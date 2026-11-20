@@ -11,9 +11,9 @@ const PORT = process.env.PORT || 10000;
 const ROOT = __dirname;
 const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.png': 'image/png', '.svg': 'image/svg+xml', '.json': 'application/json' };
 const MAX_MSG = 16 * 1024;
-const RELAY = new Set(['i', 's', 'k', 'h', 'v', 'map', 'tg']);
+const RELAY = new Set(['i', 's', 'k', 'h', 'v', 'map', 'tg', 'bi']);
 
-const queues = { casual: [], ranked: [] };
+const queues = { casual: [], ranked: [], raid: [] };
 const users = new Map();    // lowercase name -> client
 const pending = new Map();  // lowercase name -> [profile of people who sent a friend request while they were offline]
 let online = 0;
@@ -42,20 +42,28 @@ function send(c, obj) {
   try { c.sock.write(Buffer.concat([head, data])); } catch (e) { drop(c); }
 }
 
-function unqueue(c) { for (const k in queues) { const i = queues[k].indexOf(c); if (i >= 0) queues[k].splice(i, 1); } }
+const rq = new Map();       // raid queues: "size:boss" -> waiting clients
+function unqueue(c) { for (const k in queues) { const i = queues[k].indexOf(c); if (i >= 0) queues[k].splice(i, 1); } for (const q of rq.values()) { const i = q.indexOf(c); if (i >= 0) q.splice(i, 1); } }
+function leaveRoom(c) { const r = c.room; if (!r) return; c.room = null; const i = r.indexOf(c); if (i >= 0) r[i] = null; for (const o of r) if (o) send(o, { t: 'x', fr: c.slot }); }
+function startRoom(list, size) {
+  const hr = Math.floor(Date.now() / 3600000), stage = Math.floor(Math.random() * 1000000);
+  list.forEach((c, i) => { c.room = list; c.slot = i; });
+  const ps = list.map(c => ({ prof: c.prof, ci: c.team[0] | 0 }));
+  list.slice().forEach((c, i) => send(c, { t: 'm', raid: 1, slot: i, size, stage, hr, ps }));
+}
 function unpair(c) { if (c.peer) { const p = c.peer; c.peer = null; p.peer = null; send(p, { t: 'x' }); } }
 
 function drop(c) {
   if (c.closed) return;
   c.closed = true; online--;
-  unqueue(c); unpair(c);
+  unqueue(c); unpair(c); leaveRoom(c);
   if (c.key && users.get(c.key) === c) users.delete(c.key);
   try { c.sock.destroy(); } catch (e) {}
 }
 
 const int = (v, a, b) => Math.min(b, Math.max(a, Number.isFinite(+v) ? Math.floor(+v) : a));
 function cleanName(v) { return String(v == null ? '' : v).replace(/[^A-Za-z0-9_ \-]/g, '').trim().slice(0, 14); }
-function cleanProf(p, name) { p = p && typeof p === 'object' ? p : {}; return { name, icon: int(p.icon, 0, 8191), banner: int(p.banner, 0, 8191), lvl: int(p.lvl, 1, 999), rank: int(p.rank, 0, 9999) }; }
+function cleanProf(p, name) { p = p && typeof p === 'object' ? p : {}; return { name, icon: int(p.icon, 0, 8191), banner: int(p.banner, 0, 8191), lvl: int(p.lvl, 1, 999), rank: int(p.rank, 0, 9999), border: int(p.border, 0, 29) }; }
 function cleanTeam(t) {
   const out = [];
   if (Array.isArray(t)) for (const v of t.slice(0, 3)) if (Number.isInteger(v) && v >= 0 && v < 8192) out.push(v);
@@ -87,28 +95,46 @@ function onMessage(c, text) {
   let m;
   try { m = JSON.parse(text); } catch (e) { return; }
   if (!m || typeof m !== 'object') return;
-  if (RELAY.has(m.t)) { if (c.peer) send(c.peer, text); return; }
+  if (RELAY.has(m.t)) {
+    if (c.peer) send(c.peer, text);
+    else if (c.room) { m.fr = c.slot; const t = JSON.stringify(m); for (const o of c.room) if (o && o !== c) send(o, t); }
+    return;
+  }
   switch (m.t) {
     case 'hi': return hello(c, m);
     case 'p': return send(c, { t: 'on', n: users.size });
     case 'q': {
-      if (c.peer || !c.name) return;
+      if (c.peer || c.room || !c.name) return;
       unqueue(c);
-      const q = queues[m.mode === 'ranked' ? 'ranked' : 'casual'];
+      if (m.mode === 'raid') {
+        const size = m.size === 4 ? 4 : 2, key = size + ':' + int(m.b, 0, 2);
+        c.team = cleanTeam(m.team); c.rk = key; c.rs = size;
+        const q = (rq.get(key) || []).filter(o => !o.closed && o !== c); q.push(c);
+        if (q.length >= size) startRoom(q.splice(0, size), size);
+        rq.set(key, q);
+        return;
+      }
+      const q = queues[m.mode === 'ranked' ? 'ranked' : m.mode === 'raid' ? 'raid' : 'casual'];
       c.team = cleanTeam(m.team);
       let other = q.shift();
       while (other && (other.closed || other === c)) other = q.shift();
       if (other) {
         c.peer = other; other.peer = c;
+        const hr = Math.floor(Date.now() / 3600000);   // both raid partners fight the same hourly boss
         const stage = Math.floor(Math.random() * 1000000);   // seed both players use to pick the stage vote options
-        send(other, { t: 'm', side: 0, stage, opp: { team: c.team, prof: c.prof } });
-        send(c, { t: 'm', side: 1, stage, opp: { team: other.team, prof: other.prof } });
+        send(other, { t: 'm', side: 0, stage, hr, opp: { team: c.team, prof: c.prof } });
+        send(c, { t: 'm', side: 1, stage, hr, opp: { team: other.team, prof: other.prof } });
       } else q.push(c);
       return;
     }
     case 'uq': return unqueue(c);
-    case 'bot': if (c.peer) return; unqueue(c); return send(c, { t: 'botok' });   // only hand out a bot if no player was found
-    case 'done': return unpair(c);
+    case 'bot': {
+      if (c.peer || c.room) return;
+      const q = c.rk && rq.get(c.rk);
+      if (q && q.includes(c) && q.length >= 2) return startRoom(q.splice(0, q.length), c.rs);   // start the raid with whoever is waiting; bots fill the rest
+      unqueue(c); return send(c, { t: 'botok' });
+    }   // only hand out a bot if no player was found
+    case 'done': leaveRoom(c); return unpair(c);
   }
   if (!c.name) return;
   switch (m.t) {
