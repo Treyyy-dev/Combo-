@@ -1021,5 +1021,65 @@
    "flag": "noots"
   },
   "rev": 2
+ },
+ {
+  "id": "update-icon-fix",
+  "type": "update",
+  "name": "Lobby Icon Glitch Fix",
+  "subtitle": "Stops the icon flashing in the corner",
+  "desc": "Fixes the game icon flashing through at the top left of the screen.",
+  "status": "staged",
+  "created": 1795216972688,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "icofix"
+  }
+ },
+ {
+  "id": "update-chal-arrows",
+  "type": "update",
+  "name": "Challenges: Side Arrows",
+  "subtitle": "Page arrows on the sides",
+  "desc": "Moves the arrows that flip the challenge pages to the middle of the left and right sides and removes the ones at the bottom.",
+  "status": "staged",
+  "created": 1795216972689,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "carrow"
+  }
+ },
+ {
+  "id": "update-ult2",
+  "type": "update",
+  "name": "Cinematic Ultimates",
+  "subtitle": "Bigger, flashier ultimates",
+  "desc": "Every ultimate has a longer cut-in with colour slashes, lightning, a scrolling name banner and a flash, plus energy rings and rising sparks during the move and a huge burst on the final hit.",
+  "status": "staged",
+  "created": 1795216972690,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "ult2"
+  }
+ },
+ {
+  "id": "update-ots-back",
+  "type": "update",
+  "name": "Cutscenes: Real Back View",
+  "subtitle": "The front shadow is the fighter's back",
+  "desc": "In cutscene shots filmed from behind a character, the dark shape in the front is now drawn as that fighter's back: their hair, headband, shoulders and clothes.",
+  "status": "staged",
+  "created": 1795216972691,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "otsback"
+  }
  }
 ]
