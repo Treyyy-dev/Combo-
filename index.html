@@ -616,6 +616,7 @@ function netMsg(m){switch(m.t){
  case'frs':G.note={t:m.on?'Friend request sent':'Request saved. They will see it when they come online',T:3.5};return;
  case'pres':{const o={};if(m.on&&typeof m.on==='object')for(const k of SV.friends)if(m.on[k])o[k]=cleanProf(m.on[k]);FR.on=o;return}
  case'dm':{const f=cleanProf({name:m.from}).name;if(!SV.friends.includes(f))return;const q=String(m.msg||'').slice(0,140);(FR.chat[f]=FR.chat[f]||[]).push({me:0,s:q});if(FR.chat[f].length>40)FR.chat[f].shift();if(!(G.mode==='friends'&&FR.sel===f)){FR.unread[f]=(FR.unread[f]||0)+1;G.note={t:f+': '+q.slice(0,44),T:3.5}}return}
+ case'botok':if(G.net&&G.net.st==='search')startBot(G.net.type);return;
  case'dmx':G.note={t:'They are offline right now',T:2.5};return}
  const n=G.net;if(!n)return;
  if(m.t==='m'&&n.st==='search'){const tm=(m.opp&&Array.isArray(m.opp.team)?m.opp.team:[]).map(v=>v|0).filter(v=>v>=0&&v<CH.length).slice(0,3);while(tm.length<3)tm.push(tm.length);
@@ -627,7 +628,7 @@ function netMsg(m){switch(m.t){
  else if(m.t==='x')oppLeft()}
 function oppLeft(){const n=G.net;if(!n)return;const playing=n.st==='play';G.net=null;if(playing&&G.rules.online&&(G.mode==='fight'||G.mode==='intro'&&(!G.intro||G.intro.mid))){G.intro=null;G.cine=null;G.slow=1;G.win=G.f[G.me];G.left=1;finish(true)}}
 function netTick(rdt){const n=G.net;if(!n)return;
- if(n.st==='search'){n.age+=rdt;if(n.age>=n.botAt)startBot(n.type);return}
+ if(n.st==='search'){const on=NET.st==='on';if(on||NET.st==='off'&&NET.fails>=2)n.age+=rdt;if(n.age>=n.botAt){if(!on)startBot(n.type);else if(!n.asked){n.asked=1;netRaw({t:'bot'})}else if(n.age>=n.botAt+2.5)startBot(n.type)}return}
  if(n.st!=='play')return;
  for(const k in RI.buf)RI.buf[k]-=rdt;
  if(PI.mx!==n.lm||PI.guard!==n.lg||n.out.length){n.lm=PI.mx;n.lg=PI.guard;netSend({t:'i',m:PI.mx,g:PI.guard?1:0,p:n.out});n.out=[]}

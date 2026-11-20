@@ -107,6 +107,7 @@ function onMessage(c, text) {
       return;
     }
     case 'uq': return unqueue(c);
+    case 'bot': if (c.peer) return; unqueue(c); return send(c, { t: 'botok' });   // only hand out a bot if no player was found
     case 'done': return unpair(c);
   }
   if (!c.name) return;
