@@ -40,7 +40,9 @@ function save(){try{localStorage.setItem(SKEY,JSON.stringify(SV))}catch(e){}}
 
 /* ================= AUDIO ================= */
 let AC=null,noiseB=null,MG=null;
-function audioInit(){if(AC){if(AC.state==='suspended')AC.resume();return}try{AC=new(window.AudioContext||window.webkitAudioContext)();const b=AC.createBuffer(1,AC.sampleRate*.5,AC.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;noiseB=b;MG=AC.createGain();MG.gain.value=[0,.4,1][SV.set.vol];MG.connect(AC.destination)}catch(e){AC=null}}
+try{if(navigator.audioSession)navigator.audioSession.type='playback'}catch(e){}
+['pointerup','touchend','click'].forEach(e=>window.addEventListener(e,()=>audioInit(),{passive:true}));
+function audioInit(){if(AC){if(AC.state!=='running')try{AC.resume()}catch(e){}return}try{AC=new(window.AudioContext||window.webkitAudioContext)();const b=AC.createBuffer(1,AC.sampleRate*.5,AC.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;noiseB=b;MG=AC.createGain();MG.gain.value=[0,.4,1][SV.set.vol];MG.connect(AC.destination)}catch(e){AC=null}}
 function tone(type,f0,f1,dur,vol){const o=AC.createOscillator(),q=AC.createGain(),t=AC.currentTime;o.type=type;o.frequency.setValueAtTime(f0,t);o.frequency.exponentialRampToValueAtTime(Math.max(1,f1),t+dur);q.gain.setValueAtTime(vol,t);q.gain.exponentialRampToValueAtTime(.001,t+dur);o.connect(q);q.connect(MG);o.start(t);o.stop(t+dur)}
 function noise(dur,vol,fq,q,type,f1){const s=AC.createBufferSource(),fl=AC.createBiquadFilter(),gn=AC.createGain(),t=AC.currentTime;s.buffer=noiseB;fl.type=type||'bandpass';fl.frequency.setValueAtTime(fq,t);if(f1)fl.frequency.exponentialRampToValueAtTime(f1,t+dur);fl.Q.value=q;gn.gain.setValueAtTime(vol,t);gn.gain.exponentialRampToValueAtTime(.001,t+dur);s.connect(fl);fl.connect(gn);gn.connect(MG);s.start(t);s.stop(t+dur)}
 function sfx(n,a){if(!AC||AC.state!=='running'||G.mode==='gacha'&&G.rules.type==='show'&&n!=='ui'&&n!=='ult')return;try{switch(n){
