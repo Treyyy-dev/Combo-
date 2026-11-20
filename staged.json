@@ -1005,5 +1005,20 @@
   "game": {
    "flag": "map2"
   }
+ },
+ {
+  "id": "update-no-foreground",
+  "type": "update",
+  "name": "Cutscenes: Clear Front",
+  "subtitle": "No big character in the front",
+  "desc": "In cutscene shots filmed from behind a character, the big dark character in the front of the screen is no longer shown.",
+  "status": "staged",
+  "created": 1795216275499,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "noots"
+  }
  }
 ]
