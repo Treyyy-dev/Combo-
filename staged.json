@@ -1111,5 +1111,20 @@
   "game": {
    "flag": "lookcam"
   }
+ },
+ {
+  "id": "update-winfront",
+  "type": "update",
+  "name": "Winner Faces the Camera",
+  "subtitle": "Full body, looking right at you",
+  "desc": "After the winner says their line, the camera shows their whole body from the front as they raise a fist and look straight at the camera, and then VICTORY or DEFEAT shows.",
+  "status": "staged",
+  "created": 1795217803406,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "winfront"
+  }
  }
 ]

@@ -1,5 +1,5 @@
 /* Look upgrades, each off unless released: weap2 (detailed weapons), hair2 (detailed hair), phys (hair and cloth physics),
-   stance (unique idle stances and poses), winpose (victory pose shot before the result), map2 (detailed maps), ult2 (cinematic ultimates), otsback (foreground shadow drawn as the character's back), lookcam (in those shots the other fighter is drawn from the front, facing the camera), noots (in over-the-shoulder cutscene shots show only the dark shadow, not that character). */
+   stance (unique idle stances and poses), winpose (victory pose shot before the result), map2 (detailed maps), ult2 (cinematic ultimates), otsback (foreground shadow drawn as the character's back), winfront (the winner's pose shot shows them full body from the front, looking at the camera), lookcam (in those shots the other fighter is drawn from the front, facing the camera), noots (in over-the-shoulder cutscene shots show only the dark shadow, not that character). */
 (function(){'use strict';
 const F=()=>(typeof FLAGS!=='undefined'&&FLAGS)||{};
 const hs=t=>{let x=5381;for(let i=0;i<t.length;i++)x=((x*33)^t.charCodeAt(i))>>>0;return x};
@@ -70,9 +70,9 @@ const add=(p,d)=>{const o=p.slice();for(let i=0;i<10;i++)o[i]+=d[i];return o};
 const _po=poseOf;poseOf=function(f){const p=_po(f);if(!F().stance||!f||!f.c||!p)return p;if(f.state==='idle')return add(p,dOf(f.c).d);if(f.state==='win')return add(p,dOf(f.c).w);return p};
 const ISET=new Set(IDLES),_dc2=drawChar;drawChar=function(c,p,o){if(F().stance&&c&&ISET.has(p))p=add(p,dOf(c).d);return _dc2(c,p,o)};
 /* ================= VICTORY POSE SHOT ================= */
-const _sc=shotCam;shotCam=function(s,k){if(s.kind==='vpose'&&s.who){const f=s.who,e=ease(clamp(k*1.7,0,1)),hh=-120*(f.c.sc||1);return{x:f.x+f.face*lerp(46,6,e),y:lerp(-66,hh+38,e),z:lerp(1.15,2.25,e),rot:f.face*lerp(.08,-.02,e)}}return _sc(s,k)};
+const _sc=shotCam;shotCam=function(s,k){if(s.kind==='vpose'&&s.who){const f=s.who,e=ease(clamp(k*1.7,0,1)),hh=-120*(f.c.sc||1);if(F().winfront)return{x:f.x,y:lerp(-60,-74*(f.c.sc||1),e),z:lerp(1.05,1.78,e),rot:lerp(.05,0,e)};return{x:f.x+f.face*lerp(46,6,e),y:lerp(-66,hh+38,e),z:lerp(1.15,2.25,e),rot:f.face*lerp(.08,-.02,e)}}return _sc(s,k)};
 const _ex=exprOf;exprOf=function(f){if(f&&f._vp&&f.state==='pose')return'happy';return _ex(f)};
-const _fin=finish;finish=function(win){_fin(win);if(!F().winpose)return;const I=G.intro;if(!I||!I.out||!I.sh||I.sh.length<2)return;const lo=I.sh.find(q=>q.kind==='kneel'),wi=I.sh.find(q=>q!==lo);if(!lo||!wi||!wi.who)return;const w=wi.who;
+const _fin=finish;finish=function(win){_fin(win);if(!F().winpose&&!F().winfront)return;const I=G.intro;if(!I||!I.out||!I.sh||I.sh.length<2)return;const lo=I.sh.find(q=>q.kind==='kneel'),wi=I.sh.find(q=>q!==lo);if(!lo||!wi||!wi.who)return;const w=wi.who;
  I.sh=[lo,wi,{kind:'vpose',who:w,dur:2,pre(){w.hide=false;w.mv=null;w.y=0;w.vx=w.vy=0;w.pvx=0;w.state='pose';w.pz=vpose(w.c);w._vp=1;w.st=0;G.flash=.35;try{sfx('ult');shake(10);G.fx.push({type:'ring',t:0,life:.5,x:w.x,y:-70,r0:20,r1:240,col:w.c.col,w:8})}catch(e){}}}]};
 const _bg=begin;begin=function(mk){const r=_bg(mk);try{(G.tm||[]).forEach(T=>T.list.forEach(f=>{f._vp=0}))}catch(e){}return r};
 /* ===== CUTSCENES: when a character's big dark shadow fills the front, do not also draw that character in the scene ===== */
@@ -113,7 +113,7 @@ function drawFrontChar(c,o){const t=o.t||0,ex=o.expr||'',ink=INK,A=c.acc||[],lon
  g.fillStyle='rgba(255,255,255,.14)';g.beginPath();g.ellipse(-4*bk,-101,4*bk,5,0,0,TAU);g.fill();g.strokeStyle='rgba(0,0,0,.22)';g.lineWidth=1.2;g.beginPath();g.moveTo(-10*bk,-97);g.quadraticCurveTo(-5*bk,-93.5,-.6,-97);g.moveTo(.6,-97);g.quadraticCurveTo(5*bk,-93.5,10*bk,-97);g.moveTo(0,-95);g.lineTo(0,-78);g.moveTo(-4*bk,-89);g.lineTo(4*bk,-89);g.moveTo(-3.6*bk,-83.5);g.lineTo(3.6*bk,-83.5);g.stroke();
  g.beginPath();g.moveTo(-6,-116);g.lineTo(6,-116);g.lineTo(0,-103);g.closePath();g.fillStyle=c.skin;g.fill();g.strokeStyle=ink;g.lineWidth=1.4;g.stroke();g.strokeStyle=c.col;g.lineWidth=2.2;g.beginPath();g.moveTo(-7.5,-115);g.lineTo(0,-101.5);g.lineTo(7.5,-115);g.stroke();
  g.fillStyle=c.col2;g.fillRect(-16*bk,-77,32*bk,5.4);g.fillStyle=ink;g.fillRect(-2.6,-78,5.2,7.4);g.fillStyle=c.col;g.fillRect(-1.5,-77,3,5.4);g.restore();
- [-1,1].forEach(sx=>{const S={x:sx*17.5*bk,y:-107-br},E={x:sx*21*bk,y:-89},Hd={x:sx*19*bk,y:-71};seg2(S,E,5.9*bk,4.6*bk,sx<0?c.topSh:c.top);seg2(E,Hd,4.6*bk,3.5*bk,c.bare?(sx<0?c.skinSh:c.skin):(sx<0?c.topSh:c.top));
+ [-1,1].forEach(sx=>{const up=o.win&&sx<0,S={x:sx*17.5*bk,y:-107-br},E=up?{x:sx*26*bk,y:-121}:{x:sx*21*bk,y:-89},Hd=up?{x:sx*23*bk,y:-144+Math.sin(t*6)*1.5}:{x:sx*19*bk,y:-71};seg2(S,E,5.9*bk,4.6*bk,sx<0?c.topSh:c.top);seg2(E,Hd,4.6*bk,3.5*bk,c.bare?(sx<0?c.skinSh:c.skin):(sx<0?c.topSh:c.top));
   if(sx>0&&c.weapon!=='fist')weapon(c,Hd,FA[c.weapon]||0,o,false);const gl=c.weapon==='fist',r=gl?(c.fistR||8.2)*.8:4.5;circ(Hd.x,Hd.y+2,r,gl?c.col2:(sx<0?c.skinSh:c.skin),ink,2);g.strokeStyle='rgba(0,0,0,.4)';g.lineWidth=.9;g.beginPath();[-.45,0,.45].forEach(k=>{g.moveTo(Hd.x+k*r,Hd.y+2+r*.15);g.lineTo(Hd.x+k*r,Hd.y+2+r*.95)});g.stroke()});
  g.fillStyle=c.skinSh;g.fillRect(-3.8,-121,7.6,8);g.strokeStyle=ink;g.lineWidth=2;g.strokeRect(-3.8,-121,7.6,8);
  g.save();g.translate(0,-132);[-1,1].forEach(sx=>{g.beginPath();g.ellipse(sx*14.4,3,2.4,3.8,0,0,TAU);g.fillStyle=c.skin;g.fill();g.strokeStyle=ink;g.lineWidth=1.8;g.stroke()});
@@ -135,6 +135,7 @@ function drawFrontChar(c,o){const t=o.t||0,ex=o.expr||'',ink=INK,A=c.acc||[],lon
  g.restore()}
 function camSubject(){if(!OTSF||G.t-OTST>=.12)return null;if(G.mode==='intro'&&G.intro){const q=G.intro.sh[G.intro.i];return q&&q.ots&&q.who?q.who:null}if(G.mode!=='scene')return null;let best=null,bd=1e9;(G.f||[]).concat(G.al||[]).forEach(x=>{if(!x||x===OTSF||x.hide)return;const d=Math.abs(x.x-OTSF.x);if(d<bd){bd=d;best=x}});return best}
 const _df2=drawFighter;drawFighter=function(f,sil){const fl=F();if(fl.noots&&f===OTSF&&G.t-OTST<.12&&(G.mode==='intro'||G.mode==='scene'))return;
+ if(fl.winfront&&!sil&&!f.hide&&f._vp&&f.state==='pose'&&(G.mode==='intro'||G.mode==='result')){try{g.save();g.translate(f.x,f.y);const sc=f.sc||f.c.sc||1;g.scale(sc,sc);drawFrontChar(f.c,{t:f.at,expr:'happy',win:1});g.restore();return}catch(e){try{g.restore()}catch(x){}}}
  if(fl.lookcam&&!sil&&!f.hide&&f.state!=='enter'&&f===camSubject()){try{g.save();g.translate(f.x,f.y);const sc=f.sc||f.c.sc||1;g.scale(sc,sc);drawFrontChar(f.c,{t:f.at,expr:exprOf(f),sway:f.sway});g.restore();return}catch(e){try{g.restore()}catch(x){}}}
  return _df2(f,sil)};
 /* ================= CINEMATIC ULTIMATES ================= */
