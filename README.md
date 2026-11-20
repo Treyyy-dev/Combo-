@@ -51,3 +51,12 @@ Every action can be rebound for keyboard and controller in Configure → Control
 | Assist | V | D-pad down | D-pad down | AST |
 
 Progress, friends and binds are saved in the browser's local storage. The server keeps nothing on disk.
+
+## Released content (Dev Studio)
+
+New fighters, maps, modes and banners are staged in the Dev Studio on the claude.ai Combo page and released there one by one. `live.js` adds released items to the running game:
+
+- On claude.ai it reads them from the page's own database, so a release shows up right away.
+- Here (GitHub / Render) there is no such database, so it reads `live.json`, a copy of the released list. `live.json` is updated by a commit, and Render redeploys on that commit.
+
+Keep the `<script src="live.js"></script>` tag at the end of `index.html`.
