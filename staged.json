@@ -1081,5 +1081,35 @@
   "game": {
    "flag": "otsback"
   }
+ },
+ {
+  "id": "update-d25",
+  "type": "update",
+  "name": "2.5D Fighters",
+  "subtitle": "Three-quarter angle with depth",
+  "desc": "Fighters are turned toward the camera so you see the chest and both shoulders, with light, shadow and shine that make their bodies look rounded. Uses the sculpted bodies.",
+  "status": "staged",
+  "created": 1795217372100,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "d25"
+  }
+ },
+ {
+  "id": "update-lookcam",
+  "type": "update",
+  "name": "Cutscenes: Face the Camera",
+  "subtitle": "The other fighter looks at you",
+  "desc": "In cutscene shots filmed from behind a character, the other fighter is drawn from the front, looking straight out of the screen.",
+  "status": "staged",
+  "created": 1795217372101,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "lookcam"
+  }
  }
 ]
