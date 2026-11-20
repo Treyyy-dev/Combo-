@@ -38,6 +38,7 @@ async function dbInit() {
   try {
     await pool.query('create table if not exists combo_items (id text primary key, col text not null, data jsonb not null, updated_at timestamptz not null default now())');
     await pool.query('create table if not exists combo_seen (id text primary key)');
+    await pool.query('create table if not exists combo_lb (id text primary key, name text not null, rank int not null default 1000, wins int not null default 0, raids int not null default 0, xp int not null default 0, updated_at timestamptz not null default now())');
     // staged.json in the repo is how new items arrive: each id (and each new "rev" of it) is added to the staged list once.
     let seed = [];
     try { seed = JSON.parse(fs.readFileSync(path.join(ROOT, 'staged.json'), 'utf8')); } catch (e) {}
@@ -89,10 +90,43 @@ function devApi(req, res) {
   });
 }
 
+// ---- Leaderboard (optional, needs the database) ----------------------------
+// GET /api/lb returns the top players of each board; POST /api/lb saves one player's own numbers.
+let lbCache = null, lbAt = 0; const lbHits = new Map();
+const lbInt = (v, max) => Math.max(0, Math.min(max, Math.floor(Number(v) || 0)));
+function lbApi(req, res) {
+  if (!pool || !dbReady) return json(res, 503, { error: 'off' });
+  if (req.method === 'GET') {
+    if (lbCache && Date.now() - lbAt < 15000) return json(res, 200, lbCache);
+    const q = c => pool.query('select id, name, rank, wins as w, raids as r, xp from combo_lb order by ' + c + ' desc limit 100');
+    return Promise.all([q('rank'), q('wins'), q('raids'), q('xp')]).then(rs => {
+      const seen = new Map(); rs.forEach(r => r.rows.forEach(x => seen.set(x.id, x)));
+      lbCache = { rows: Array.from(seen.values()) }; lbAt = Date.now(); json(res, 200, lbCache);
+    }).catch(() => json(res, 500, { error: 'storage' }));
+  }
+  if (req.method !== 'POST') return json(res, 405, { error: 'method' });
+  const ip = String(req.headers['x-forwarded-for'] || req.socket.remoteAddress || '').split(',')[0].trim(), now = Date.now();
+  if (now - (lbHits.get(ip) || 0) < 3000) return json(res, 429, { error: 'slow down' });
+  lbHits.set(ip, now); if (lbHits.size > 20000) lbHits.clear();
+  let body = '', over = false;
+  req.on('data', d => { if (over) return; body += d; if (body.length > 2048) { over = true; json(res, 413, { error: 'too big' }); req.destroy(); } });
+  req.on('end', async () => {
+    if (over) return;
+    try {
+      let m; try { m = JSON.parse(body || '{}'); } catch (e) { return json(res, 400, { error: 'json' }); }
+      const id = cleanId(m.id), name = String(m.name == null ? '' : m.name).replace(/[^A-Za-z0-9 _\-]/g, '').trim().slice(0, 14);
+      if (id.length < 8 || !name) return json(res, 400, { error: 'bad player' });
+      await pool.query('insert into combo_lb (id, name, rank, wins, raids, xp) values ($1, $2, $3, $4, $5, $6) on conflict (id) do update set name = excluded.name, rank = excluded.rank, wins = excluded.wins, raids = excluded.raids, xp = excluded.xp, updated_at = now()', [id, name, lbInt(m.rank, 9999), lbInt(m.w, 1000000), lbInt(m.r, 1000000), lbInt(m.xp, 400000000)]);
+      json(res, 200, { ok: true });
+    } catch (e) { json(res, 500, { error: 'storage' }); }
+  });
+}
+
 const server = http.createServer((req, res) => {
   const url = (req.url || '/').split('?')[0];
   if (url === '/health') { res.writeHead(200, { 'content-type': 'application/json' }); return res.end(JSON.stringify({ ok: true, online })); }
   if (url === '/api/dev') return devApi(req, res);
+  if (url === '/api/lb') return lbApi(req, res);
   if (url === '/live.json' && dbReady && liveCache) { res.writeHead(200, { 'content-type': 'application/json', 'cache-control': 'no-cache' }); return res.end(JSON.stringify(liveCache)); }
   const rel = url === '/' ? 'index.html' : path.normalize(url).replace(/^([/\\]|\.\.)+/, '');
   const file = path.join(ROOT, rel);

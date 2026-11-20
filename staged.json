@@ -840,5 +840,35 @@
   "game": {
    "flag": "fvoice"
   }
+ },
+ {
+  "id": "update-challenges",
+  "type": "update",
+  "name": "Challenges",
+  "subtitle": "Daily, weekly and monthly",
+  "desc": "Adds CHALLENGES to the main menu: 20 daily, 20 weekly and 20 monthly challenges. Each one pays yellow tickets and gems when you claim it.",
+  "status": "staged",
+  "created": 1795212961572,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "chal"
+  }
+ },
+ {
+  "id": "update-leaderboard",
+  "type": "update",
+  "name": "Leaderboard",
+  "subtitle": "Ranked, wins, raids and level",
+  "desc": "Adds LEADERBOARD to the main menu with four boards: ranked points, total wins, boss raid clears and player level.",
+  "status": "staged",
+  "created": 1795212961573,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "lboard"
+  }
  }
 ]
