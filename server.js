@@ -1,4 +1,6 @@
-// Combo game server: serves the game and pairs players for online matches.
+// Combo game server: serves the game, pairs players for online matches,
+// and relays friend requests and chat between players who are online.
+// Nothing is stored on disk: friend lists live in each player's browser.
 // No dependencies: plain Node http + a small WebSocket implementation.
 const http = require('http');
 const fs = require('fs');
@@ -12,6 +14,8 @@ const MAX_MSG = 16 * 1024;
 const RELAY = new Set(['i', 's', 'k']);
 
 const queues = { casual: [], ranked: [] };
+const users = new Map();    // lowercase name -> client
+const pending = new Map();  // lowercase name -> [profile of people who sent a friend request while they were offline]
 let online = 0;
 
 const server = http.createServer((req, res) => {
@@ -28,7 +32,7 @@ const server = http.createServer((req, res) => {
 });
 
 function send(c, obj) {
-  if (c.closed) return;
+  if (!c || c.closed) return;
   const data = Buffer.from(typeof obj === 'string' ? obj : JSON.stringify(obj));
   const n = data.length;
   let head;
@@ -39,15 +43,19 @@ function send(c, obj) {
 }
 
 function unqueue(c) { for (const k in queues) { const i = queues[k].indexOf(c); if (i >= 0) queues[k].splice(i, 1); } }
+function unpair(c) { if (c.peer) { const p = c.peer; c.peer = null; p.peer = null; send(p, { t: 'x' }); } }
 
 function drop(c) {
   if (c.closed) return;
   c.closed = true; online--;
-  unqueue(c);
-  if (c.peer) { const p = c.peer; c.peer = null; p.peer = null; send(p, { t: 'x' }); }
+  unqueue(c); unpair(c);
+  if (c.key && users.get(c.key) === c) users.delete(c.key);
   try { c.sock.destroy(); } catch (e) {}
 }
 
+const int = (v, a, b) => Math.min(b, Math.max(a, Number.isFinite(+v) ? Math.floor(+v) : a));
+function cleanName(v) { return String(v == null ? '' : v).replace(/[^A-Za-z0-9_ \-]/g, '').trim().slice(0, 14); }
+function cleanProf(p, name) { p = p && typeof p === 'object' ? p : {}; return { name, icon: int(p.icon, 0, 63), banner: int(p.banner, 0, 63), lvl: int(p.lvl, 1, 999), rank: int(p.rank, 0, 9999) }; }
 function cleanTeam(t) {
   const out = [];
   if (Array.isArray(t)) for (const v of t.slice(0, 3)) if (Number.isInteger(v) && v >= 0 && v < 64) out.push(v);
@@ -55,24 +63,79 @@ function cleanTeam(t) {
   return out;
 }
 
+function hello(c, m) {
+  let name = cleanName(m.prof && m.prof.name) || 'Player';
+  const pid = String(m.pid || '').slice(0, 40);
+  let key = name.toLowerCase();
+  const holder = users.get(key);
+  if (holder && holder !== c) {
+    if (holder.pid && holder.pid === pid) drop(holder);            // same player reconnecting
+    else { name = (name.slice(0, 10) + (100 + Math.floor(Math.random() * 900))); key = name.toLowerCase(); }
+  }
+  if (c.key && c.key !== key && users.get(c.key) === c) users.delete(c.key);
+  c.name = name; c.key = key; c.pid = pid; c.prof = cleanProf(m.prof, name);
+  users.set(key, c);
+  const pend = pending.get(key) || [];
+  pending.delete(key);
+  send(c, { t: 'hi', name, online: users.size, pend });
+}
+
 function onMessage(c, text) {
+  const now = Date.now();
+  if (now - c.rt > 1000) { c.rt = now; c.rate = 0; }
+  if (++c.rate > 240) return drop(c);
   let m;
   try { m = JSON.parse(text); } catch (e) { return; }
   if (!m || typeof m !== 'object') return;
-  if (m.t === 'q') {
-    if (c.peer) return;
-    unqueue(c);
-    const q = queues[m.mode === 'ranked' ? 'ranked' : 'casual'];
-    c.team = cleanTeam(m.team);
-    const other = q.shift();
-    if (other && !other.closed && other !== c) {
-      c.peer = other; other.peer = c;
-      const stage = Math.floor(Math.random() * 5);
-      send(other, { t: 'm', side: 0, stage, opp: { team: c.team } });
-      send(c, { t: 'm', side: 1, stage, opp: { team: other.team } });
-    } else q.push(c);
-  } else if (RELAY.has(m.t) && c.peer) {
-    send(c.peer, text);
+  if (RELAY.has(m.t)) { if (c.peer) send(c.peer, text); return; }
+  switch (m.t) {
+    case 'hi': return hello(c, m);
+    case 'p': return send(c, { t: 'on', n: users.size });
+    case 'q': {
+      if (c.peer || !c.name) return;
+      unqueue(c);
+      const q = queues[m.mode === 'ranked' ? 'ranked' : 'casual'];
+      c.team = cleanTeam(m.team);
+      let other = q.shift();
+      while (other && (other.closed || other === c)) other = q.shift();
+      if (other) {
+        c.peer = other; other.peer = c;
+        const stage = Math.floor(Math.random() * 5);
+        send(other, { t: 'm', side: 0, stage, opp: { team: c.team, prof: c.prof } });
+        send(c, { t: 'm', side: 1, stage, opp: { team: other.team, prof: other.prof } });
+      } else q.push(c);
+      return;
+    }
+    case 'uq': return unqueue(c);
+    case 'done': return unpair(c);
+  }
+  if (!c.name) return;
+  switch (m.t) {
+    case 'find': {
+      const q = cleanName(m.q).toLowerCase(), list = [];
+      if (q) for (const [k, u] of users) { if (u !== c && k.includes(q)) { list.push(u.prof); if (list.length >= 6) break; } }
+      return send(c, { t: 'found', list });
+    }
+    case 'fr': {
+      const key = cleanName(m.to).toLowerCase();
+      if (!key || key === c.key) return;
+      const u = users.get(key);
+      if (u) send(u, { t: 'fr', prof: c.prof });
+      else if (pending.size < 5000 || pending.has(key)) { const l = pending.get(key) || []; if (l.length < 6 && !l.some(p => p.name === c.name)) l.push(c.prof); pending.set(key, l); }
+      return send(c, { t: 'frs', on: !!u });
+    }
+    case 'fa': { const u = users.get(cleanName(m.to).toLowerCase()); if (u) send(u, { t: 'fa', prof: c.prof }); return; }
+    case 'pres': {
+      const on = {};
+      if (Array.isArray(m.names)) for (const n of m.names.slice(0, 50)) { const u = users.get(cleanName(n).toLowerCase()); if (u) on[u.name] = u.prof; }
+      return send(c, { t: 'pres', on });
+    }
+    case 'dm': {
+      const u = users.get(cleanName(m.to).toLowerCase()), msg = String(m.msg == null ? '' : m.msg).replace(/[\u0000-\u001f]/g, ' ').slice(0, 140);
+      if (!msg) return;
+      if (u) send(u, { t: 'dm', from: c.name, msg }); else send(c, { t: 'dmx' });
+      return;
+    }
   }
 }
 
@@ -82,7 +145,7 @@ server.on('upgrade', (req, sock) => {
   const accept = crypto.createHash('sha1').update(key + '258EAFA5-E914-47DA-95CA-C5AB0DC85B11').digest('base64');
   sock.write('HTTP/1.1 101 Switching Protocols\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: ' + accept + '\r\n\r\n');
   sock.setNoDelay(true);
-  const c = { sock, buf: Buffer.alloc(0), peer: null, closed: false, team: [0, 1, 2] };
+  const c = { sock, buf: Buffer.alloc(0), peer: null, closed: false, team: [0, 1, 2], name: '', key: '', pid: '', prof: null, rate: 0, rt: 0 };
   online++;
   sock.on('data', chunk => {
     c.buf = Buffer.concat([c.buf, chunk]);

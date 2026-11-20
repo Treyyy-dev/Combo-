@@ -22,25 +22,30 @@ Notes:
 
 ## What's in it
 
-- 30 fighters, each with two skills, a cinematic ultimate and their own world
-- 3 vs 3 team matches with swapping and assists
+- 30 fighters, each with two skills, an 8 second cinematic ultimate and their own world
+- 3 vs 3 team matches with swapping, assists and a clash cutscene when a new fighter comes in
 - Offline: Team Match and Practice. Online: Casual Combo and Ranked Combo
-- Gacha with 8 banners and a summon cutscene, paid for with gems earned by playing
-- Intro and ending cutscenes with matchup dialogue
+- If nobody else is searching, online queues fill with a computer opponent (relaxed in Casual, hard in Ranked)
+- Player profile with username, level, rank, icon and banner
+- Friends: search a username, send a request, chat. Both players need to be online on the same server
+- Gacha with 8 banners and a summon cutscene. Fighters, icons and banners all come from gems earned by playing
+- The game always plays in landscape
 
 ## Controls
 
-| | Keyboard / mouse | Controller | Touch |
-|---|---|---|---|
-| Move | A / D | Stick or D-pad left/right | Drag left side |
-| Jump | W / Space | A | Flick up or JUMP |
-| Light attack | Left click / J | X | ATK |
-| Heavy attack | Right click / K | Y | HVY |
-| Dash | Shift | B | DASH |
-| Skills | Q / E | LB / RB | S1 / S2 |
-| Ultimate | R | RT | ULT |
-| Guard | F / S | LT | GRD |
-| Swap fighter | C | D-pad up | SWAP |
-| Assist | V | D-pad down | AST |
+Every action can be rebound for keyboard and controller in Configure → Controls. Defaults:
 
-Progress is saved in the browser's local storage.
+| | Keyboard / mouse | Xbox | PS5 | Touch |
+|---|---|---|---|---|
+| Move | A / D | Stick or D-pad | Stick or D-pad | Drag left side |
+| Jump | Space / W | A | Cross | Flick up or JUMP |
+| Light attack | J / left click | X | Square | ATK |
+| Heavy attack | K / right click | Y | Triangle | HVY |
+| Dash | Left Shift | B | Circle | DASH |
+| Skills | Q / E | LB / RB | L1 / R1 | S1 / S2 |
+| Ultimate | R | RT | R2 | ULT |
+| Guard | F / S | LT | L2 | GRD |
+| Swap fighter | C | D-pad up | D-pad up | SWAP |
+| Assist | V | D-pad down | D-pad down | AST |
+
+Progress, friends and binds are saved in the browser's local storage. The server keeps nothing on disk.
