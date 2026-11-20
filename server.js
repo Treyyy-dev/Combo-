@@ -55,10 +55,10 @@ function drop(c) {
 
 const int = (v, a, b) => Math.min(b, Math.max(a, Number.isFinite(+v) ? Math.floor(+v) : a));
 function cleanName(v) { return String(v == null ? '' : v).replace(/[^A-Za-z0-9_ \-]/g, '').trim().slice(0, 14); }
-function cleanProf(p, name) { p = p && typeof p === 'object' ? p : {}; return { name, icon: int(p.icon, 0, 511), banner: int(p.banner, 0, 511), lvl: int(p.lvl, 1, 999), rank: int(p.rank, 0, 9999) }; }
+function cleanProf(p, name) { p = p && typeof p === 'object' ? p : {}; return { name, icon: int(p.icon, 0, 8191), banner: int(p.banner, 0, 8191), lvl: int(p.lvl, 1, 999), rank: int(p.rank, 0, 9999) }; }
 function cleanTeam(t) {
   const out = [];
-  if (Array.isArray(t)) for (const v of t.slice(0, 3)) if (Number.isInteger(v) && v >= 0 && v < 512) out.push(v);
+  if (Array.isArray(t)) for (const v of t.slice(0, 3)) if (Number.isInteger(v) && v >= 0 && v < 8192) out.push(v);
   while (out.length < 3) out.push(out.length);
   return out;
 }
@@ -100,7 +100,7 @@ function onMessage(c, text) {
       while (other && (other.closed || other === c)) other = q.shift();
       if (other) {
         c.peer = other; other.peer = c;
-        const stage = Math.floor(Math.random() * 5);
+        const stage = Math.floor(Math.random() * 1000000);   // seed both players use to pick the stage vote options
         send(other, { t: 'm', side: 0, stage, opp: { team: c.team, prof: c.prof } });
         send(c, { t: 'm', side: 1, stage, opp: { team: other.team, prof: other.prof } });
       } else q.push(c);
