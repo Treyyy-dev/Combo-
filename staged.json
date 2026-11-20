@@ -915,5 +915,95 @@
   "game": {
    "flag": "sarrow"
   }
+ },
+ {
+  "id": "update-weapons2",
+  "type": "update",
+  "name": "Detailed Weapons",
+  "subtitle": "Sharper swords, staffs, bows and more",
+  "desc": "Every weapon is redrawn with more detail: blades with edges and guards, wrapped grips, glowing staff heads, banded bo staffs, recurve bows and orbiting rings on orbs.",
+  "status": "staged",
+  "created": 1795216262633,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "weap2"
+  }
+ },
+ {
+  "id": "update-winpose",
+  "type": "update",
+  "name": "Victory Pose",
+  "subtitle": "Winner poses before the result",
+  "desc": "After the winner says their line to the loser, the camera zooms in on the winner while they strike a pose, and then VICTORY or DEFEAT shows.",
+  "status": "staged",
+  "created": 1795216262634,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "winpose"
+  }
+ },
+ {
+  "id": "update-hair2",
+  "type": "update",
+  "name": "Detailed Hair",
+  "subtitle": "Strands, shine and layers",
+  "desc": "Hair has more detail: separate strands, extra shine, layered locks at the back and side locks by the face.",
+  "status": "staged",
+  "created": 1795216262635,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "hair2"
+  }
+ },
+ {
+  "id": "update-physics",
+  "type": "update",
+  "name": "Hair and Cloth Physics",
+  "subtitle": "Hair and clothes move with the fighter",
+  "desc": "Hair, capes, sashes and coat tails swing, bounce and lift as fighters run, jump, fall and get hit.",
+  "status": "staged",
+  "created": 1795216262636,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "phys"
+  }
+ },
+ {
+  "id": "update-stances",
+  "type": "update",
+  "name": "Unique Stances and Poses",
+  "subtitle": "Every fighter stands their own way",
+  "desc": "Every fighter has their own idle stance and their own win pose instead of sharing a handful.",
+  "status": "staged",
+  "created": 1795216262637,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "stance"
+  }
+ },
+ {
+  "id": "update-maps2",
+  "type": "update",
+  "name": "Detailed Maps",
+  "subtitle": "More to see on every stage",
+  "desc": "Stages have more detail: light rays, birds or shooting stars, haze on the horizon, extra props like stone lanterns, street lamps, ice crystals, lava rocks and flags, and cracks and shine on the floor.",
+  "status": "staged",
+  "created": 1795216262638,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "map2"
+  }
  }
 ]
