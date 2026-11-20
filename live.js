@@ -86,6 +86,7 @@ SCR.livemodes=function(){scr();const M=L.modes,bw=Math.min(600,W-36),bx=(W-bw)/2
  M.slice(G.lmpg*per,G.lmpg*per+per).forEach(m=>{button(bx,y,bw,60,m.n,m.col,()=>pickTeam(()=>playMode(m,'livemodes'),'livemodes'),30,m.d);y+=72});
  if(!M.length)txt('No extra modes right now.',W/2,H/2,15,'#e6dcff',null,'center',FU);if(np>1)pager(W/2-78,H-40,'lmpg',np);hdr('NEW MODES','offline')};
 try{BACK.livemodes='offline'}catch(e){}
+{const c0=SCR.config;SCR.config=function(){c0();if(L.canKey&&!L.owner)button(12,H-44,118,32,'DEV KEY','#3a2a5e',()=>askKey(),15)}}
 {const f0=SCR.menu;SCR.menu=function(){f0();if(!L.owner)return;const ww=W*.42,wh=H-84,wx=W-ww-22,wy=58;button(wx+10,wy+wh-42,150,32,'DEV STUDIO'+(L.staged.length?'  ·  '+L.staged.length:''),'#b8324f',()=>{L.sel=0;G.devpg=0;goto('dev')},16)}}
 try{BACK.dev='menu'}catch(e){}
 
@@ -153,7 +154,7 @@ const RDB={doc(p){const q=String(p).split('/'),col=q[0],id=q[1];return{set:async
 async function devLogin(key,quiet){L.key=key;try{const res=await api('list');L.owner=true;L.db=RDB;L.remote=true;try{localStorage.setItem(DK,key)}catch(e){}take(res);if(!quiet){L.sel=0;G.devpg=0;goto('dev')}}
  catch(e){L.key='';L.owner=false;if(e.status===401){try{localStorage.removeItem(DK)}catch(x){}}if(!quiet)say(e.status===401?'That dev key is not right':e.status===429?'Too many tries. Wait ten minutes.':e.status===503?'The studio is not set up on this server yet':'Could not reach the studio')}}
 function askKey(){try{ask('Dev key',90,v=>{if(v)devLogin(v,false)})}catch(e){}}
-async function remote(){let ok=false;try{const r=await fetch('live.json',{cache:'no-store'});if(r.ok){const q=await r.json();if(Array.isArray(q)){ok=true;apply(q)}}}catch(e){}if(!ok)return;
+async function remote(){let ok=false;try{const r=await fetch('live.json',{cache:'no-store'});if(r.ok){const q=await r.json();if(Array.isArray(q)){ok=true;apply(q)}}}catch(e){}if(!ok)return;L.canKey=true;
  let key='';try{key=localStorage.getItem(DK)||''}catch(e){}if(key)await devLogin(key,true);
  const open=()=>{if(location.hash!=='#dev')return;if(L.owner){if(SCR[G.mode]&&G.mode!=='dev')goto('dev')}else{if(G.mode==='title')goto('menu');askKey()}};
  window.addEventListener('hashchange',open);open()}
