@@ -1123,7 +1123,7 @@ function drawMenu(){scr();const c=CH[SV.team[0]],sc=2.3,ww=W*.42,wh=H-84,wx=W-ww
  g.save();rr(wx,wy,ww,wh,16);g.fillStyle=c.col;g.fill();g.strokeStyle='#fff';g.lineWidth=3;g.stroke();g.clip();worldBG(c,wx,wy,ww,wh);
  g.fillStyle='rgba(10,0,30,.45)';g.beginPath();g.ellipse(ax,ay+4,sc*40,sc*7,0,0,TAU);g.fill();miniChar(c,ax,ay,Math.min(sc,(wh-50)/160),{anim:1,sway:.3,expr:G.t%3.2<.1?'blink':''});
  g.fillStyle='rgba(10,4,24,.72)';g.fillRect(wx,wy,ww,26);txt('WORLD: '+c.wn.toUpperCase(),wx+12,wy+14,13,'#fff',null,'left',FU);txt(c.name+' · '+c.title.toUpperCase(),wx+ww-12,wy+14,13,c.col2,null,'right',FU);g.restore();
- const tx=wx/2,bw=Math.min(330,wx-40),bh=39,bx=tx-bw/2;gameIcon(bx,14,58);g.save();g.translate(bx+66+(bw-66)/2,44);g.rotate(-.03);txt('COMBO',0,0,62,'#ffe14d','#fff','center',FB,12);txt('COMBO',0,0,62,'#ffe14d',INK,'center',FB,6);g.restore();
+ const tx=wx/2,bw=Math.min(330,wx-40),bh=39,bx=tx-bw/2;if(!FLAGS.noicon)gameIcon(bx,14,58);g.save();g.translate(bx+66+(bw-66)/2,44);g.rotate(-.03);txt('COMBO',0,0,62,'#ffe14d','#fff','center',FB,12);txt('COMBO',0,0,62,'#ffe14d',INK,'center',FB,6);g.restore();
  let y=84;button(bx,y,bw,bh,'STORY',FLAGS.story1?'#b8782f':'#4a3a4e',()=>{if(FLAGS.story1)goto('story');else G.note={t:'Story mode is locked',T:2}},24,FLAGS.story1?'Chapter 1':'LOCKED');y+=bh+7;
  let fn=FR.req.length;for(const k in FR.unread)fn+=FR.unread[k]||0;
  [['MATCH','Offline · Online','#2f4f8f','match'],['GACHA','Fighters · Icons · Banners','#8a3fb8','gacha'],['TEAMS','Your squad of 3','#2f7a5f','teams'],['FRIENDS',fn?fn+' NEW':'Add · Chat','#b8782f','friends'],['CONFIGURE','FPS · Quality · Controls','#3a2a5e','config']].forEach(b=>{button(bx,y,bw,bh,b[0],b[2],()=>goto(b[3]),24,b[1]);y+=bh+7});
@@ -1425,4 +1425,4 @@ requestAnimationFrame(frame);
 <!-- Live content + Dev Studio: keep this tag. It loads released fighters, maps, modes and banners (page database on claude.ai, live.json elsewhere). -->
 <script src="live.js"></script>
 <!-- Chapter 1 story and music: keep this tag after live.js. Everything in it stays off until its update is released in the Dev Studio. -->
-<script src="story.js"></script><script src="voice.js"></script><script src="more.js"></script></body></html>
+<script src="story.js"></script><script src="voice.js"></script><script src="more.js"></script><script src="body.js"></script></body></html>

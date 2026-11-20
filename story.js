@@ -1629,7 +1629,7 @@ function drawScene(){if(!SC){goto('story');return}g.setTransform(S*dpr,0,0,S*dpr
  const sk={x:W-118,y:H*.08+8,w:104,h:34};hit(sk.x,sk.y,sk.w,sk.h,()=>{if(SC)endScene()});g.save();g.beginPath();g.moveTo(sk.x+8,sk.y);g.lineTo(sk.x+sk.w,sk.y);g.lineTo(sk.x+sk.w-8,sk.y+sk.h);g.lineTo(sk.x,sk.y+sk.h);g.closePath();g.fillStyle='rgba(10,4,24,.78)';g.fill();g.strokeStyle='#fff';g.lineWidth=2.5;g.stroke();txt('SKIP  »',sk.x+sk.w/2,sk.y+sk.h/2+1,18,'#ffe14d',INK);g.restore();
  hit(0,0,W,H,advance)}
 function drawStory1(){if(PEND!=null){const p=PEND;PEND=null;if(QS[p].a.length){startScene(p,true);return drawScene()}}
- scr();const dn=done();if(G.spg==null)G.spg=Math.min(9,(dn/10)|0);G.spg=clamp(G.spg|0,0,9);if(G.sfo!==dn){G.sfo=dn;if(G.spg===((dn/10)|0))G.focus=dn%10}const pg=G.spg,gap=8,bw=Math.min((W-40)/2,430),bh=Math.min(54,(H-150)/5-gap),x0=(W-(bw*2+gap))/2,y0=92;
+ scr();const dn=done();if(G.spg==null)G.spg=Math.min(9,(dn/10)|0);G.spg=clamp(G.spg|0,0,9);if(G.sfo!==dn){G.sfo=dn;if(G.spg===((dn/10)|0))G.focus=dn%10}const pg=G.spg,gap=8,bw=Math.min((W-(F().sarrow?148:40))/2,430),bh=Math.min(54,(H-150)/5-gap),x0=(W-(bw*2+gap))/2,y0=92;
  txt('CHAPTER 1  ·  PART '+(pg+1)+':  '+ARCS[pg],W/2,72,17,'#ffe14d',INK,'center',FB,5);
  for(let k=0;k<10;k++){const i=pg*10+k,q=QS[i];if(!q)break;const x=x0+(k%2)*(bw+gap),y=y0+(k/2|0)*(bh+gap),open=i<=dn,cl=i<dn,col=q.k==='T'?'#3fa9ff':q.k==='B'?'#ff3d5a':'#ffb020';
   const foc=hit(x,y,bw,bh,()=>{if(open)startScene(i,false);else G.note={t:'Clear quest '+(dn+1)+' first',T:2}});
@@ -1639,7 +1639,7 @@ function drawStory1(){if(PEND!=null){const p=PEND;PEND=null;if(QS[p].a.length){s
   g.font='700 10.5px '+FU;const tag=q.k==='T'?'STORY':q.k==='B'?'BOSS':'FIGHT',tw=g.measureText(tag).width+12;rr(x+60,y+bh*.58,tw,15,4);g.fillStyle=col;g.fill();txt(tag,x+60+tw/2,y+bh*.58+8,10.5,'#10061e',null,'center',FU);
   txt(q.k==='T'?q.cast.map(c=>CH[c].name).join(', '):'vs '+q.foe.map(c=>CH[c].name).join(', '),x+68+tw,y+bh*.58+8,11,'#cbbfe6',null,'left',FU);
   txt(cl?'CLEAR':open?'PLAY':'LOCKED',x+bw-12,y+bh*.5,14,cl?'#7fdcff':open?'#ffe14d':'#aaa',INK,'right');g.restore()}
- const py=y0+5*(bh+gap)+2;pager(W/2-78,py,'spg',10);txt(dn+' / '+QS.length+' quests cleared  ·  fights use your team from TEAMS',W/2,py+44,12,'#e6dcff',null,'center',FU);hdr('STORY','menu')}
+ const py=y0+5*(bh+gap)+2;if(F().sarrow){const ah=64,ay=y0+(5*(bh+gap)-gap)/2-ah/2,lx=Math.max(6,x0-56),rx=Math.min(W-52,x0+bw*2+gap+10);button(lx,ay,46,ah,'‹','#3a2a5e',()=>{G.spg=((G.spg|0)+9)%10},34);button(rx,ay,46,ah,'›','#3a2a5e',()=>{G.spg=((G.spg|0)+1)%10},34);txt(((G.spg|0)+1)+' / 10',W/2,py+16,15,'#fff',INK,'center',FU,3)}else pager(W/2-78,py,'spg',10);txt(dn+' / '+QS.length+' quests cleared  ·  fights use your team from TEAMS',W/2,py+44,12,'#e6dcff',null,'center',FU);hdr('STORY','menu')}
 /* ---------- hooks ---------- */
 {const s0=SCR.story;SCR.story=function(){if(F().story1)drawStory1();else if(s0)s0()};SCR.scene=drawScene;BACK.story='menu';BACK.scene='story'}
 {const u0=update;update=function(rdt){u0(rdt);if(G.mode==='scene')sceneStep(rdt);musicTick()}}

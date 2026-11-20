@@ -870,5 +870,50 @@
   "game": {
    "flag": "lboard"
   }
+ },
+ {
+  "id": "update-body2",
+  "type": "update",
+  "name": "Sculpted Bodies",
+  "subtitle": "New look for every fighter",
+  "desc": "Every fighter has a more human body: a shaped chest and waist, muscled arms and legs, hands with fingers, and real feet.",
+  "status": "staged",
+  "created": 1795215597980,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "body2"
+  }
+ },
+ {
+  "id": "update-lobby-noicon",
+  "type": "update",
+  "name": "Lobby: No Icon",
+  "subtitle": "Removes the top left icon",
+  "desc": "Takes the game icon out of the top left corner of the lobby.",
+  "status": "staged",
+  "created": 1795215597981,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "noicon"
+  }
+ },
+ {
+  "id": "update-story-arrows",
+  "type": "update",
+  "name": "Story: Side Arrows",
+  "subtitle": "Quest page arrows on the sides",
+  "desc": "Moves the arrows that flip the story quest pages to the middle of the left and right sides of the screen.",
+  "status": "staged",
+  "created": 1795215597982,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "sarrow"
+  }
  }
 ]
