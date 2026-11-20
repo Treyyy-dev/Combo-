@@ -1,6 +1,7 @@
 // Combo game server: serves the game, pairs players for online matches,
 // and relays friend requests and chat between players who are online.
 // Nothing is stored on disk: friend lists live in each player's browser.
+// Dev Studio items (staged and released content) are kept in Postgres when one is attached.
 // No dependencies: plain Node http + a small WebSocket implementation.
 const http = require('http');
 const fs = require('fs');
@@ -18,12 +19,84 @@ const users = new Map();    // lowercase name -> client
 const pending = new Map();  // lowercase name -> [profile of people who sent a friend request while they were offline]
 let online = 0;
 
+// ---- Dev Studio storage (optional) ----------------------------------------
+// Staged and released fighters, maps, modes and banners live in Postgres when DATABASE_URL is set.
+// Without a database the game still runs: released content then comes from the live.json file.
+// The studio is only reachable with the DEV_KEY environment variable (sent as the x-dev-key header).
+const DEV_KEY = process.env.DEV_KEY || '';
+const COLS = new Set(['staged', 'live']);
+let pool = null, dbReady = false, liveCache = null;
+try {
+  if (process.env.DATABASE_URL) { const { Pool } = require('pg'); pool = new Pool({ connectionString: process.env.DATABASE_URL, max: 3 }); pool.on('error', () => {}); }
+} catch (e) { console.log('Dev Studio storage is off: ' + e.message); pool = null; }
+const cleanId = v => String(v == null ? '' : v).replace(/[^A-Za-z0-9_\-]/g, '').slice(0, 60);
+const rowItem = r => Object.assign({}, r.data, { id: r.id });
+async function itemsIn(col) { const r = await pool.query('select id, data from combo_items where col = $1 order by updated_at desc', [col]); return r.rows.map(rowItem); }
+async function refreshLive() { if (!pool || !dbReady) return; try { liveCache = await itemsIn('live'); } catch (e) {} }
+async function dbInit() {
+  if (!pool) return;
+  try {
+    await pool.query('create table if not exists combo_items (id text primary key, col text not null, data jsonb not null, updated_at timestamptz not null default now())');
+    await pool.query('create table if not exists combo_seen (id text primary key)');
+    // staged.json in the repo is how new items arrive: each id (and each new "rev" of it) is added to the staged list once.
+    let seed = [];
+    try { seed = JSON.parse(fs.readFileSync(path.join(ROOT, 'staged.json'), 'utf8')); } catch (e) {}
+    for (const it of Array.isArray(seed) ? seed : []) {
+      const id = cleanId(it && it.id); if (!id || !it.name || !it.type) continue;
+      const seen = await pool.query('insert into combo_seen (id) values ($1) on conflict do nothing', [id + '@' + (parseInt(it.rev, 10) || 1)]);
+      if (!seen.rowCount) continue;
+      const data = Object.assign({}, it); delete data.id;
+      await pool.query("insert into combo_items (id, col, data) values ($1, 'staged', $2::jsonb) on conflict (id) do update set data = excluded.data, updated_at = now() where combo_items.col = 'staged'", [id, JSON.stringify(data)]);
+    }
+    dbReady = true; await refreshLive();
+    console.log('Dev Studio storage ready' + (DEV_KEY.length >= 6 ? '' : ' (set DEV_KEY to open the studio)'));
+  } catch (e) { console.log('Dev Studio storage not ready, retrying: ' + e.message); setTimeout(dbInit, 30000); }
+}
+dbInit();
+setInterval(refreshLive, 60000).unref();
+const bad = new Map();      // ip -> [count, window start] for wrong dev keys
+function keyOk(v) {
+  if (DEV_KEY.length < 6 || typeof v !== 'string') return false;
+  const h = x => crypto.createHash('sha256').update(x).digest();
+  return crypto.timingSafeEqual(h(v), h(DEV_KEY));
+}
+function json(res, code, obj) { res.writeHead(code, { 'content-type': 'application/json', 'cache-control': 'no-store' }); res.end(JSON.stringify(obj)); }
+function devApi(req, res) {
+  if (req.method !== 'POST') return json(res, 405, { error: 'post only' });
+  if (!pool || !dbReady || DEV_KEY.length < 6) return json(res, 503, { error: 'off' });
+  const ip = String(req.headers['x-forwarded-for'] || req.socket.remoteAddress || '').split(',')[0].trim(), now = Date.now();
+  let b = bad.get(ip); if (b && now - b[1] > 600000) { bad.delete(ip); b = null; }
+  if (b && b[0] >= 8) return json(res, 429, { error: 'slow down' });
+  if (!keyOk(req.headers['x-dev-key'])) { if (b) b[0]++; else bad.set(ip, [1, now]); if (bad.size > 5000) bad.clear(); return json(res, 401, { error: 'key' }); }
+  let body = '', over = false;
+  req.on('data', d => { if (over) return; body += d; if (body.length > 65536) { over = true; json(res, 413, { error: 'too big' }); req.destroy(); } });
+  req.on('end', async () => {
+    if (over) return;
+    try {
+      let m; try { m = JSON.parse(body || '{}'); } catch (e) { return json(res, 400, { error: 'json' }); }
+      const id = cleanId(m.id), col = COLS.has(m.col) ? m.col : '';
+      if (m.op === 'set') {
+        if (!id || !col || !m.data || typeof m.data !== 'object' || Array.isArray(m.data)) return json(res, 400, { error: 'bad item' });
+        const data = Object.assign({}, m.data); delete data.id;
+        await pool.query('insert into combo_items (id, col, data) values ($1, $2, $3::jsonb) on conflict (id) do update set col = excluded.col, data = excluded.data, updated_at = now()', [id, col, JSON.stringify(data)]);
+      } else if (m.op === 'del') {
+        if (!id || !col) return json(res, 400, { error: 'bad item' });
+        await pool.query('delete from combo_items where id = $1 and col = $2', [id, col]);
+      } else if (m.op !== 'list') return json(res, 400, { error: 'op' });
+      const staged = await itemsIn('staged'); liveCache = await itemsIn('live');
+      json(res, 200, { staged, live: liveCache });
+    } catch (e) { json(res, 500, { error: 'storage' }); }
+  });
+}
+
 const server = http.createServer((req, res) => {
   const url = (req.url || '/').split('?')[0];
   if (url === '/health') { res.writeHead(200, { 'content-type': 'application/json' }); return res.end(JSON.stringify({ ok: true, online })); }
+  if (url === '/api/dev') return devApi(req, res);
+  if (url === '/live.json' && dbReady && liveCache) { res.writeHead(200, { 'content-type': 'application/json', 'cache-control': 'no-cache' }); return res.end(JSON.stringify(liveCache)); }
   const rel = url === '/' ? 'index.html' : path.normalize(url).replace(/^([/\\]|\.\.)+/, '');
   const file = path.join(ROOT, rel);
-  if (!file.startsWith(ROOT) || !TYPES[path.extname(file)] || path.basename(file) === 'server.js' || path.basename(file) === 'package.json') { res.writeHead(404); return res.end('Not found'); }
+  if (!file.startsWith(ROOT) || !TYPES[path.extname(file)] || path.basename(file) === 'server.js' || path.basename(file) === 'package.json' || path.basename(file) === 'staged.json') { res.writeHead(404); return res.end('Not found'); }
   fs.readFile(file, (err, data) => {
     if (err) { res.writeHead(404); return res.end('Not found'); }
     res.writeHead(200, { 'content-type': TYPES[path.extname(file)], 'cache-control': 'no-cache' });

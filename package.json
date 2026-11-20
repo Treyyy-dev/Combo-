@@ -3,6 +3,13 @@
   "version": "1.0.0",
   "private": true,
   "description": "Combo: a 2.5D anime fighting game with an online match server",
-  "scripts": { "start": "node server.js" },
-  "engines": { "node": ">=18" }
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "pg": "^8.11.0"
+  }
 }

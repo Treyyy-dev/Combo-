@@ -50,13 +50,17 @@ Every action can be rebound for keyboard and controller in Configure → Control
 | Swap fighter | C | D-pad up | D-pad up | SWAP |
 | Assist | V | D-pad down | D-pad down | AST |
 
-Progress, friends and binds are saved in the browser's local storage. The server keeps nothing on disk.
+Progress, friends and binds are saved in the browser's local storage. The server keeps nothing on disk; Dev Studio items are the only thing it stores, in its database.
 
 ## Released content (Dev Studio)
 
-New fighters, maps, modes and banners are staged in the Dev Studio on the claude.ai Combo page and released there one by one. `live.js` adds released items to the running game:
+New fighters, maps, modes and banners are staged first, previewed in the Dev Studio, and released one by one. `live.js` adds released items to the running game and draws the studio. Keep the `<script src="live.js"></script>` tag at the end of `index.html`.
 
-- On claude.ai it reads them from the page's own database, so a release shows up right away.
-- Here (GitHub / Render) there is no such database, so it reads `live.json`, a copy of the released list. `live.json` is updated by a commit, and Render redeploys on that commit.
+There are two places the studio runs, each with its own list:
 
-Keep the `<script src="live.js"></script>` tag at the end of `index.html`.
+- **claude.ai Combo page:** items are kept in the page's own database. The owner sees a DEV STUDIO button on the main menu.
+- **This server (Render):** items are kept in a Postgres database (`DATABASE_URL`). Open the game with `#dev` on the end of the address and enter the dev key (`DEV_KEY` in the service's Environment settings on Render). After that the DEV STUDIO button shows on the main menu on that device.
+
+New items reach this server through `staged.json`: every item in it is added to the staged list once (bump its `rev` to send an updated copy). The file is not served to players, but it is visible in this repository.
+
+If no database is attached, or it stops working, the game still runs and released content comes from the `live.json` file instead.
