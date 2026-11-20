@@ -1,5 +1,5 @@
 /* Look upgrades, each off unless released: weap2 (detailed weapons), hair2 (detailed hair), phys (hair and cloth physics),
-   stance (unique idle stances and poses), winpose (victory pose shot before the result), map2 (detailed maps), noots (no big foreground character in cutscene shots). */
+   stance (unique idle stances and poses), winpose (victory pose shot before the result), map2 (detailed maps), noots (in over-the-shoulder cutscene shots show only the dark shadow, not that character). */
 (function(){'use strict';
 const F=()=>(typeof FLAGS!=='undefined'&&FLAGS)||{};
 const hs=t=>{let x=5381;for(let i=0;i<t.length;i++)x=((x*33)^t.charCodeAt(i))>>>0;return x};
@@ -75,8 +75,9 @@ const _ex=exprOf;exprOf=function(f){if(f&&f._vp&&f.state==='pose')return'happy';
 const _fin=finish;finish=function(win){_fin(win);if(!F().winpose)return;const I=G.intro;if(!I||!I.out||!I.sh||I.sh.length<2)return;const lo=I.sh.find(q=>q.kind==='kneel'),wi=I.sh.find(q=>q!==lo);if(!lo||!wi||!wi.who)return;const w=wi.who;
  I.sh=[lo,wi,{kind:'vpose',who:w,dur:2,pre(){w.hide=false;w.mv=null;w.y=0;w.vx=w.vy=0;w.pvx=0;w.state='pose';w.pz=vpose(w.c);w._vp=1;w.st=0;G.flash=.35;try{sfx('ult');shake(10);G.fx.push({type:'ring',t:0,life:.5,x:w.x,y:-70,r0:20,r1:240,col:w.c.col,w:8})}catch(e){}}}]};
 const _bg=begin;begin=function(mk){const r=_bg(mk);try{(G.tm||[]).forEach(T=>T.list.forEach(f=>{f._vp=0}))}catch(e){}return r};
-/* ================= NO FOREGROUND CHARACTER IN CUTSCENES ================= */
-const _ots=drawOTS;drawOTS=function(f,k){if(F().noots)return;return _ots(f,k)};
+/* ===== CUTSCENES: when a character's big dark shadow fills the front, do not also draw that character in the scene ===== */
+let OTSF=null,OTST=-9;const _ots=drawOTS;drawOTS=function(f,k){if(F().noots){OTSF=f;OTST=G.t}return _ots(f,k)};
+const _df2=drawFighter;drawFighter=function(f,sil){if(F().noots&&f===OTSF&&G.t-OTST<.12&&(G.mode==='intro'||G.mode==='scene'))return;return _df2(f,sil)};
 /* ================= MAP DETAIL ================= */
 const DEC=[];{const r=rg(4242);for(let i=0;i<70;i++)DEC.push({x:(r()*2-1)*1500,d:.08+r()*.9,k:(r()*3)|0,s:.6+r()*.9,a:r()*TAU})}
 const BIRD=[];{const r=rg(77);for(let i=0;i<6;i++)BIRD.push({x:r(),y:.12+r()*.4,s:.7+r()*.6,p:r()*6})}
