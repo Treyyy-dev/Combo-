@@ -720,5 +720,20 @@
     "lose": "The tide... turns..."
    }
   }
+ },
+ {
+  "id": "update-featured-tab",
+  "type": "update",
+  "name": "Featured Gacha Tab",
+  "subtitle": "New first tab in the Gacha",
+  "desc": "Adds a FEATURED tab as the first tab in the Gacha. Every fighter you release gets a rate-up banner there, released banners go there too, and it keeps the newest 8.",
+  "status": "staged",
+  "created": 1795206000000,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "featured"
+  }
  }
 ]

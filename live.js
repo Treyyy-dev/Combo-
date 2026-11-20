@@ -10,7 +10,7 @@ if(typeof CH==='undefined'||typeof STAGES==='undefined'||typeof SCR==='undefined
 const NB=CH.length,NS=STAGES.length,CK='combo-live-v1',CN='combo-live-names-v1';
 const WPN=['katana','fist','staff','dagger','bow','bo','orb'],ACCS=['band','horns','ears','halo','patch','glasses','mark'];
 const BLD=['city','pines','islands','none'],MID=['torii','neon','ice','rock','column'],FXS=['petal','rain','snow','ember','mote'],FGS=['sakura','wires','ice','none'];
-const TCOL={character:'#b06bff',map:'#3fa9ff',mode:'#3fe0a0',banner:'#ff4d8d'},TNAME={character:'FIGHTER',map:'MAP',mode:'MODE',banner:'BANNER'};
+const TCOL={character:'#b06bff',map:'#3fa9ff',mode:'#3fe0a0',banner:'#ff4d8d',update:'#ffd36e'},TNAME={character:'FIGHTER',map:'MAP',mode:'MODE',banner:'BANNER',update:'UPDATE'};
 const L={db:null,owner:false,ready:false,staged:[],live:[],names:[],modes:[],bans:[],bc:null,sig:null,first:true,test:null,pending:null,tab:0,sel:0,pg:0,busy:false,pv:null};
 window.COMBO_LIVE=L;
 
@@ -63,6 +63,10 @@ function remap(old){let ch=false;const n=CH.length,fix=i=>{i=i|0;if(i<NB)return 
  try{(SV.teams||[]).forEach(t=>{for(let s=0;s<3;s++){let v=fix(t[s]);if(v<0||v>=n){v=0;while(t.includes(v))v++}if(v!==t[s]){t[s]=v;ch=true}}});SV.team=SV.teams[SV.tp|0]||SV.team;
   ['icon','banner'].forEach(k=>{let v=fix(SV[k]);if(v<0||v>=n)v=0;if(v!==SV[k]){SV[k]=v;ch=true}});
   ['icons','banners'].forEach(k=>{if(!Array.isArray(SV[k]))return;const a=SV[k].map(fix).filter(v=>v>=0&&v<n);if(a.join()!==SV[k].join()){SV[k]=a;ch=true}});if(ch)save()}catch(e){}}
+/* Game updates ship switched off. Releasing an 'update' item turns its flag on for every player; pulling it back turns it off. */
+function flagSync(){const docs=L.live||[],F={};docs.forEach(d=>{if(d.type==='update'){const k=str(obj(d.game).flag,30);if(k)F[k]=1}});for(const k in L.pvf||{})F[k]=1;FLAGS=F;L.bc=null;
+ if(F.featured){L.bans=[];try{FEAT=docs.filter(d=>d.releasedAt>0&&(d.type==='banner'||d.type==='character')).sort((x,y)=>y.releasedAt-x.releasedAt).map(d=>{if(d.type==='banner')return mkBan(d);const ci=findCh(str(d.name,20).toUpperCase().replace(/[^A-Z]/g,'').slice(0,8));if(ci<0||!CH[ci].live)return null;const c=CH[ci];return{n:c.name,d:'Featured  \u00b7  '+c.title,col:c.col,f:[ci],el:c.el,stage:c.el%STAGES.length,key:'feat-'+str(d.id,60)}}).filter(Boolean).slice(0,8)}catch(e){FEAT=[]}}
+ else{FEAT=[];L.bans=docs.filter(d=>d.type==='banner').slice(-4).map(mkBan)}}
 function apply(docs){
  docs=docs.filter(d=>d&&d.name&&TNAME[d.type]).sort((a,b)=>(a.releasedAt||0)-(b.releasedAt||0)||String(a.id).localeCompare(String(b.id)));
  const sig=JSON.stringify(docs);if(sig===L.sig)return;if(L.test){L.pending=docs;return}L.sig=sig;L.live=docs;
@@ -70,10 +74,10 @@ function apply(docs){
  L.names.forEach(n=>{delete TALK[n]});L.names=[];CH.length=NB;STAGES.length=NS;const taken=new Set(CH.map(c=>c.name));
  docs.forEach(it=>{try{if(it.type==='character'){const c=mkChar(it);if(!c||taken.has(c.name))return;taken.add(c.name);TALK[c.name]=c._talk;L.names.push(c.name);CH.push(seat(c,CH.length))}
   else if(it.type==='map'){const s=mkStage(it);if(stageIdx(s.name)<0)STAGES.push(s)}}catch(e){}});
- L.modes=docs.filter(d=>d.type==='mode').map(mkMode).slice(0,12);L.bans=docs.filter(d=>d.type==='banner').slice(-4).map(mkBan);
+ L.modes=docs.filter(d=>d.type==='mode').map(mkMode).slice(0,12);flagSync();
  resetCaches();remap(old);clampG();
  try{for(let i=MAILS.length-1;i>=0;i--)if(MAILS[i].news)MAILS.splice(i,1);const RNM=['R','SR','SSR','UR'],sub=d=>str(d.subtitle,40),nw=docs.filter(d=>d.releasedAt>0).sort((x,y)=>y.releasedAt-x.releasedAt).slice(0,30).map(d=>{const n=str(d.name,20).toUpperCase(),t=d.type;
-  return{id:'news-'+str(d.id,60)+'-'+d.releasedAt,news:1,tag:'NEW '+TNAME[t],col:TCOL[t],title:n,text:t==='character'?(sub(d)?sub(d)+' ('+RNM[int(obj(d.game).rar,0,3,2)]+'). ':'')+'A new fighter has joined. Summon them in GACHA.':t==='mode'?(sub(d)?sub(d)+'. ':'')+'A new mode is open. Play it in MATCH, OFFLINE, NEW MODES.':t==='map'?(sub(d)?sub(d)+'. ':'')+'A new stage has been added to matches.':(sub(d)?sub(d)+'. ':'')+'A new banner is up in GACHA.'}});MAILS.unshift.apply(MAILS,nw)}catch(e){}
+  return{id:'news-'+str(d.id,60)+'-'+d.releasedAt,news:1,tag:'NEW '+TNAME[t],col:TCOL[t],title:n,text:t==='character'?(sub(d)?sub(d)+' ('+RNM[int(obj(d.game).rar,0,3,2)]+'). ':'')+'A new fighter has joined. Summon them in GACHA.':t==='mode'?(sub(d)?sub(d)+'. ':'')+'A new mode is open. Play it in MATCH, OFFLINE, NEW MODES.':t==='map'?(sub(d)?sub(d)+'. ':'')+'A new stage has been added to matches.':t==='update'?str(d.desc,150,'The game has been updated.'):(sub(d)?sub(d)+'. ':'')+'A new banner is up in GACHA.'}});MAILS.unshift.apply(MAILS,nw)}catch(e){}
  try{localStorage.setItem(CK,sig);localStorage.setItem(CN,JSON.stringify(L.names))}catch(e){}}
 
 /* ---------- hooks into the game (wrapping, so the main script stays untouched) ---------- */
@@ -136,10 +140,13 @@ function drawDev(){untest();if(L.pending){const p=L.pending;L.pending=null;apply
    txt('SUMMON BANNER',x0+18,py+20,11,'#fff',null,'left',FU);txt(B.n,x0+18,py+50,Math.min(38,pw/(B.n.length*.6)),'#ffe14d',INK,'left',FB,8);txt(B.d,x0+18,py+78,13,'#fff',INK,'left',FU,3);
    const ts=Math.min(78,(pw-36-24)/4,ph-150);txt('RATE UP',x0+18,py+100,11,'#ffe14d',null,'left',FU);B.f.forEach((ci,k)=>tile(CH[ci],x0+18+k*(ts+8),py+110,ts,{}));
    const miss=arr(obj(it.game).featured).filter(n=>findCh(n)<0).map(n=>str(n,12).toUpperCase());if(miss.length)warn=miss.join(', ')+' is not live yet. Release the fighter first to feature them.';lines(str(it.desc,160),x0+18,py+110+ts+18,pw-36,12,'#e6dcff',2)}
+  else if(it.type==='update'){const bgc=g.createLinearGradient(x0,py,x0+pw,py+ph);bgc.addColorStop(0,'#7a5a14');bgc.addColorStop(1,'#120a22');g.fillStyle=bgc;g.fillRect(x0,py,pw,ph);txt('GAME UPDATE',x0+18,py+20,11,'#fff',null,'left',FU);const nm=str(it.name,24).toUpperCase();txt(nm,x0+18,py+50,Math.min(36,pw/(nm.length*.6)),'#ffe14d',INK,'left',FB,8);txt(str(it.subtitle,50),x0+18,py+78,13,'#fff',INK,'left',FU,3);lines(str(it.desc,400),x0+18,py+106,pw-36,13,'#fff',7);
+   txt(L.tab?'This update is ON for every player. PULL BACK switches it off.':'This update is already in the game, switched OFF. RELEASE switches it on for everyone.',x0+18,py+ph-44,11.5,'#7fdcff',null,'left',FU)}
   else txt('This item has no game data yet.',x0+pw/2,py+ph/2,14,'#e6dcff',null,'center',FU);
   g.restore();if(warn){rr(x0+8,py+ph-30,pw-16,24,6);g.fillStyle='rgba(60,20,10,.92)';g.fill();txt(warn,x0+pw/2,py+ph-18,11.5,'#ffd9a0',null,'center',FU)}
-  const by=H-58,n=L.tab?(it.type==='banner'?1:2):(it.type==='banner'?2:3),bw=(pw-8*(n-1))/n;let bx=x0;const add=(l,c,fn,d)=>{button(bx,by,bw,46,l,c,fn,22,d);bx+=bw+8};
-  if(it.type!=='banner')add('TEST','#2f4f8f',()=>testIt(it,P),it.type==='character'?'Practice as this fighter':it.type==='map'?'Practice on this map':'Play it now');
+  const by=H-58,n=L.tab?(it.type==='banner'||it.type==='update'?1:2):(it.type==='banner'?2:3),bw=(pw-8*(n-1))/n;let bx=x0;const add=(l,c,fn,d)=>{button(bx,by,bw,46,l,c,fn,22,d);bx+=bw+8};
+  if(it.type==='update'){if(!L.tab)add('TEST','#2f4f8f',()=>{const k=str(obj(it.game).flag,30);if(!k)return;L.pvf=L.pvf||{};L.pvf[k]=1;flagSync();say('Switched on for you only, until you close the game')},'Try it on this device')}
+  else if(it.type!=='banner')add('TEST','#2f4f8f',()=>testIt(it,P),it.type==='character'?'Practice as this fighter':it.type==='map'?'Practice on this map':'Play it now');
   if(L.tab)add('PULL BACK','#3a2a5e',()=>{G.cf={text:'Pull '+str(it.name,20).toUpperCase()+' back?',sub:'It leaves the live game and returns to staged',yes:()=>move(it,false)}},'Remove from the live game');
   else{add('RELEASE','#2f7a5f',()=>{if(!can){say(warn);return}G.cf={text:'Release '+str(it.name,20).toUpperCase()+'?',sub:'It goes into the live game right away',yes:()=>move(it,true)}},'Send to the live game');
    add('SCRAP','#7a1f2b',()=>{G.cf={text:'Scrap '+str(it.name,20).toUpperCase()+'?',sub:'This deletes it from the studio for good',yes:()=>scrap(it)}},'Delete')}}
