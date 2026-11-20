@@ -735,5 +735,80 @@
   "game": {
    "flag": "featured"
   }
+ },
+ {
+  "id": "update-story-ch1",
+  "type": "update",
+  "name": "Story Chapter 1",
+  "subtitle": "100 quests with anime cutscenes",
+  "desc": "Unlocks STORY on the main menu. Chapter 1, The Fallen Star: 100 quests in 10 parts, story quests and fights, each with a 3 minute cutscene that plays by itself with speech bubbles, camera cuts and music.",
+  "status": "staged",
+  "created": 1795207000000,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "story1"
+  }
+ },
+ {
+  "id": "update-music-lobby",
+  "type": "update",
+  "name": "Lobby Music",
+  "subtitle": "Upbeat anime theme in the menus",
+  "desc": "Plays an upbeat anime style theme on the title screen and in every menu.",
+  "status": "staged",
+  "created": 1795207000001,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "mlobby"
+  }
+ },
+ {
+  "id": "update-music-maps",
+  "type": "update",
+  "name": "Map Music",
+  "subtitle": "Every stage has its own track",
+  "desc": "Each stage plays its own music during a match, with a different key, speed and mood for every map.",
+  "status": "staged",
+  "created": 1795207000002,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "mmap"
+  }
+ },
+ {
+  "id": "update-music-summon",
+  "type": "update",
+  "name": "Summon Music",
+  "subtitle": "Fast track for the summon scene",
+  "desc": "Plays a fast, dramatic track during the summon cutscene.",
+  "status": "staged",
+  "created": 1795207000003,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "msummon"
+  }
+ },
+ {
+  "id": "update-music-gacha",
+  "type": "update",
+  "name": "Gacha Music",
+  "subtitle": "Sparkly theme in the Gacha",
+  "desc": "Plays its own light, sparkly theme while you are in the Gacha.",
+  "status": "staged",
+  "created": 1795207000004,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "mgacha"
+  }
  }
 ]
