@@ -74,7 +74,7 @@ const _sc=shotCam;shotCam=function(s,k){if(s.kind==='vpose'&&s.who){const f=s.wh
 const _ex=exprOf;exprOf=function(f){if(f&&f._vp&&f.state==='pose')return'happy';return _ex(f)};
 const _fin=finish;finish=function(win){_fin(win);if(!F().winpose&&!F().winfront)return;const I=G.intro;if(!I||!I.out||!I.sh||I.sh.length<2)return;const lo=I.sh.find(q=>q.kind==='kneel'),wi=I.sh.find(q=>q!==lo);if(!lo||!wi||!wi.who)return;const w=wi.who;
  const only=F().winfront,wl=only&&wi.line?wi.line:null;
- I.sh=(only?[]:[lo,wi]).concat([{kind:'vpose',who:w,line:wl,dur:wl?Math.max(2.2,1.9+wl.length*.05):2,pre(){if(only){try{lo.pre&&lo.pre()}catch(e){}}w.hide=false;w.mv=null;w.y=0;w.vx=w.vy=0;w.pvx=0;w.state='pose';w.pz=vpose(w.c);w._vp=1;w.st=0;G.flash=.35;try{sfx('ult');shake(10);G.fx.push({type:'ring',t:0,life:.5,x:w.x,y:-70,r0:20,r1:240,col:w.c.col,w:8})}catch(e){}}}])};
+ I.sh=(only?[]:[lo,wi]).concat([{kind:'vpose',who:w,line:wl,dur:wl?Math.max(2.2,1.9+wl.length*.05):2,pre(){if(only){try{lo.pre&&lo.pre();G.f.forEach(q=>{if(q!==w)q.hide=true});(G.al||[]).forEach(q=>{if(q!==w)q.hide=true});G.as=[]}catch(e){}}w.hide=false;w.mv=null;w.y=0;w.vx=w.vy=0;w.pvx=0;w.state='pose';w.pz=vpose(w.c);w._vp=1;w.st=0;G.flash=.35;try{sfx('ult');shake(10);G.fx.push({type:'ring',t:0,life:.5,x:w.x,y:-70,r0:20,r1:240,col:w.c.col,w:8})}catch(e){}}}])};
 const _bg=begin;begin=function(mk){const r=_bg(mk);try{(G.tm||[]).forEach(T=>T.list.forEach(f=>{f._vp=0}))}catch(e){}return r};
 /* ===== CUTSCENES: when a character's big dark shadow fills the front, do not also draw that character in the scene ===== */
 const dkc=(h,k)=>hexOk(h)?shade(h,k):h;
