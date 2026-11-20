@@ -812,21 +812,6 @@
   }
  },
  {
-  "id": "update-voice-part1",
-  "type": "update",
-  "name": "Story Voices Part 1",
-  "subtitle": "Quests 1 to 10 fully voiced",
-  "desc": "Every line in quests 1 to 10 of the story is spoken out loud, with its own voice and emotion for each character.",
-  "status": "staged",
-  "created": 1795210000000,
-  "colors": [
-   "#ffd36e"
-  ],
-  "game": {
-   "flag": "voice1"
-  }
- },
- {
   "id": "update-story-nowait",
   "type": "update",
   "name": "Story: No Long Waits",
