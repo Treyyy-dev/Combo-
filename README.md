@@ -22,13 +22,15 @@ Notes:
 
 ## What's in it
 
-- 30 fighters, each with two skills, an 8 second cinematic ultimate and their own world
+- 130 fighters, each with two skills, an 8 second cinematic ultimate and their own world
 - 3 vs 3 team matches with swapping, assists and a clash cutscene when a new fighter comes in
 - Offline: Team Match and Practice. Online: Casual Combo and Ranked Combo
 - If nobody else is searching, online queues fill with a computer opponent (relaxed in Casual, hard in Ranked)
 - Player profile with username, level, rank, icon and banner
 - Friends: search a username, send a request, chat. Both players need to be online on the same server
-- Gacha with 8 banners and a summon cutscene. Fighters, icons and banners all come from gems earned by playing
+- Gacha with 8 banners that rotate every 30 minutes, a live preview of each rate-up fighter, and a summon cutscene
+- Mailbox next to the gem counter (every player gets a 1,000,000,000 gem gift)
+- Online matches start with a stage vote and a loading screen
 - The game always plays in landscape
 
 ## Controls

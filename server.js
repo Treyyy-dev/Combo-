@@ -11,7 +11,7 @@ const PORT = process.env.PORT || 10000;
 const ROOT = __dirname;
 const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.png': 'image/png', '.svg': 'image/svg+xml', '.json': 'application/json' };
 const MAX_MSG = 16 * 1024;
-const RELAY = new Set(['i', 's', 'k']);
+const RELAY = new Set(['i', 's', 'k', 'h', 'v', 'map', 'tg']);
 
 const queues = { casual: [], ranked: [] };
 const users = new Map();    // lowercase name -> client
@@ -55,10 +55,10 @@ function drop(c) {
 
 const int = (v, a, b) => Math.min(b, Math.max(a, Number.isFinite(+v) ? Math.floor(+v) : a));
 function cleanName(v) { return String(v == null ? '' : v).replace(/[^A-Za-z0-9_ \-]/g, '').trim().slice(0, 14); }
-function cleanProf(p, name) { p = p && typeof p === 'object' ? p : {}; return { name, icon: int(p.icon, 0, 63), banner: int(p.banner, 0, 63), lvl: int(p.lvl, 1, 999), rank: int(p.rank, 0, 9999) }; }
+function cleanProf(p, name) { p = p && typeof p === 'object' ? p : {}; return { name, icon: int(p.icon, 0, 511), banner: int(p.banner, 0, 511), lvl: int(p.lvl, 1, 999), rank: int(p.rank, 0, 9999) }; }
 function cleanTeam(t) {
   const out = [];
-  if (Array.isArray(t)) for (const v of t.slice(0, 3)) if (Number.isInteger(v) && v >= 0 && v < 64) out.push(v);
+  if (Array.isArray(t)) for (const v of t.slice(0, 3)) if (Number.isInteger(v) && v >= 0 && v < 512) out.push(v);
   while (out.length < 3) out.push(out.length);
   return out;
 }
