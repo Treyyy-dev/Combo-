@@ -1177,10 +1177,8 @@ function drawExpc(){scr();const bw=Math.min(600,W-36),bx=(W-bw)/2,bh=Math.min(64
  EXPC.forEach((E,k)=>{button(bx,y,bw,bh,E[0],E[1],()=>pickTeam(()=>begin(()=>({type:'exp',tier:k,cd:E[2],epw:E[3],team:SV.team.slice(),ret:'expc'})),'expc'),30,'win: '+E[5]+'  ·  enemy power ×'+E[3]);y+=bh+10});
  txt('Small EXP ×'+(SV.items.s|0)+'   ·   Big EXP ×'+(SV.items.b|0)+'   ·   Play as many times as you want. Level up in TEAMS: hold a fighter.',W/2,y+12,12.5,'#e6dcff',null,'center',FU);hdr('EXP CHALLENGE','offline')}
 function drawOffline(){scr();const bw=Math.min(600,W-36),bx=(W-bw)/2,bh=H>W?80:Math.min(66,(H-190)/3-12);let y=H>W?H*.16:64;
- button(bx,y,bw,bh,'TEAM MATCH','#b8324f',()=>pickTeam(()=>begin(()=>({type:'team',team:SV.team.slice(),ret:'offline'})),'offline'),32,'3 vs 3 · swap and assist · win +120 gems');y+=bh+14;
- button(bx,y,bw,bh,'PRACTICE','#2f7a5f',()=>pickTeam(()=>begin(()=>({type:'training',team:SV.team.slice(),ret:'offline',noIntro:1})),'offline'),32,'Free practice · unlimited ultimate');y+=bh+14;
  button(bx,y,bw,bh,'EXP CHALLENGE','#8a3fb8',()=>goto('expc'),32,'Win EXP items to level up fighters');y+=bh+14;
- button(bx,y,bw,44,'CPU LEVEL','#3a2a5e',()=>{SV.set.diff=(SV.set.diff+1)%3;save()},24,['EASY','NORMAL','HARD'][SV.set.diff]);y+=62;
+ y+=8;
  txt('Your squad: '+SV.team.map(i=>CH[i].name).join('  ·  ')+'   (change it in TEAMS)',W/2,y,13,'#e6dcff',null,'center',FU);hdr('OFFLINE','match')}
 function drawOnline(){scr();const bw=Math.min(600,W-36),bx=(W-bw)/2,bh=H>W?80:Math.min(70,(H-150)/3-12);let y=H>W?H*.16:70;const n=G.net;
  if(n){const d='.'.repeat(1+Math.floor(G.t*2.5)%3);txt((n.type==='raid'?'SEARCHING FOR A PARTNER':'SEARCHING FOR OPPONENT')+d,W/2,y+30,Math.min(40,W*.06),'#ffe14d',INK,'center',FB,8);txt((n.type==='raid'?'BOSS RAID':n.type==='ranked'?'RANKED COMBO':'CASUAL COMBO')+'  ·  squad: '+SV.team.map(i=>CH[i].name).join(', '),W/2,y+76,15,'#fff',null,'center',FU);
