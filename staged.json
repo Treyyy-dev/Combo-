@@ -825,5 +825,20 @@
   "game": {
    "flag": "voice1"
   }
+ },
+ {
+  "id": "update-story-nowait",
+  "type": "update",
+  "name": "Story: No Long Waits",
+  "subtitle": "Lines come one after another",
+  "desc": "Cuts the long quiet parts in story scenes where the characters stand and wait before they talk.",
+  "status": "staged",
+  "created": 1795210756311,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "nowait"
+  }
  }
 ]

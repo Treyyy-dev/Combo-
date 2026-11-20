@@ -1532,7 +1532,8 @@ function vxStop(){VX.want=null;try{if(VX.el&&!VX.el.paused)VX.el.pause()}catch(e
 try{['pointerup','touchend','click'].forEach(e=>window.addEventListener(e,vxUnlock,{passive:true}))}catch(e){}
 const cps=b=>b.cps||34;
 const TOTAL=180,TITLE=3.5;
-function layout(q,lines,after,qi){const fight=!after&&q.k!=='T',B=[],nl=lines.length;let D=0;lines.forEach(b=>{b.dur=b.vd?b.vd+.9:2.6+.09*b.line.length;if(b.vd)b.cps=Math.max(12,b.line.length/Math.max(.6,b.vd*.9));D+=b.dur});
+function layout(q,lines,after,qi){const fight=!after&&q.k!=='T',B=[],nl=lines.length;let D=0;const NW=F().nowait;lines.forEach(b=>{b.dur=b.vd?b.vd+(NW?.35:.9):2.6+.09*b.line.length;if(b.vd)b.cps=Math.max(12,b.line.length/Math.max(.6,b.vd*.9));D+=b.dur});
+ if(NW){B.push({sil:'env',dur:2,dir:qi%2?1:-1});lines.forEach(b=>B.push(b));if(fight)B.push({sil:'spar',dur:8});let t=0;B.forEach(b=>{t+=b.dur});return{B,tot:t}}
  const open=7,big=fight?17:12;let rest=TOTAL-(after?0:TITLE)-D-open-big,extra=0;while(nl&&rest/nl>6.5&&extra<14){extra++;rest-=6}const r=nl?Math.max(0,rest/nl):0,ev=extra?Math.max(1,Math.floor(nl/(extra+1))):0;
  B.push({sil:'env',dur:open,dir:qi%2?1:-1});let used=0;
  lines.forEach((b,k)=>{B.push(b);const last=k===nl-1;if(r>=1.2&&!(fight&&last))B.push({sil:'react',dur:r,k});else if(fight&&last&&r>=1.2)B[0].dur+=r;
