@@ -72,6 +72,8 @@ function apply(docs){
   else if(it.type==='map'){const s=mkStage(it);if(stageIdx(s.name)<0)STAGES.push(s)}}catch(e){}});
  L.modes=docs.filter(d=>d.type==='mode').map(mkMode).slice(0,12);L.bans=docs.filter(d=>d.type==='banner').slice(-4).map(mkBan);
  resetCaches();remap(old);clampG();
+ try{for(let i=MAILS.length-1;i>=0;i--)if(MAILS[i].news)MAILS.splice(i,1);const RNM=['R','SR','SSR','UR'],sub=d=>str(d.subtitle,40),nw=docs.filter(d=>d.releasedAt>0).sort((x,y)=>y.releasedAt-x.releasedAt).slice(0,30).map(d=>{const n=str(d.name,20).toUpperCase(),t=d.type;
+  return{id:'news-'+str(d.id,60)+'-'+d.releasedAt,news:1,tag:'NEW '+TNAME[t],col:TCOL[t],title:n,text:t==='character'?(sub(d)?sub(d)+' ('+RNM[int(obj(d.game).rar,0,3,2)]+'). ':'')+'A new fighter has joined. Summon them in GACHA.':t==='mode'?(sub(d)?sub(d)+'. ':'')+'A new mode is open. Play it in MATCH, OFFLINE, NEW MODES.':t==='map'?(sub(d)?sub(d)+'. ':'')+'A new stage has been added to matches.':(sub(d)?sub(d)+'. ':'')+'A new banner is up in GACHA.'}});MAILS.unshift.apply(MAILS,nw)}catch(e){}
  try{localStorage.setItem(CK,sig);localStorage.setItem(CN,JSON.stringify(L.names))}catch(e){}}
 
 /* ---------- hooks into the game (wrapping, so the main script stays untouched) ---------- */
