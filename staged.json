@@ -1,6 +1,724 @@
 [
-{"id":"char-vesper","type":"character","name":"VESPER","subtitle":"Eclipse Reaper","desc":"Mid-range polearm fighter. Throws crescent cuts from range, then rift-walks behind you.","status":"staged","created":1795204000000,"colors":["#8a5cff","#ff7ad1","#2a1140","#f3dcec","#1d1530","#151020","#ffd36e"],"game":{"style":7,"weapon":"bo","spd":325,"range":32,"kit":[[0,1],[3,0],7],"sn":["Crescent Reap","Rift Walk"],"un":"TOTAL ECLIPSE","rar":2,"idle":4,"gu":1,"wp":1,"ent":3,"el":23,"wn":"Eclipse Hollow","acc":["mark"],"talk":{"say":"The sun sets on everyone. Tonight, you.","re":"Keep shining. It makes the dark easier to find.","win":"Lights out.","lose":"So... the dawn... still comes..."}}},
-{"id":"map-neon-shrine","type":"map","name":"Neon Shrine Rooftop","subtitle":"Night stage","desc":"A shrine gate on top of a skyscraper, city glowing below, petals blowing through the wires.","status":"staged","created":1795203999000,"colors":["#0a0628","#ff6aa8"],"game":{"sky":["#0a0628","#2a1260","#8a2a7a","#ff6aa8"],"sun":"#fff0c8","glow":"#ff6aa8","sunR":60,"sunY":120,"cloud":["#7a3aa0","#2a1a6a"],"m":["#1c1650","#120e34"],"bld":"city","bc":"#0b0822","win":["#ffd36e","#5af0ff"],"mid":"torii","lan":1,"fl":["#3a2a70","#1c1440","#07051a"],"rf":"#ff6aa8","fx":"petal","fg":"wires","stars":1}},
-{"id":"mode-iron-gauntlet","type":"mode","name":"Iron Gauntlet","subtitle":"Tough 3 vs 3 · big gem payout","desc":"A harder team match. The enemy squad has more health, hits harder and fights on hard CPU. You start with your ultimate ready.","status":"staged","created":1795203998000,"colors":["#b8782f"],"game":{"timer":240,"cd":2,"playerHp":1,"enemyHp":1.6,"playerDmg":1,"enemyDmg":1.2,"meter":1,"gems":{"win":300,"lose":40}}},
-{"id":"banner-eclipse","type":"banner","name":"Eclipse Festival","subtitle":"Vesper rate up","desc":"Gem banner that puts Vesper in the rate-up slots.","status":"staged","created":1795203997000,"colors":["#5a2ad8"],"game":{"featured":["VESPER"],"stage":"NEON SHRINE ROOFTOP","el":23}}
+ {
+  "id": "char-vesper",
+  "type": "character",
+  "name": "VESPER",
+  "subtitle": "Eclipse Reaper",
+  "desc": "Mid-range polearm fighter. Throws crescent cuts from range, then rift-walks behind you.",
+  "status": "staged",
+  "created": 1795204000000,
+  "colors": [
+   "#8a5cff",
+   "#ff7ad1",
+   "#2a1140",
+   "#f3dcec",
+   "#1d1530",
+   "#151020",
+   "#ffd36e"
+  ],
+  "game": {
+   "style": 7,
+   "weapon": "bo",
+   "spd": 325,
+   "range": 32,
+   "kit": [
+    [
+     0,
+     1
+    ],
+    [
+     3,
+     0
+    ],
+    7
+   ],
+   "sn": [
+    "Crescent Reap",
+    "Rift Walk"
+   ],
+   "un": "TOTAL ECLIPSE",
+   "rar": 2,
+   "idle": 4,
+   "gu": 1,
+   "wp": 1,
+   "ent": 3,
+   "el": 23,
+   "wn": "Eclipse Hollow",
+   "acc": [
+    "mark"
+   ],
+   "talk": {
+    "say": "The sun sets on everyone. Tonight, you.",
+    "re": "Keep shining. It makes the dark easier to find.",
+    "win": "Lights out.",
+    "lose": "So... the dawn... still comes..."
+   }
+  }
+ },
+ {
+  "id": "map-neon-shrine",
+  "type": "map",
+  "name": "Neon Shrine Rooftop",
+  "subtitle": "Night stage",
+  "desc": "A shrine gate on top of a skyscraper, city glowing below, petals blowing through the wires.",
+  "status": "staged",
+  "created": 1795203999000,
+  "colors": [
+   "#0a0628",
+   "#ff6aa8"
+  ],
+  "game": {
+   "sky": [
+    "#0a0628",
+    "#2a1260",
+    "#8a2a7a",
+    "#ff6aa8"
+   ],
+   "sun": "#fff0c8",
+   "glow": "#ff6aa8",
+   "sunR": 60,
+   "sunY": 120,
+   "cloud": [
+    "#7a3aa0",
+    "#2a1a6a"
+   ],
+   "m": [
+    "#1c1650",
+    "#120e34"
+   ],
+   "bld": "city",
+   "bc": "#0b0822",
+   "win": [
+    "#ffd36e",
+    "#5af0ff"
+   ],
+   "mid": "torii",
+   "lan": 1,
+   "fl": [
+    "#3a2a70",
+    "#1c1440",
+    "#07051a"
+   ],
+   "rf": "#ff6aa8",
+   "fx": "petal",
+   "fg": "wires",
+   "stars": 1
+  }
+ },
+ {
+  "id": "mode-iron-gauntlet",
+  "type": "mode",
+  "name": "Iron Gauntlet",
+  "subtitle": "Tough 3 vs 3 \u00b7 big gem payout",
+  "desc": "A harder team match. The enemy squad has more health, hits harder and fights on hard CPU. You start with your ultimate ready.",
+  "status": "staged",
+  "created": 1795203998000,
+  "colors": [
+   "#b8782f"
+  ],
+  "game": {
+   "timer": 240,
+   "cd": 2,
+   "playerHp": 1,
+   "enemyHp": 1.6,
+   "playerDmg": 1,
+   "enemyDmg": 1.2,
+   "meter": 1,
+   "gems": {
+    "win": 300,
+    "lose": 40
+   }
+  }
+ },
+ {
+  "id": "banner-eclipse",
+  "type": "banner",
+  "name": "Eclipse Festival",
+  "subtitle": "Vesper rate up",
+  "desc": "Gem banner that puts Vesper in the rate-up slots.",
+  "status": "staged",
+  "created": 1795203997000,
+  "colors": [
+   "#5a2ad8"
+  ],
+  "game": {
+   "featured": [
+    "VESPER"
+   ],
+   "stage": "NEON SHRINE ROOFTOP",
+   "el": 23
+  }
+ },
+ {
+  "id": "char-kazuro",
+  "type": "character",
+  "name": "KAZURO",
+  "subtitle": "Thunder Ronin",
+  "desc": "Fast katana duelist. Steps through you with a lightning cut, then finishes with a rising crescent.",
+  "status": "staged",
+  "created": 1795205000000,
+  "colors": [
+   "#3fa9ff",
+   "#ffe14d",
+   "#141a3a",
+   "#f6d7b8",
+   "#e9eeff",
+   "#1a2040",
+   "#ffe14d"
+  ],
+  "game": {
+   "style": 0,
+   "weapon": "katana",
+   "spd": 360,
+   "range": 26,
+   "kit": [
+    [
+     0,
+     0
+    ],
+    [
+     0,
+     1
+    ],
+    0
+   ],
+   "sn": [
+    "Flash Draw",
+    "Storm Crescent"
+   ],
+   "un": "HEAVENS DIVIDE",
+   "rar": 2,
+   "idle": 0,
+   "gu": 0,
+   "wp": 0,
+   "ent": 0,
+   "el": 0,
+   "wn": "Thunder Pass",
+   "acc": [
+    "band"
+   ],
+   "ty": 1,
+   "talk": {
+    "say": "One cut. That is all I need.",
+    "re": "Then draw, and be quick about it.",
+    "win": "You blinked.",
+    "lose": "My blade... was slow..."
+   }
+  }
+ },
+ {
+  "id": "char-mirella",
+  "type": "character",
+  "name": "MIRELLA",
+  "subtitle": "Tide Dancer",
+  "desc": "Light on her feet. Spinning kicks into a water cyclone that carries you across the stage.",
+  "status": "staged",
+  "created": 1795205000001,
+  "colors": [
+   "#2fb8e0",
+   "#c9f6ff",
+   "#0f4a6a",
+   "#ffe0c8",
+   "#e8fbff",
+   "#1c4a66",
+   "#2fb8e0"
+  ],
+  "game": {
+   "style": 6,
+   "weapon": "fist",
+   "spd": 350,
+   "range": 14,
+   "kit": [
+    [
+     6,
+     0
+    ],
+    [
+     6,
+     1
+    ],
+    6
+   ],
+   "sn": [
+    "Wave Kick",
+    "Riptide Spin"
+   ],
+   "un": "MAELSTROM WALTZ",
+   "rar": 1,
+   "idle": 1,
+   "gu": 1,
+   "wp": 2,
+   "ent": 6,
+   "el": 8,
+   "wn": "Coral Stage",
+   "acc": [
+    "ears"
+   ],
+   "ty": 1,
+   "talk": {
+    "say": "Try to keep up with the current.",
+    "re": "Oh, I love a partner with rhythm.",
+    "win": "What a lovely dance.",
+    "lose": "I lost... the beat..."
+   }
+  }
+ },
+ {
+  "id": "char-draven",
+  "type": "character",
+  "name": "DRAVEN",
+  "subtitle": "Ash Brawler",
+  "desc": "Heavy hitter. Charges in with a rush, launches with an uppercut and never backs off.",
+  "status": "staged",
+  "created": 1795205000002,
+  "colors": [
+   "#ff5a36",
+   "#ffc23d",
+   "#2a0d08",
+   "#d9a37c",
+   "#3a1410",
+   "#1a1010",
+   "#ffc23d"
+  ],
+  "game": {
+   "style": 1,
+   "weapon": "fist",
+   "spd": 300,
+   "range": 10,
+   "kit": [
+    [
+     1,
+     0
+    ],
+    [
+     1,
+     1
+    ],
+    1
+   ],
+   "sn": [
+    "Cinder Rush",
+    "Furnace Upper"
+   ],
+   "un": "INFERNO BREAKER",
+   "rar": 0,
+   "idle": 2,
+   "gu": 2,
+   "wp": 3,
+   "ent": 4,
+   "el": 1,
+   "wn": "Ash Pit",
+   "acc": [
+    "patch"
+   ],
+   "ty": 0,
+   "talk": {
+    "say": "Hope you like it hot.",
+    "re": "Big talk. Come swing.",
+    "win": "Burned out already?",
+    "lose": "Fire's... out..."
+   }
+  }
+ },
+ {
+  "id": "char-solenne",
+  "type": "character",
+  "name": "SOLENNE",
+  "subtitle": "Dawn Lancer",
+  "desc": "Long reach with a holy spear. Pokes from range and punishes anyone who jumps in.",
+  "status": "staged",
+  "created": 1795205000003,
+  "colors": [
+   "#ffb020",
+   "#fff6c0",
+   "#f2e2a0",
+   "#ffe6cc",
+   "#fffaf0",
+   "#b8862a",
+   "#ff8a1f"
+  ],
+  "game": {
+   "style": 2,
+   "weapon": "staff",
+   "spd": 320,
+   "range": 36,
+   "kit": [
+    [
+     2,
+     0
+    ],
+    [
+     2,
+     1
+    ],
+    2
+   ],
+   "sn": [
+    "Sun Lance",
+    "Halo Fang"
+   ],
+   "un": "DAYBREAK JUDGMENT",
+   "rar": 2,
+   "idle": 3,
+   "gu": 1,
+   "wp": 1,
+   "ent": 5,
+   "el": 22,
+   "wn": "Dawn Spire",
+   "acc": [
+    "halo"
+   ],
+   "ty": 4,
+   "talk": {
+    "say": "Stand in the light and be measured.",
+    "re": "Your shadow is longer than your courage.",
+    "win": "The sun always rises.",
+    "lose": "The light... fades..."
+   }
+  }
+ },
+ {
+  "id": "char-torik",
+  "type": "character",
+  "name": "TORIK",
+  "subtitle": "Stone Warden",
+  "desc": "Slow and tough. Shakes the ground with a quake, then barrels through with a charge.",
+  "status": "staged",
+  "created": 1795205000004,
+  "colors": [
+   "#e08a2c",
+   "#f6e3ae",
+   "#3a2a1a",
+   "#c99468",
+   "#6a5a48",
+   "#2a2018",
+   "#f6e3ae"
+  ],
+  "game": {
+   "style": 4,
+   "weapon": "bo",
+   "spd": 280,
+   "range": 30,
+   "kit": [
+    [
+     4,
+     0
+    ],
+    [
+     4,
+     1
+    ],
+    4
+   ],
+   "sn": [
+    "Faultline",
+    "Boulder Charge"
+   ],
+   "un": "MOUNTAIN FALL",
+   "rar": 0,
+   "idle": 5,
+   "gu": 2,
+   "wp": 3,
+   "ent": 4,
+   "el": 4,
+   "wn": "Granite Gate",
+   "acc": [
+    "horns"
+   ],
+   "ty": 4,
+   "talk": {
+    "say": "You will not move me.",
+    "re": "Push, then. I have all day.",
+    "win": "Solid as ever.",
+    "lose": "Even stone... cracks..."
+   }
+  }
+ },
+ {
+  "id": "char-nyxia",
+  "type": "character",
+  "name": "NYXIA",
+  "subtitle": "Void Witch",
+  "desc": "Zoner. Pulls you in with a gravity grip and bursts you with a floating orb.",
+  "status": "staged",
+  "created": 1795205000005,
+  "colors": [
+   "#7a6bff",
+   "#ffd36e",
+   "#1a1038",
+   "#e9d6f2",
+   "#2a1a52",
+   "#120a26",
+   "#ffd36e"
+  ],
+  "game": {
+   "style": 7,
+   "weapon": "orb",
+   "spd": 310,
+   "range": 22,
+   "kit": [
+    [
+     7,
+     0
+    ],
+    [
+     7,
+     1
+    ],
+    7
+   ],
+   "sn": [
+    "Gravity Grip",
+    "Null Orb"
+   ],
+   "un": "EVENT HORIZON",
+   "rar": 3,
+   "idle": 8,
+   "gu": 1,
+   "wp": 1,
+   "ent": 7,
+   "el": 7,
+   "wn": "The Quiet Dark",
+   "acc": [
+    "mark",
+    "glasses"
+   ],
+   "ty": 3,
+   "talk": {
+    "say": "Come closer. The void is curious.",
+    "re": "How brave. How brief.",
+    "win": "Nothing remains.",
+    "lose": "The dark... lets go..."
+   }
+  }
+ },
+ {
+  "id": "char-bramos",
+  "type": "character",
+  "name": "BRAMOS",
+  "subtitle": "Iron Engine",
+  "desc": "Mecha bruiser. A rocket rush up close and a ground quake to stop anyone running.",
+  "status": "staged",
+  "created": 1795205000006,
+  "colors": [
+   "#9ab0c8",
+   "#ff5a36",
+   "#3a4658",
+   "#c8b8a8",
+   "#5a6a80",
+   "#2a3240",
+   "#ff5a36"
+  ],
+  "game": {
+   "style": 4,
+   "weapon": "fist",
+   "spd": 295,
+   "range": 12,
+   "kit": [
+    [
+     1,
+     0
+    ],
+    [
+     4,
+     0
+    ],
+    4
+   ],
+   "sn": [
+    "Piston Rush",
+    "Shock Stomp"
+   ],
+   "un": "OVERDRIVE CRUSH",
+   "rar": 1,
+   "idle": 6,
+   "gu": 2,
+   "wp": 3,
+   "ent": 4,
+   "el": 19,
+   "wn": "Scrap Foundry",
+   "acc": [
+    "glasses"
+   ],
+   "ty": 0,
+   "talk": {
+    "say": "Systems hot. Target locked.",
+    "re": "Recalculating. Still winning.",
+    "win": "Efficient.",
+    "lose": "Power... failing..."
+   }
+  }
+ },
+ {
+  "id": "char-zephra",
+  "type": "character",
+  "name": "ZEPHRA",
+  "subtitle": "Gale Archer",
+  "desc": "Keeps you out with fast arrows and a rain of shots from above.",
+  "status": "staged",
+  "created": 1795205000007,
+  "colors": [
+   "#3fe0a0",
+   "#f2ffd6",
+   "#1a5a44",
+   "#ffe2c4",
+   "#eafff2",
+   "#1f4a3a",
+   "#3fe0a0"
+  ],
+  "game": {
+   "style": 5,
+   "weapon": "bow",
+   "spd": 340,
+   "range": 34,
+   "kit": [
+    [
+     5,
+     0
+    ],
+    [
+     5,
+     1
+    ],
+    5
+   ],
+   "sn": [
+    "Wind Arrow",
+    "Arrow Rain"
+   ],
+   "un": "TEMPEST VOLLEY",
+   "rar": 1,
+   "idle": 4,
+   "gu": 0,
+   "wp": 0,
+   "ent": 2,
+   "el": 6,
+   "wn": "Skyreed Cliff",
+   "acc": [
+    "band"
+   ],
+   "ty": 1,
+   "talk": {
+    "say": "You will not get close.",
+    "re": "The wind already told me your next step.",
+    "win": "Bullseye.",
+    "lose": "Missed... my mark..."
+   }
+  }
+ },
+ {
+  "id": "char-onikai",
+  "type": "character",
+  "name": "ONIKAI",
+  "subtitle": "Blood Oni",
+  "desc": "Dual daggers and blinks. Teleports behind you and fans blades in your back.",
+  "status": "staged",
+  "created": 1795205000008,
+  "colors": [
+   "#e0343f",
+   "#ffd36e",
+   "#1a0a0c",
+   "#e8b89a",
+   "#2a0c10",
+   "#120608",
+   "#ff3d5a"
+  ],
+  "game": {
+   "style": 3,
+   "weapon": "dagger",
+   "spd": 370,
+   "range": 16,
+   "kit": [
+    [
+     3,
+     0
+    ],
+    [
+     3,
+     1
+    ],
+    3
+   ],
+   "sn": [
+    "Crimson Blink",
+    "Fang Fan"
+   ],
+   "un": "THOUSAND CUT MOON",
+   "rar": 3,
+   "idle": 9,
+   "gu": 0,
+   "wp": 0,
+   "ent": 3,
+   "el": 20,
+   "wn": "Oni Gate",
+   "acc": [
+    "horns",
+    "mark"
+   ],
+   "ty": 2,
+   "talk": {
+    "say": "I can smell your fear from here.",
+    "re": "Good. Fight like you mean it.",
+    "win": "Barely a snack.",
+    "lose": "The hunt... ends..."
+   }
+  }
+ },
+ {
+  "id": "char-lumeira",
+  "type": "character",
+  "name": "LUMEIRA",
+  "subtitle": "Moon Priestess",
+  "desc": "Calm staff fighter. A lance thrust up close and a moon orb that holds you in place.",
+  "status": "staged",
+  "created": 1795205000009,
+  "colors": [
+   "#b9a6ff",
+   "#fff6c9",
+   "#e8e0ff",
+   "#ffeede",
+   "#f4f0ff",
+   "#5a4a8a",
+   "#b9a6ff"
+  ],
+  "game": {
+   "style": 2,
+   "weapon": "staff",
+   "spd": 315,
+   "range": 30,
+   "kit": [
+    [
+     2,
+     0
+    ],
+    [
+     7,
+     1
+    ],
+    7
+   ],
+   "sn": [
+    "Crescent Thrust",
+    "Moonwell"
+   ],
+   "un": "LUNAR REQUIEM",
+   "rar": 2,
+   "idle": 7,
+   "gu": 1,
+   "wp": 1,
+   "ent": 5,
+   "el": 23,
+   "wn": "Silver Lake",
+   "acc": [
+    "halo"
+   ],
+   "ty": 3,
+   "talk": {
+    "say": "The moon watches. Be at peace.",
+    "re": "Your anger is loud. I will quiet it.",
+    "win": "Rest now.",
+    "lose": "The tide... turns..."
+   }
+  }
+ }
 ]
