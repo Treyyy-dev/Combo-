@@ -825,5 +825,20 @@
   "game": {
    "flag": "nowait"
   }
+ },
+ {
+  "id": "update-fighter-voices",
+  "type": "update",
+  "name": "Fighter Voices",
+  "subtitle": "Fighters talk out loud",
+  "desc": "Every fighter speaks their lines out loud: at the start of a match, when they use their ultimate, when they win and when they get knocked out. Your lead fighter also talks during the summon animation.",
+  "status": "staged",
+  "created": 1795212104799,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "fvoice"
+  }
  }
 ]
