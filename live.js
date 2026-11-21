@@ -174,6 +174,23 @@ SCR.dev=drawDev;
   try{if(m.pt==='character'){drawIcon(CH[findCh(m.pn)],x,y,sz,null,1)}else if(m.pt==='map'){stageCard(stageIdx(m.pn),x-20,y,sz+40,sz)}else{const f=(m.pf||[]).map(n=>findCh(n)).filter(k=>k>=0).slice(0,4),h=f.length>1?sz/2:sz;f.forEach((ci,k)=>drawIcon(CH[ci],x+(k%2)*h,y+(k/2|0)*h,h,null,1))}}catch(e){}
   g.restore();rr(x,y,sz,sz,10);g.strokeStyle='#fff';g.lineWidth=2;g.stroke()})}}
 
+/* flag "mailexp": mailbox news about fighters (a new fighter, or a banner with up to 4) can be tapped to expand; the expanded mail shows every fighter in it with their stats */
+{const m1=SCR.mail;SCR.mail=function(){if(!FLAGS.mailexp){G.mx=null;return m1()}const bw=Math.min(640,W-36),bx=(W-bw)/2,page=MAILS.slice((G.mpg|0)*3,(G.mpg|0)*3+3),
+  who=m=>{if(!m||!m.news)return[];const n=m.pt==='character'?[m.pn]:m.pt==='banner'?(m.pf||[]):[];return n.map(q=>findCh(q)).filter(k=>k>=0).slice(0,4)};
+ if(G.mx&&G.t-(G.mx.t||0)>.4)G.mx=null;const open=G.mx&&MAILS.find(q=>q.id===G.mx.id),L=open?who(open):[];
+ m1();
+ if(!open||!L.length){G.mx=null;page.forEach((m,i)=>{if(!who(m).length)return;const y=62+i*104;hit(bx,y,bw-180,96,()=>{G.mx={id:m.id,t:G.t};sfx('ui')});txt('TAP FOR STATS  ▸',bx+18+(FLAGS.mailpic?84:0),y+87,10,'#ffe14d',null,'left',FU)});return}
+ G.mx.t=G.t;G.ui=[];g.fillStyle='rgba(6,2,16,.93)';g.fillRect(0,0,W,H);const pw=Math.min(700,W-24),px=(W-pw)/2,top=54,rh=Math.min(92,(H-top-14)/L.length),ph=rh*L.length+12;
+ rr(px,top,pw,ph,14);g.fillStyle='rgba(16,8,34,.96)';g.fill();g.strokeStyle=open.col||'#ffe14d';g.lineWidth=3;g.stroke();txt(open.title,px+6,30,24,'#fff',INK,'left',FB,6);
+ if(open.tag){g.font='700 12px '+FU;const tw=g.measureText(open.tag).width+18,tx0=px+16+Math.min(pw-260,open.title.length*15);rr(tx0,19,tw,22,6);g.fillStyle=open.col||'#ffe14d';g.fill();txt(open.tag,tx0+tw/2,30.5,12,'#10061e',null,'center',FU)}
+ L.forEach((ci,k)=>{const c=CH[ci],y=top+6+k*rh,sz=rh-12,tx=px+sz+24,st=SV.owned[c.name]||0,fs=Math.min(13,rh/6.6),ty=TY[c.ty]||TY[0];if(k){g.fillStyle='rgba(255,255,255,.12)';g.fillRect(px+12,y-3,pw-24,1.5)}
+  g.save();rr(px+10,y+3,sz,sz,10);g.clip();g.fillStyle='#120a22';g.fillRect(px+10,y+3,sz,sz);try{drawIcon(c,px+10,y+3,sz,null,1)}catch(e){}g.restore();rr(px+10,y+3,sz,sz,10);g.strokeStyle=RC[c.rar]||'#fff';g.lineWidth=2.5;g.stroke();
+  txt(RN[c.rar],tx,y+rh*.2,fs*1.5,RC[c.rar]||'#fff',INK,'left',FB,5);txt(c.name,tx+fs*4.4,y+rh*.2,fs*1.5,'#fff',INK,'left',FB,5);txt(String(c.title||'').toUpperCase(),px+pw-14,y+rh*.2,fs*.9,c.col2||'#e6dcff',INK,'right',FU,3);
+  txt(ty[0]+' TYPE  ·  beats '+TY[(c.ty+1)%5][0]+'  ·  weak to '+TY[(c.ty+4)%5][0]+'  ·  Power +'+Math.round((pwOf(c.name)-1)*100)+'%',tx,y+rh*.43,fs,ty[1],INK,'left',FU,3);
+  txt('S1  '+c.sn[0]+'   ·   S2  '+c.sn[1]+'   ·   ULT  '+c.un,tx,y+rh*.63,fs,'#fff',null,'left',FU);
+  txt(st?'★ '+st+' / 14   ·   LEVEL '+lvOf(c.name)+' / 200':'NOT OWNED   ·   Summon in GACHA',tx,y+rh*.83,fs,st?'#ffe14d':'#aaa',null,'left',FU)});
+ button(W-110,12,96,34,'CLOSE','#3a2a5e',()=>{G.mx=null},18);if(G.focus>=G.ui.length)G.focus=0}}
+
 /* ---------- outside claude.ai (the GitHub / Render copy) ----------
    Released content comes from live.json. The game server can also run the studio: it is opened with the dev key
    (add #dev to the address), and the server keeps staged and released items in its own database. */

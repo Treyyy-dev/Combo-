@@ -1517,5 +1517,20 @@
   "game": {
    "flag": "winscar"
   }
+ },
+ {
+  "id": "update-mail-expand",
+  "type": "update",
+  "name": "Mailbox Fighter Stats",
+  "subtitle": "Tap fighter news to expand it",
+  "desc": "Mailbox news about a new fighter or a banner can be tapped to expand. The expanded mail shows every fighter in it with their stats: rarity, type, skills, ultimate, stars and level.",
+  "status": "staged",
+  "created": 1795232336480,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "mailexp"
+  }
  }
 ]
