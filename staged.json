@@ -1292,5 +1292,20 @@
   "game": {
    "flag": "vsync"
   }
+ },
+ {
+  "id": "update-jp-story",
+  "type": "update",
+  "name": "Japanese Story Subtitles",
+  "subtitle": "Story lines in Japanese",
+  "desc": "All 1,329 story lines are translated to Japanese. When SUBTITLES is set to Japanese in Configure, the story cutscenes show their lines in Japanese. Story voices stay in English.",
+  "status": "staged",
+  "created": 1795226562944,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "jpstory"
+  }
  }
 ]

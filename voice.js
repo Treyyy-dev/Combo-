@@ -42,8 +42,8 @@ const _du=drawSummonUI;drawSummonUI=function(){_du();const M=G.sm;if(!M||!M.say|
  g.globalAlpha=clamp(Math.min(s.t*6,(s.dur-s.t)*4),0,1);g.fillStyle='rgba(8,4,20,.82)';rr(bx,by,bw,bh,14);g.fill();g.strokeStyle=f.c.col;g.lineWidth=3;rr(bx,by,bw,bh,14);g.stroke();txt(f.c.name,bx+18,by+16,15,f.c.col2||'#ffd58a',INK,'left',FU,4);
  let left=shown.length;ls.forEach((l,i)=>{const part=l.slice(0,Math.max(0,left));left-=l.length+1;if(part)txt(part,W/2,by+34+i*lh+lh*.4,fs,'#fff',INK,'center',FU,4)});g.restore()};
 
-/* Configure screen: VOICES row (flag "jpvoice") and SUBTITLES row (flag "jpsub"), each English / Japanese */
-{const c0=SCR.config;SCR.config=function(){let jv=false,js=false;try{jv=!!(on()&&FLAGS.jpvoice);js=!!FLAGS.jpsub}catch(e){}const ex=(jv?1:0)+(js?1:0);if(!ex)return c0();const b0=button,t0=txt,st=ex>1?44:51,rh=ex>1?38:44,fz=ex>1?20:22,Y=i=>70+i*st;let n=0,bx=0,bw=0;
+/* Configure screen: VOICES row (flag "jpvoice") and SUBTITLES row (flag "jpsub" or "jpstory"), each English / Japanese */
+{const c0=SCR.config;SCR.config=function(){let jv=false,js=false;try{jv=!!(on()&&FLAGS.jpvoice);js=!!(FLAGS.jpsub||FLAGS.jpstory)}catch(e){}const ex=(jv?1:0)+(js?1:0);if(!ex)return c0();const b0=button,t0=txt,st=ex>1?44:51,rh=ex>1?38:44,fz=ex>1?20:22,Y=i=>70+i*st;let n=0,bx=0,bw=0;
  button=function(x,y,w,h,l,col,fn,size,desc){if(h===52){bx=x;bw=w;y=Y(l==='CONTROLS'?4+ex:n++);h=rh;size=fz}return b0(x,y,w,h,l,col,fn,size,desc)};
  txt=function(s,x,y){const a=Array.prototype.slice.call(arguments);if(typeof s==='string'&&s.indexOf('120 FPS')===0)a[2]=Y(5+ex)+6;return t0.apply(this,a)};
  try{c0()}finally{button=b0;txt=t0}
