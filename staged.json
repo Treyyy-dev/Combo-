@@ -109,7 +109,7 @@
   "id": "mode-iron-gauntlet",
   "type": "mode",
   "name": "Iron Gauntlet",
-  "subtitle": "Tough 3 vs 3 \u00b7 big gem payout",
+  "subtitle": "Tough 3 vs 3 · big gem payout",
   "desc": "A harder team match. The enemy squad has more health, hits harder and fights on hard CPU. You start with your ultimate ready.",
   "status": "staged",
   "created": 1795203998000,
@@ -1171,6 +1171,21 @@
   ],
   "game": {
    "flag": "dbz2"
+  }
+ },
+ {
+  "id": "update-story-voices",
+  "type": "update",
+  "name": "Story Voices",
+  "subtitle": "Every story line is spoken",
+  "desc": "All 100 story quests are voice acted. Each character speaks their lines out loud in the story scenes, and the narrator reads the scene openings. Uses the Sound setting for volume.",
+  "status": "staged",
+  "created": 1795223495275,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "voice1"
   }
  }
 ]
