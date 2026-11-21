@@ -2254,5 +2254,20 @@
   "game": {
    "flag": "nopity"
   }
+ },
+ {
+  "id": "update-featured-5",
+  "type": "update",
+  "name": "Even Banners",
+  "subtitle": "Rate-up fighters are 5 in 100 on every banner",
+  "desc": "Every banner now gives its rate-up fighters the same chance: 5 summons in 100. No banner gives more duplicates than another, even a one-fighter banner. The other pulls use the normal odds.",
+  "status": "staged",
+  "created": 1795249922083,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "feat5"
+  }
  }
 ]

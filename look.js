@@ -956,4 +956,12 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
 {const OLD='Every 5th summon without a new fighter guarantees a new one.',AFTER=['Duplicates add','Each fighter unlocks','Banners change'];
  const pl0=pull;pull=function(){if(!F().nopity)return pl0();const p=SV.pity;SV.pity=-1e9;try{return pl0()}finally{SV.pity=p}};
  const ga0=SCR.gacha;if(ga0)SCR.gacha=function(){if(!F().nopity)return ga0();const t0=txt;let cut=false;txt=function(s){if(s===OLD){cut=true;return}if(cut&&typeof s==='string'&&AFTER.some(q=>s.indexOf(q)===0))arguments[2]-=18;return t0.apply(this,arguments)};try{return ga0()}finally{txt=t0}}}
+/* feat5: every banner gives its rate-up fighters the same chance, so no banner makes more duplicates than another (before: half of all gem pulls and 1 in 5 ticket pulls were a rate-up fighter,
+   which on a one-fighter banner meant that one fighter half the time). Now 5 pulls in 100 are a rate-up fighter on every banner, gems and tickets, whatever the number of rate-up fighters;
+   the other 95 use the banner's normal rarity odds. pull() decides rate-up with its first random number, so that one number is replaced for the call.
+   The guaranteed-new pull (when nopity is off) is left alone. The two on-screen sentences about the rate-up chance are reworded. */
+{const P5=.05,pl5=pull;pull=function(){if(!F().feat5)return pl5();let B=null,pity=false;try{const BS=actBans();B=BS[G.ban||0]||BS[0];const tk=G.gtab===1;pity=!F().nopity&&SV.pity+1>=5&&pools()[tk?1:0].some(i=>!SV.owned[CH[i].name])}catch(e){}
+   if(!B||!B.f||!B.f.length||pity)return pl5();const r0=Math.random;let first=true;Math.random=function(){if(first){first=false;return r0()<P5?0:.999}return r0()};try{return pl5()}finally{Math.random=r0}};
+ const gb0=SCR.gacha;if(gb0)SCR.gacha=function(){if(!F().feat5)return gb0();const t0=txt;txt=function(s){if(typeof s==='string'){if(s.indexOf('RATE UP: ')===0)arguments[0]=s.replace('1 in 5 summons','5 in 100 summons').replace('half of all summons','5 in 100 summons');
+     else if(s.indexOf(' here are ')>0&&s.indexOf('rate-up fighter')>0)arguments[0]=s.replace('1 in 5 summons','5 in 100 summons').replace('Half of all summons','5 in 100 summons')}return t0.apply(this,arguments)};try{return gb0()}finally{txt=t0}}}
 })();
