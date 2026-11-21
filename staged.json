@@ -1202,5 +1202,20 @@
   "game": {
    "flag": "cine2"
   }
+ },
+ {
+  "id": "update-dialog-box",
+  "type": "update",
+  "name": "Cutscenes: Talk Box at the Bottom",
+  "subtitle": "Face square with the words next to it",
+  "desc": "Story speech no longer pops up in bubbles. Everything is said in one box at the bottom of the screen: a square with the speaker's face, their name, and the words next to it.",
+  "status": "staged",
+  "created": 1795224125144,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "dlg2"
+  }
  }
 ]
