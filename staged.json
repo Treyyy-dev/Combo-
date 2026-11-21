@@ -1682,5 +1682,35 @@
   "game": {
    "flag": "studio"
   }
+ },
+ {
+  "id": "update-start-screen",
+  "type": "update",
+  "name": "New Start Screen",
+  "subtitle": "Kenko and Neto clash under the name",
+  "desc": "The start screen now shows COMBO at the top with Kenko and Neto clashing under it. The picture is still and the line under the name is gone.",
+  "status": "staged",
+  "created": 1795235707007,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "title2"
+  }
+ },
+ {
+  "id": "update-lobby-banner-bg",
+  "type": "update",
+  "name": "Banner Lobby Background",
+  "subtitle": "Your banner is your lobby background",
+  "desc": "The banner you pick in your profile is now the background of the lobby and the Match, Offline and Online menus.",
+  "status": "staged",
+  "created": 1795235707008,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "lobbybg"
+  }
  }
 ]

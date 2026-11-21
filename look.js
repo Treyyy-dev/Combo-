@@ -326,6 +326,24 @@ let SCX=null,HCX=null;
    const k=s/140;g.save();g.translate(x+s*.5,y+s*.06+152*k);g.scale(k,k);drawFrontChar(c,{t:1.2,expr:'',arms:'front'});g.restore();
    const gr=g.createLinearGradient(0,y+s*.7,0,y+s);gr.addColorStop(0,'rgba(10,4,24,0)');gr.addColorStop(1,'rgba(10,4,24,.45)');g.fillStyle=gr;g.fillRect(x,y,s,s);g.restore()}catch(e){try{g.restore()}catch(x2){}}};
  const u0=update;update=function(rdt){u0(rdt);const on=!!F().icon2;if(on===IS)return;IS=on;try{const u=mkIcon(128),q=r=>document.querySelector('link[rel="'+r+'"]'),a=q('icon'),b=q('apple-touch-icon'),m=q('manifest');if(a&&u)a.href=u;if(location.protocol!=='blob:'){if(b)b.href=on?'icon2.png':'icon.png';if(m)m.href=on?'manifest2.json':'manifest.json'}}catch(e){}}}
+/* ================= flag "title2": new start screen =================
+   COMBO at the top with no line under it, and Kenko and Neto clashing under the name. The picture is still (nothing moves except the blinking start line). */
+{let KC=null,NC=null;const T2=()=>F().title2&&(KC=KC||CH.find(c=>c&&c.name==='KENKO'))&&(NC=NC||CH.find(c=>c&&c.name==='NETO'));
+ const tt0=SCR.title;SCR.title=function(){if(!T2())return tt0();g.setTransform(S*dpr,0,0,S*dpr,0,0);G.ui=[];const bg=g.createLinearGradient(0,0,0,H);bg.addColorStop(0,'#0d0630');bg.addColorStop(.5,'#5b1f7a');bg.addColorStop(.85,'#ff5a4d');bg.addColorStop(1,'#ffc46b');g.fillStyle=bg;g.fillRect(0,0,W,H);
+  const sx=W*.5,sy=H*.66;g.save();g.translate(sx,sy);g.fillStyle='rgba(255,220,150,.14)';for(let i=0;i<18;i++){g.rotate(TAU/18);g.beginPath();g.moveTo(0,0);g.lineTo(-30,-W);g.lineTo(30,-W);g.fill()}g.restore();circ(sx,sy,H*.42,'#fff1c9');circ(sx,sy,H*.35,'#ffd98a');
+  g.fillStyle='#2a1050';for(let i=0;i<30;i++){const bw=W/30,bh=H*(.1+(((Math.sin(i*12.9898)*43758.5453)%1)+1)%1*.22);g.fillRect(i*bw,H*.8-bh,bw+1,bh+H);g.fillStyle='rgba(255,214,130,.7)';g.fillRect(i*bw+bw*.3,H*.8-bh+8,3,5);g.fillRect(i*bw+bw*.6,H*.8-bh+20,3,5);g.fillStyle='#2a1050'}
+  const fg=g.createLinearGradient(0,H*.8,0,H);fg.addColorStop(0,'#3d1d5e');fg.addColorStop(1,'#0d0630');g.fillStyle=fg;g.fillRect(0,H*.8,W,H*.2);
+  const k=H*.64/160,gy=H*.985,cx=W*.5,cy=gy-76*k,gap=64*k;
+  g.fillStyle='rgba(10,0,30,.45)';[-1,1].forEach(d=>{g.beginPath();g.ellipse(cx+d*gap,gy+4,40*k,7*k,0,0,TAU);g.fill()});
+  [[KC,-1,lp(L4A,L4B,.9),'yell'],[NC,1,L1B,'angry']].forEach(q=>{g.save();g.translate(cx+q[1]*gap,gy);g.scale(-q[1]*k,k);try{drawChar(q[0],q[2],{t:1.2,sway:.5,expr:q[3],ground:true})}catch(e){}g.restore()});
+  g.save();g.translate(cx,cy);for(let j=0;j<3;j++){const r=[104,72,40][j]*k/2.7,n=12;g.fillStyle=[KC.col,NC.col,'#fff'][j];g.globalAlpha=j?1:.9;g.beginPath();for(let i=0;i<n*2;i++){const a=i*Math.PI/n+j*.26,rr2=i%2?r*.36:r*(.8+.2*((i*7)%5)/4);g.lineTo(Math.cos(a)*rr2,Math.sin(a)*rr2)}g.closePath();g.fill();if(j<2){g.strokeStyle=INK;g.lineWidth=3;g.stroke()}}
+  g.globalAlpha=1;g.lineCap='round';[[KC.col2||'#fff',-1],[NC.col2,1]].forEach(q=>{g.strokeStyle=q[0];g.lineWidth=5;for(let i=0;i<5;i++){const a=(q[1]>0?0:Math.PI)+(i-2)*.36,r0=(125+i%2*20)*k/2.7,r1=r0+(46+i*7)*k/2.7;g.beginPath();g.moveTo(Math.cos(a)*r0,Math.sin(a)*r0);g.lineTo(Math.cos(a)*r1,Math.sin(a)*r1);g.stroke()}});g.restore();
+  const vg=g.createRadialGradient(W/2,H/2,H*.4,W/2,H/2,W*.75);vg.addColorStop(0,'rgba(10,0,30,0)');vg.addColorStop(1,'rgba(10,0,30,.7)');g.fillStyle=vg;g.fillRect(0,0,W,H);
+  const ls=Math.min(118,W*.15);g.save();g.translate(W/2,H*.15);g.rotate(-.04);txt('COMBO',0,0,ls,'#ffe14d','#fff','center',FB,26);txt('COMBO',0,0,ls,'#ffe14d',INK,'center',FB,13);g.restore();
+  g.globalAlpha=.55+.45*Math.sin(G.t*5);txt(lastDev==='touch'?'TAP TO START':'CLICK OR PRESS ANY BUTTON TO START',W/2,H*.93,24,'#fff',INK,'center',FB,7);g.globalAlpha=1;hit(0,0,W,H,()=>goto('menu'))}}
+/* ================= flag "lobbybg": the lobby background is the player's profile banner =================
+   The main lobby and the Match, Offline and Online menus draw the world picture of the banner chosen in the profile, darkened so the buttons stay readable. */
+{const LOB={menu:1,match:1,offline:1,online:1},s0=scr;scr=function(){s0();if(!F().lobbybg||!LOB[G.mode])return;try{const c=CH[SV.banner|0];if(!c)return;g.save();worldBG(c,0,0,W,H);const gr=g.createLinearGradient(0,0,W,0);gr.addColorStop(0,'rgba(10,4,24,.72)');gr.addColorStop(1,'rgba(10,4,24,.4)');g.fillStyle=gr;g.fillRect(0,0,W,H);g.restore()}catch(e){try{g.restore()}catch(x){}}}}
 /* ================= flag "studio": the Treyyverse studio intro plays before the start menu =================
    Ported from the "Treyyverse Studio Intro" page: 5 seconds on black, a four-hit combo by Kaito, Rin, Zero and Gou, then the TREYYVERSE logo with the first
    eight fighters lined up under it. Plays once each time the game is opened, then the start menu shows.
