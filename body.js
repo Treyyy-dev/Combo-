@@ -48,10 +48,10 @@ function drawChar2(c,p,o){CEL=F().cel?1:0;const J=joints(p),Z2=F().dbz2?1:0,DZ=Z
  if(c.style===7){ribbon(J.neck.x-6,J.neck.y+4,88,22,30,-16,sw*.8,t,C(c.col),ink);ribbon(J.hip.x-3,J.hip.y-6,56,28,38,-10,sw*.6,t,C(c.topSh),ink)}
  const glove=c.weapon==='fist',gk=glove?(c.fistR||8.2)/5.6:1,grip=c.weapon!=='orb';
  /* back arm (drawn over the torso when the whole body faces the screen) */
- const backArm=()=>{limb2([[J.shB,J.ab[0],(Z2?5.8:5.2)*bk,(Z2?4.6:4.3)*bk,1,1.2,C(Z2?c.top:c.topSh),Z2?c.topSh:null],[J.ab[0],J.ab[1],(Z2?4.6:4.3)*bk,3.2*bk,1.1,.6,C(c.bare?c.skinSh:Z2?c.top:c.topSh),Z2&&!c.bare?c.topSh:null]],ink,sil);
+ const backArm=()=>{limb2([[J.shB,J.ab[0],5.2*bk,4.3*bk,1,1.2,C(c.topSh)],[J.ab[0],J.ab[1],4.3*bk,3.2*bk,1.1,.6,C(c.bare?c.skinSh:c.topSh)]],ink,sil);
   if(c.weapon==='dagger')weapon(c,J.ab[1],p[4]+p[5],o,true);
   hand(J.ab[1],p[4]+p[5],C(glove?shade(c.col2.length===7?c.col2:'#cccccc',.8):c.skinSh),'rgba(0,0,0,.35)',ink,sil,glove||c.weapon==='dagger',gk*.95)};
- if(!Z2)backArm();
+ backArm();
  /* legs */
  limb2([[J.hipB,J.lb[0],7.2*bk,5.4*bk,1.2,1.8,C(c.pantsSh)],[J.lb[0],J.lb[1],5.4*bk,3.6,2,.3,C(c.pantsSh)]],ink,sil);foot(J.lb[1],p[8]+p[9],c,C,ink,sil,true,Z2?-1:0);
  limb2([[J.hipA,J.lf[0],7.9*bk,5.9*bk,1.2,2,C(c.pants),c.pantsSh,LT],[J.lf[0],J.lf[1],5.9*bk,3.9,2.2,.3,C(c.pants),c.pantsSh,LT]],ink,sil);foot(J.lf[1],p[6]+p[7],c,C,ink,sil,false,Z2?1:0);
@@ -96,7 +96,7 @@ function drawChar2(c,p,o){CEL=F().cel?1:0;const J=joints(p),Z2=F().dbz2?1:0,DZ=Z
   g.restore()}
  g.restore();
  if(!sil){const dm=o.dmg||0;if(dm>.5){const mx=(J.hip.x+J.sh.x)/2,my=(J.hip.y+J.sh.y)/2;g.fillStyle='rgba(150,16,28,.75)';g.beginPath();g.ellipse(mx+4,my-4,5,3.5,.5,0,TAU);g.ellipse(mx+7,my+1,2,3,0,0,TAU);g.fill();if(dm>.75){g.beginPath();g.ellipse(mx-2,my+10,4,2.6,-.4,0,TAU);g.fill();g.strokeStyle='#8a1420';g.lineWidth=1.3;g.beginPath();g.moveTo(J.af[0].x-3,J.af[0].y-3);g.lineTo(J.af[0].x+3,J.af[0].y+2);g.moveTo(J.lf[0].x-4,J.lf[0].y-6);g.lineTo(J.lf[0].x+2,J.lf[0].y-1);g.stroke()}}}
- if(Z2){backArm();if(!sil){[J.shA,J.shB].forEach(q=>{g.beginPath();g.arc(q.x,q.y+1,6.6*bk,Math.PI*.95,Math.PI*2.05);g.strokeStyle='rgba(0,0,0,.28)';g.lineWidth=1.2;g.stroke()})}}
+ if(Z2){if(!sil){[J.shA].forEach(q=>{g.beginPath();g.arc(q.x,q.y+1,6.6*bk,Math.PI*.95,Math.PI*2.05);g.strokeStyle='rgba(0,0,0,.28)';g.lineWidth=1.2;g.stroke()})}}
  /* neck + head */
  limb2([[{x:J.neck.x,y:J.neck.y+2},{x:hx,y:hy+6},4.1*bk,3.5,.2,.2,C(c.skinSh)]],ink,sil);
  g.save();g.translate(hx,hy);g.rotate(ha);headFront(c,o);
@@ -106,6 +106,8 @@ function drawChar2(c,p,o){CEL=F().cel?1:0;const J=joints(p),Z2=F().dbz2?1:0,DZ=Z
  g.restore();
  /* front arm */
  limb2([[J.shA,J.af[0],6*bk,4.7*bk,1.3,1.5,C(c.top),c.topSh,LT],[J.af[0],J.af[1],4.7*bk,3.4*bk,1.3,.6,C(c.bare?c.skin:c.top),c.bare?c.skinSh:c.topSh,c.bare?hi:LT]],ink,sil);
+ if(DZ&&!sil){const q=J.shA,tl2=p[0]*R,nx=Math.cos(tl2),ny=Math.sin(tl2),e=J.af[0],dx=e.x-q.x,dy=e.y-q.y,L=Math.hypot(dx,dy)||1;g.fillStyle=c.top;g.beginPath();g.ellipse(q.x-nx*4.2*bk,q.y-ny*4.2*bk+1.2,6.4*bk,5.3*bk,tl2,0,TAU);g.fill();g.beginPath();g.arc(q.x+dx/L*1.5,q.y+dy/L*1.5,4.9*bk,0,TAU);g.fill();
+  g.strokeStyle='rgba(0,0,0,.26)';g.lineWidth=1.1;g.lineCap='round';g.beginPath();g.arc(q.x,q.y+.5,6.2*bk,tl2+Math.PI*.62,tl2+Math.PI*1.12);g.stroke()}
  if(!sil&&!c.bare){const w=J.af[1],e=J.af[0],dx=w.x-e.x,dy=w.y-e.y,L=Math.hypot(dx,dy)||1,x=w.x-dx/L*2.5,y=w.y-dy/L*2.5,nx=-dy/L*3.6*bk,ny=dx/L*3.6*bk;g.lineCap='butt';g.strokeStyle=INK;g.lineWidth=4;g.beginPath();g.moveTo(x-nx,y-ny);g.lineTo(x+nx,y+ny);g.stroke();g.strokeStyle=c.col;g.lineWidth=2.2;g.stroke();g.lineCap='round'}
  if(glove)hand(J.af[1],p[2]+p[3],C(c.col2),'rgba(0,0,0,.4)',ink,sil,true,gk);
  else{weapon(c,J.af[1],p[2]+p[3],o,false);hand(J.af[1],p[2]+p[3],C(c.skin),'rgba(120,50,40,.55)',ink,sil,grip,1)}
