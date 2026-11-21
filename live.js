@@ -125,7 +125,7 @@ function devTools(x,y,w){if(!L.db)return;const bw=Math.min(150,(w-16)/3);
   button(x+bw+8,y,bw,30,L.tab?'STAGED ONLY':'RELEASE '+mp.length,mp.length&&!L.tab?'#2f7a5f':'#3a2a5e',()=>{if(L.tab){say('Open the STAGED tab to release');return}const its=L.staged.filter(q=>mp.includes(q.id));if(!its.length){say('Tap items in the list first');return}G.cf={text:'Release '+its.length+' item'+(its.length>1?'s':'')+'?',sub:'They all go into the live game right away',yes:()=>moveMany(its)}},13);
   button(x+bw*2+16,y,bw,30,'CANCEL','#7a1f2b',()=>{L.pick=null;L.mp=null},13);return}
  button(x,y,bw,30,'ADD HINT','#1d6f8f',()=>{const cur=(L.tab?L.live:L.staged)[L.sel],pre=cur&&cur.type==='character'?'A new fighter is coming soon.':cur&&cur.type==='map'?'A new map is coming soon.':cur&&cur.type==='banner'?'A new banner is coming soon.':cur&&cur.type==='mode'?'A new mode is coming soon.':'Something new is coming soon.';
-  try{ask('Hint for the mailbox',150,v=>{if(v)devNew('hint-'+Date.now().toString(36),{type:'hint',name:'COMING SOON',subtitle:'',desc:String(v).slice(0,150),status:'staged',created:Date.now(),colors:['#7fdcff'],game:{}})},pre)}catch(e){}},13);
+  try{ask('Hint for NEWS',150,v=>{if(v)devNew('hint-'+Date.now().toString(36),{type:'hint',name:'COMING SOON',subtitle:'',desc:String(v).slice(0,150),status:'staged',created:Date.now(),colors:['#7fdcff'],game:{}})},pre)}catch(e){}},13);
  button(x+bw+8,y,bw,30,'SELECT','#8a3fb8',()=>{L.pick=[];L.mp=[]},13)}
 function drawDev(){untest();if(L.pending){const p=L.pending;L.pending=null;apply(p)}
  if(L.remote&&!L.busy&&performance.now()-(L.at||0)>20000){L.at=performance.now();api('list').then(take).catch(()=>{})}
@@ -153,7 +153,7 @@ function drawDev(){untest();if(L.pending){const p=L.pending;L.pending=null;apply
    txt('SUMMON BANNER',x0+18,py+20,11,'#fff',null,'left',FU);txt(B.n,x0+18,py+50,Math.min(38,pw/(B.n.length*.6)),'#ffe14d',INK,'left',FB,8);txt(B.d,x0+18,py+78,13,'#fff',INK,'left',FU,3);
    const ts=Math.min(78,(pw-36-24)/4,ph-150);txt('RATE UP',x0+18,py+100,11,'#ffe14d',null,'left',FU);B.f.forEach((ci,k)=>tile(CH[ci],x0+18+k*(ts+8),py+110,ts,{}));
    const miss=arr(obj(it.game).featured).filter(n=>findCh(n)<0).map(n=>str(n,12).toUpperCase());if(miss.length)warn=miss.join(', ')+' is not live yet. Release the fighter first to feature them.';lines(str(it.desc,160),x0+18,py+110+ts+18,pw-36,12,'#e6dcff',2)}
-  else if(it.type==='hint'){const bgc=g.createLinearGradient(x0,py,x0+pw,py+ph);bgc.addColorStop(0,'#1d4f6e');bgc.addColorStop(1,'#120a22');g.fillStyle=bgc;g.fillRect(x0,py,pw,ph);txt('MAILBOX HINT',x0+18,py+20,11,'#fff',null,'left',FU);txt(str(it.name,24).toUpperCase(),x0+18,py+50,30,'#ffe14d',INK,'left',FB,8);lines(str(it.desc,150),x0+18,py+84,pw-36,14,'#fff',6);txt(L.tab?'Players have this in their mailbox. PULL BACK removes it.':'RELEASE sends this to every player\'s mailbox as COMING SOON.',x0+18,py+ph-44,11.5,'#7fdcff',null,'left',FU)}
+  else if(it.type==='hint'){const bgc=g.createLinearGradient(x0,py,x0+pw,py+ph);bgc.addColorStop(0,'#1d4f6e');bgc.addColorStop(1,'#120a22');g.fillStyle=bgc;g.fillRect(x0,py,pw,ph);txt('NEWS HINT',x0+18,py+20,11,'#fff',null,'left',FU);txt(str(it.name,24).toUpperCase(),x0+18,py+50,30,'#ffe14d',INK,'left',FB,8);lines(str(it.desc,150),x0+18,py+84,pw-36,14,'#fff',6);txt(L.tab?'Players have this in NEWS. PULL BACK removes it.':'RELEASE sends this to every player\'s NEWS as COMING SOON.',x0+18,py+ph-44,11.5,'#7fdcff',null,'left',FU)}
   else if(it.type==='update'){const bgc=g.createLinearGradient(x0,py,x0+pw,py+ph);bgc.addColorStop(0,'#7a5a14');bgc.addColorStop(1,'#120a22');g.fillStyle=bgc;g.fillRect(x0,py,pw,ph);txt('GAME UPDATE',x0+18,py+20,11,'#fff',null,'left',FU);const nm=str(it.name,24).toUpperCase();txt(nm,x0+18,py+50,Math.min(36,pw/(nm.length*.6)),'#ffe14d',INK,'left',FB,8);txt(str(it.subtitle,50),x0+18,py+78,13,'#fff',INK,'left',FU,3);lines(str(it.desc,400),x0+18,py+106,pw-36,13,'#fff',7);
    txt(L.tab?'This update is ON for every player. PULL BACK switches it off.':'This update is already in the game, switched OFF. RELEASE switches it on for everyone.',x0+18,py+ph-44,11.5,'#7fdcff',null,'left',FU)}
   else txt('This item has no game data yet.',x0+pw/2,py+ph/2,14,'#e6dcff',null,'center',FU);
@@ -206,6 +206,14 @@ SCR.dev=drawDev;
   g.save();rr(x,y,w,h,8);g.fillStyle='#7a2434';g.fill();g.strokeStyle=foc?'#ffe14d':'#fff';g.lineWidth=foc?3:2;g.stroke();const cx=x+w/2,cy=y+h/2;g.strokeStyle='#fff';g.fillStyle='#fff';g.lineWidth=2;g.lineCap='round';g.lineJoin='round';
   g.beginPath();g.moveTo(cx-9,cy-7);g.lineTo(cx+9,cy-7);g.moveTo(cx-3,cy-7);g.lineTo(cx-3,cy-10);g.lineTo(cx+3,cy-10);g.lineTo(cx+3,cy-7);g.stroke();
   g.beginPath();g.moveTo(cx-7,cy-4);g.lineTo(cx-5.5,cy+10);g.lineTo(cx+5.5,cy+10);g.lineTo(cx+7,cy-4);g.closePath();g.stroke();g.lineWidth=1.5;g.beginPath();[-2.5,2.5].forEach(o=>{g.moveTo(cx+o,cy-1);g.lineTo(cx+o,cy+7)});g.stroke();g.restore()})}}
+
+/* NEWS screen: the NEWS button next to the mailbox opens it. Every news mail (new fighter, map, mode, banner, update, coming soon) shows there;
+   the mailbox keeps only the mails that give rewards. Both screens run the same mail code on a filtered list. */
+{const m4=SCR.mail,view=function(news){const all=MAILS.slice(),h0=hdr,t0=txt;G.mall=all;MAILS.length=0;all.forEach(m=>{if(!!m.news===news)MAILS.push(m)});const none=!MAILS.some(m=>!(SV.mdel||[]).includes(m.id));
+ txt=function(s){if(typeof s==='string'){if(s.indexOf('New mail shows')===0)arguments[0]=news?(none?'No news yet. ':'')+'Fresh news shows a red dot on the NEWS button next to your mailbox.':(none?'No rewards right now. ':'')+'New rewards show a red dot on the mailbox next to your gems.';else if(news&&s==='Mail deleted')arguments[0]='News deleted'}return t0.apply(this,arguments)};
+ hdr=function(t,b,x){return h0(news&&t==='MAILBOX'?'NEWS':t,b,x)};
+ try{m4()}finally{hdr=h0;txt=t0;MAILS.length=0;all.forEach(m=>MAILS.push(m));G.mall=null}};
+ SCR.mail=function(){view(false)};SCR.news=function(){view(true)}}
 
 /* ---------- outside claude.ai (the GitHub / Render copy) ----------
    Released content comes from live.json. The game server can also run the studio: it is opened with the dev key

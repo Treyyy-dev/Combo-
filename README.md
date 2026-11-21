@@ -30,6 +30,7 @@ Notes:
 - Friends: search a username, send a request, chat. Both players need to be online on the same server
 - Gacha with 8 banners that rotate every 30 minutes, a live preview of each rate-up fighter, and a summon cutscene
 - Mailbox next to the gem counter (every player gets a 1,000,000,000 gem gift)
+- NEWS button next to the mailbox: new fighters, maps, modes, banners and updates show there; the mailbox keeps the mails that give rewards
 - Online matches start with a stage vote and a loading screen
 - The game always plays in landscape
 
