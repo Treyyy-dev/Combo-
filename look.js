@@ -322,10 +322,16 @@ let SCX=null,HCX=null;
    Kenko facing forward from about the knees up with her hands together in front, on her own world background. Used for the lobby icon and the browser tab icon;
    the home-screen icon links switch to icon2.png / manifest2.json while the flag is on. */
 {let KC=null,IS=null;const kenko=()=>KC||(KC=CH.find(c=>c&&c.name==='KENKO'))||null;
- const g0=gameIcon;gameIcon=function(x,y,s){const c=F().icon2?kenko():null;if(!c)return g0(x,y,s);try{g.save();rr(x,y,s,s,s*.22);g.fillStyle=c.col;g.fill();g.strokeStyle='#fff';g.lineWidth=Math.max(2,s*.05);g.stroke();g.clip();worldBG(c,x,y,s,s);
+ /* Game icons list. Every game icon added by an update goes in window.COMBO_ICONS as {flag, png, man, draw(x,y,s)} (draw returns false if it cannot draw).
+    With flag "iconlast" on, the game shows the icon whose update was released last, and switches as soon as a release arrives, also while the game is open.
+    With it off, only the Kenko icon (flag icon2) is used, as before. */
+ const ICONS=window.COMBO_ICONS=window.COMBO_ICONS||[];
+ const pick=()=>{const f=F(),R=window.COMBO_RELS||{};if(!f.iconlast)return f.icon2?ICONS.find(ic=>ic.flag==='icon2')||null:null;let b=null,bt=-1;for(const ic of ICONS){if(!f[ic.flag])continue;const t=R[ic.flag]||0;if(t>=bt){b=ic;bt=t}}return b};
+ const g0=gameIcon;gameIcon=function(x,y,s){const ic=pick();let ok=false;if(ic){try{ok=ic.draw(x,y,s)!==false}catch(e){ok=false}}if(!ok)return g0(x,y,s)};
+ ICONS.push({flag:'icon2',png:'icon2.png',man:'manifest2.json',draw:function(x,y,s){const c=kenko();if(!c)return false;try{g.save();rr(x,y,s,s,s*.22);g.fillStyle=c.col;g.fill();g.strokeStyle='#fff';g.lineWidth=Math.max(2,s*.05);g.stroke();g.clip();worldBG(c,x,y,s,s);
    const k=s/140;g.save();g.translate(x+s*.5,y+s*.06+152*k);g.scale(k,k);drawFrontChar(c,{t:1.2,expr:'',arms:'front'});g.restore();
-   const gr=g.createLinearGradient(0,y+s*.7,0,y+s);gr.addColorStop(0,'rgba(10,4,24,0)');gr.addColorStop(1,'rgba(10,4,24,.45)');g.fillStyle=gr;g.fillRect(x,y,s,s);g.restore()}catch(e){try{g.restore()}catch(x2){}}};
- const u0=update;update=function(rdt){u0(rdt);const on=!!F().icon2;if(on===IS)return;IS=on;try{const u=mkIcon(128),q=r=>document.querySelector('link[rel="'+r+'"]'),a=q('icon'),b=q('apple-touch-icon'),m=q('manifest');if(a&&u)a.href=u;if(location.protocol!=='blob:'){if(b)b.href=on?'icon2.png':'icon.png';if(m)m.href=on?'manifest2.json':'manifest.json'}}catch(e){}}}
+   const gr=g.createLinearGradient(0,y+s*.7,0,y+s);gr.addColorStop(0,'rgba(10,4,24,0)');gr.addColorStop(1,'rgba(10,4,24,.45)');g.fillStyle=gr;g.fillRect(x,y,s,s);g.restore()}catch(e){try{g.restore()}catch(x2){}}}});
+ const u0=update;update=function(rdt){u0(rdt);const ic=pick(),on=ic?ic.flag:'';if(on===IS)return;IS=on;try{const u=mkIcon(128),q=r=>document.querySelector('link[rel="'+r+'"]'),a=q('icon'),b=q('apple-touch-icon'),m=q('manifest');if(a&&u)a.href=u;if(location.protocol!=='blob:'){if(b)b.href=ic&&ic.png?ic.png:'icon.png';if(m)m.href=ic&&ic.man?ic.man:'manifest.json'}}catch(e){}}}
 /* ================= flag "title2": new start screen =================
    COMBO at the top with no line under it, and Kenko and Neto clashing under the name. The picture is still (nothing moves except the blinking start line). */
 {let KC=null,NC=null;const T2=()=>F().title2&&(KC=KC||CH.find(c=>c&&c.name==='KENKO'))&&(NC=NC||CH.find(c=>c&&c.name==='NETO'));

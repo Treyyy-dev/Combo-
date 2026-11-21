@@ -1802,5 +1802,20 @@
   "game": {
    "flag": "rcover"
   }
+ },
+ {
+  "id": "update-latest-icon",
+  "type": "update",
+  "name": "Latest Game Icon",
+  "subtitle": "Newest released icon is always the game icon",
+  "desc": "When an update adds a new game icon, the game icon changes to it as soon as the update is released, also for players who have the game open. If more than one icon update is out, the one released last is used.",
+  "status": "staged",
+  "created": 1795238547423,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "iconlast"
+  }
  }
 ]
