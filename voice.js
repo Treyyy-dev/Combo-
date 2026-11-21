@@ -4,6 +4,7 @@ const D={"CH":["2f2ba9d551944597a8d4314f0e8f3f4d/e16017a53bc2448884386e76dfaad77
 const on=()=>typeof FLAGS!=='undefined'&&FLAGS&&FLAGS.fvoice;
 const hx=t=>{let x=5381;for(let i=0;i<t.length;i++)x=((x*33)^t.charCodeAt(i))>>>0;return x.toString(16)};
 const VC={};
+try{window.COMBO_VOICEOF=n=>voiceOf(n)}catch(e){}
 function voiceOf(name){if(VC[name]!=null)return VC[name];let v=D.VN[name];if(v==null){const T=typeof TALK!=='undefined'&&TALK[name],k=T?'t'+hx(T.say):'',c=[];if(k)for(let i=0;i<D.V.length;i++)if(D.V[i][k])c.push(i);const h=parseInt(hx(name),16);v=c.length?c[h%c.length]:h%D.V.length}return VC[name]=v}
 /* Japanese voices: only when the "jpvoice" update is released AND the player picks JAPANESE in Configure. On-screen text stays English. */
 const jp=()=>{try{return !!(FLAGS.jpvoice&&SV.set.vlang===1)}catch(e){return false}};

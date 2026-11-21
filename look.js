@@ -1387,7 +1387,7 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
    gl.enable(gl.DEPTH_TEST);gl.clearColor(0,0,0,0);return true}catch(e){dead=true;gl=null;try{window.COMBO_3DERR=String(e&&e.message||e)}catch(x){}return false}};
  const bind=m=>{gl.bindBuffer(gl.ARRAY_BUFFER,m.b);const a=gl.getAttribLocation(PR,'aP');gl.enableVertexAttribArray(a);gl.vertexAttribPointer(a,3,gl.FLOAT,false,0,0);gl.bindBuffer(gl.ARRAY_BUFFER,m.n);const n=gl.getAttribLocation(PR,'aN');gl.enableVertexAttribArray(n);gl.vertexAttribPointer(n,3,gl.FLOAT,false,0,0);gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,m.i)};
  let cur=null,OUT=1.25;const put=(m,O,X,Y,Z,col,tp,flat,noOut)=>{if(cur!==m){bind(m);cur=m}gl.uniformMatrix4fv(U.uM,false,[X[0],X[1],X[2],0,Y[0],Y[1],Y[2],0,Z[0],Z[1],Z[2],0,O[0],O[1],O[2],1]);gl.uniform1f(U.uT,tp==null?1:tp);gl.uniform3fv(U.uC,rgb(col));gl.uniform1f(U.uF,flat?1:0);
-   if(!noOut){gl.enable(gl.CULL_FACE);gl.cullFace(gl.FRONT);gl.uniform1f(U.uO,OUT);gl.drawElements(gl.TRIANGLES,m.c,gl.UNSIGNED_SHORT,0);gl.disable(gl.CULL_FACE)}gl.uniform1f(U.uO,0);gl.drawElements(gl.TRIANGLES,m.c,gl.UNSIGNED_SHORT,0)};
+   if(!noOut||noOut===2){gl.enable(gl.CULL_FACE);gl.cullFace(gl.FRONT);gl.uniform1f(U.uO,noOut===2?OUT*.4:OUT);gl.drawElements(gl.TRIANGLES,m.c,gl.UNSIGNED_SHORT,0);gl.disable(gl.CULL_FACE)}gl.uniform1f(U.uO,0);gl.drawElements(gl.TRIANGLES,m.c,gl.UNSIGNED_SHORT,0)};
  const ZR=[0,0,1],XR=[1,0,0],fr=y=>{let x=cr(y,ZR);if(ln(x)<.05)x=cr(y,XR);x=nm(x);return[x,cr(x,y)]};
  const sph=(O,r,col,flat,no)=>put(MS,O,[r,0,0],[0,r,0],[0,0,r],col,1,flat,no);
  const ell=(O,yd,ry,rx,rz,col,flat,no)=>{const y=nm(yd),f=fr(y);put(MS,O,ml(f[0],rx),ml(y,ry),ml(f[1],rz),col,1,flat,no)};
@@ -1408,7 +1408,7 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
    const P3=(q,z)=>{const a=T2(q);return[a[0],-(a[1]+gy),z]},t=o.t||0,sw=(o.sway==null?.15:o.sway)+.12,bk=(c.sc>1.07||c.dm>1)?1.14:1,bare=!!c.bare;
    const hip=P3(J.hip,0),neck=P3(J.neck,0),shC=P3(J.sh,0),sp=nm(sb(neck,hip)),fw=nm(cr(sp,[0,0,1]));
    const SW=15.6*bk,HW=7.6*bk,shF=ad(shC,[0,0,SW]),shB=ad(shC,[0,0,-SW]),elF=P3(J.af[0],SW+2),haF=P3(J.af[1],SW),elB=P3(J.ab[0],-SW-2),haB=P3(J.ab[1],-SW),hpF=ad(hip,[0,0,HW]),hpB=ad(hip,[0,0,-HW]),knF=P3(J.lf[0],HW+1.5),ftF=P3(J.lf[1],HW+1.5),knB=P3(J.lb[0],-HW-1.5),ftB=P3(J.lb[1],-HW-1.5);
-   const top=c.top,topS=c.topSh||c.top,skin=c.skin,pants=c.pants,slv=bare?skin:top,st=c.style|0;
+   const fem=isFem(c),top=c.top,topS=c.topSh||c.top,skin=c.skin,pants=c.pants,slv=bare?skin:top,st=c.style|0;
    /* cloth behind the body first (order does not matter for depth, only kept readable) */
    const K=c.name+'|'+view+'|';
    if(st===7){cloth(K+'cape',ad(neck,ml(fw,-7)),[-.3,-.95,0],86,17,c.col,t,sw*.8);cloth(K+'coat',ad(hip,ml(fw,-8)),[-.25,-.97,0],52,13,topS,t,sw*.6)}
@@ -1429,20 +1429,21 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
    const arm=(s,e,h,back)=>{sph(s,7.6*bk,slv);cap(s,e,6.2*bk,5*bk,slv);ell(ml(ad(s,e),.5),sb(e,s),ln(sb(e,s))*.36,6.9*bk,6.5*bk,slv);cap(e,h,5.3*bk,3.9*bk,bare?skin:topS);sph(h,c.weapon==='fist'?6.2:5.1,c.weapon==='fist'?c.col2:skin)};
    arm(shB,elB,haB,1);arm(shF,elF,haF,0);
    /* head */
-   const ha=((p[0]||0)*.5+(p[1]||0))*R0+ra,HS=1.36,hu=[Math.sin(ha)*HS,Math.cos(ha)*HS,0],hf=[Math.cos(ha)*HS,-Math.sin(ha)*HS,0],hs=[0,0,HS],nk=ad(neck,ml(sp,-2)),hc=ad(neck,ml(hu,13.2)),hp=(a,b,s)=>ad(hc,ad(ml(hf,a),ad(ml(hu,b),ml(hs,s))));
-   cyl(nk,hc,5.2,4.6,skin);sph(hc,13.6*HS,skin);
-   const hair=c.hair,long=[1,2,5,6,7].includes(st);ell3(hp(-2.6,2.8,0),ml(hf,14.6),ml(hu,14.4),ml(hs,14.9),hair);
+   const ha=((p[0]||0)*.5+(p[1]||0))*R0+ra,HS=1.14,hu=[Math.sin(ha)*HS,Math.cos(ha)*HS,0],hf=[Math.cos(ha)*HS,-Math.sin(ha)*HS,0],hs=[0,0,HS],nk=ad(neck,ml(sp,-2)),hc=ad(neck,ml(hu,14.6)),hp=(a,b,s)=>ad(hc,ad(ml(hf,a),ad(ml(hu,b),ml(hs,s))));
+   cyl(nk,hc,fem?4:5.2,fem?3.5:4.6,skin);/* human head (Trey: give the head a human head): a skull that is taller than wide, a jaw and chin, cheeks, a nose and ears, at a more human size */
+   ell3(hp(-.6,1.2,0),ml(hf,13.3),ml(hu,13.6),ml(hs,11.6),skin);if(fem){ell3(hp(3,-6.8,0),ml(hf,9.1),ml(hu,7.4),ml(hs,7.9),skin);ell3(hp(7.4,-12,0),ml(hf,3.3),ml(hu,3),ml(hs,3),skin)}else{ell3(hp(3.2,-7.4,0),ml(hf,9.4),ml(hu,7.6),ml(hs,8.9),skin);ell3(hp(7.6,-12.6,0),ml(hf,4.2),ml(hu,3.4),ml(hs,4.6),skin)}[1,-1].forEach(k=>{ell3(hp(6.4,-4.6,(fem?6:6.6)*k),ml(hf,5.2),ml(hu,4.8),ml(hs,fem?4:4.4),skin);ell3(hp(-1.4,-1.4,11.6*k),ml(hf,2.6),ml(hu,4.2),ml(hs,1.7),skin)});if(fem){cyl(hp(11.6,-1,0),hp(13.5,-4,0),.9,1.2,skin,0,2);sph(hp(13.4,-4.2,0),1.25*HS,skin,0,2)}else{cyl(hp(11.4,-.2,0),hp(14.3,-4.2,0),1.2,1.7,skin,0,2);sph(hp(14.1,-4.4,0),1.7*HS,skin,0,2)}
+   const hair=c.hair,long=[1,2,5,6,7].includes(st);ell3(hp(-2.8,3.6,0),ml(hf,14.2),ml(hu,14.2),ml(hs,12.9),hair);
    [-6.5,0,6.5].forEach((s,i)=>cyl(hp(8,11.5,s),hp(14.4,4.5-(i===1?1.5:0),s*1.12),5.8,.3,hair));
-   [[-1,3,13.2],[-1,3,-13.2]].forEach(q=>cyl(hp(q[0],q[1]+4,q[2]),hp(q[0]+1,q[1]-9,q[2]*1.02),4.8,.4,hair));
+   [[-1,3,11.4],[-1,3,-11.4]].forEach(q=>cyl(hp(q[0],q[1]+4,q[2]),hp(q[0]+1,q[1]-9,q[2]*1.02),4.8,.4,hair));
    if(!long)HAIRSP.forEach((d,i)=>{const n=nm(d),k=(st===4?1.25:st===3?.85:1)*(1+.12*Math.sin(i*2.3));cyl(hp(n[0]*8,n[1]*8+2,n[2]*8),hp(n[0]*(15+9*k)+Math.sin(t*3+i)*sw*1.2,n[1]*(15+9*k)+2,n[2]*(15+9*k)),8.6,.3,i%3===2&&c.hairHi?c.hairHi:hair)});
    else{tail(K+'tail',hp(-12,5,0),[-.5,-.86,0],(st===2||st===7)?76:54,7.4,2,hair,t,sw);if(st===1||st===6)ell3(hp(-13,6,0),ml(hf,3),ml(hu,3.4),ml(hs,3.4),c.col2)}
    /* face */
    const ex=o.expr||'',blink=ex==='blink'||ex==='closed'||ex==='happy'||ex==='hurt'||(t%4.1)>3.95;
    /* eyes and mouth sit on the curve of the head, so they read from the side and from the front */
-   const fp=(b,s,off,th,hg,wd,col)=>{const x=Math.sqrt(Math.max(1,185-b*b-s*s)),rn=nm([x,b,s]),k=13.6+off,Rw=nm(ad(ml(hf,rn[0]),ad(ml(hu,rn[1]),ml(hs,rn[2])))),uU=nm(hu),d=uU[0]*Rw[0]+uU[1]*Rw[1]+uU[2]*Rw[2],Y=nm(sb(uU,ml(Rw,d))),Z=cr(Rw,Y);ell3(hp(rn[0]*k,rn[1]*k,rn[2]*k),ml(Rw,th*HS),ml(Y,hg*HS),ml(Z,wd*HS),col,1,1)};
-   [5.6,-5.6].forEach(s=>{if(blink)fp(1,s,.5,.6,.8,3.1,'#1a1024');else{fp(1.2,s,.2,.9,5,3.6,'#ffffff');fp(1,s,.6,.8,4,2.7,c.eye||'#333');fp(.6,s,1,.6,2.2,1.4,'#1a1024');fp(2.6,s+1,1.4,.4,1.1,.8,'#ffffff')}
-     const by=ex==='yell'||ex==='angry'?6.4:7.6;cyl(hp(11.2,by+(ex==='yell'||ex==='angry'?1.2:0),s+(s>0?3:-3)),hp(12.2,by,s-(s>0?2.6:-2.6)),.9,.7,hair,1,1)});
-   const mo=ex==='yell'?2.6:ex==='talk'?1.7:.5;fp(-6.4,0,.3,.7,mo,ex==='yell'||ex==='talk'?2.2:2.5,'#5a1a26');
+   const fp=(b,s,off,th,hg,wd,col)=>{const x=12.9*Math.sqrt(Math.max(.05,1-(b-1.2)*(b-1.2)/185-s*s/134.6)),xl=Math.hypot(x,b,s),rn=nm([x,b,s]),k=xl+off+(b<-3?1.6:0),Rw=nm(ad(ml(hf,rn[0]),ad(ml(hu,rn[1]),ml(hs,rn[2])))),uU=nm(hu),d=uU[0]*Rw[0]+uU[1]*Rw[1]+uU[2]*Rw[2],Y=nm(sb(uU,ml(Rw,d))),Z=cr(Rw,Y);ell3(hp(rn[0]*k,rn[1]*k,rn[2]*k),ml(Rw,th*HS),ml(Y,hg*HS),ml(Z,wd*HS),col,1,1)};
+   [4.7,-4.7].forEach(s=>{if(blink)fp(1,s,.5,.6,.8,3.1,'#1a1024');else{if(fem){fp(1.2,s,.2,.9,5,3.9,'#ffffff');fp(1,s,.6,.8,4.3,2.9,c.eye||'#333');fp(.8,s,1,.6,2.5,1.5,'#1a1024');fp(2.8,s+1,1.4,.4,1.2,.85,'#ffffff');fp(6.3,s,.5,.6,1,4.6,'#1a1024');fp(5.6,s+(s>0?4.4:-4.4),.5,.5,1.6,.8,'#1a1024')}else{fp(1.2,s,.2,.9,4.1,3.6,'#ffffff');fp(1,s,.6,.8,3.5,2.5,c.eye||'#333');fp(.8,s,1,.6,2,1.3,'#1a1024');fp(2.4,s+.9,1.4,.4,1,.7,'#ffffff');fp(5.5,s,.5,.5,.7,4,'#1a1024')}}
+     const by=(ex==='yell'||ex==='angry'?6.4:7.6)+(fem?1.6:0);cyl(hp(11.2,by+(ex==='yell'||ex==='angry'?1.2:0),s+(s>0?3:-3)),hp(12.2,by,s-(s>0?2.6:-2.6)),fem?.55:.9,fem?.4:.7,hair,1,1)});
+   const mo=ex==='yell'?2.6:ex==='talk'?1.7:.5;if(fem){ell3(hp(12.1,-9,0),ml(hf,.7),ml(hu,Math.max(1.05,mo)),ml(hs,ex==='yell'||ex==='talk'?2.1:2.5),'#d8566e',1,1);if(mo>1)ell3(hp(12.5,-9,0),ml(hf,.5),ml(hu,mo*.6),ml(hs,1.5),'#5a1a26',1,1)}else ell3(hp(12.5,-9.4,0),ml(hf,.6),ml(hu,mo),ml(hs,ex==='yell'||ex==='talk'?2.3:3),'#7a2a34',1,1);
    /* accessories */
    const A=c.acc||[];if(A.includes('band'))ell3(hp(-.6,6.5,0),ml(hf,14.9),ml(hu,2.3),ml(hs,15.2),c.col2);
    if(A.includes('horns'))[7,-7].forEach(s=>cyl(hp(2,10,s),hp(5,25,s*1.6),3.3,.3,'#f2e6c8'));
@@ -1457,6 +1458,8 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
    else if(wp==='bow'){const h=haB,up=[0,1,0];for(let i=0;i<8;i++){const a=-1.1+i*.275,b=a+.275,q=x=>ad(h,[Math.cos(x)*14-6,Math.sin(x)*26,0]);cyl(q(a),q(b),1.4,1.4,c.col2)}cyl(ad(h,[.35,-23.2,0]),ad(h,[.35,23.2,0]),.4,.4,'#ffffff',1,1)}
    else if(wp==='orb'){const q=W(11),pl=1+.08*Math.sin(t*6);sph(q,6.4*pl,c.col,1);sph(ad(q,[1.5,2,2]),2.2,'#ffffff',1,1)}};
  const POSEF=[-2,-2,10,12,-10,14,7,-5,-7,-5,0,0];
+ /* woman's head (Trey: give girls a woman's head; he chose "by their voice"): fighters whose voice is one of the four girl voices (Rin 1, Yuki 2, Hana 5, Cocky Girl 7 in voice.js order) */
+ const FEMC={},isFem=c=>{let f=FEMC[c.name];if(f==null){f=false;try{if(window.COMBO_VOICEOF)f=[1,2,5,7].includes(window.COMBO_VOICEOF(c.name))}catch(e){}FEMC[c.name]=f}return f};
  /* render one fighter and stamp it into the 2D picture at the current drawing position */
  const render=(c,p,o,yaw,view)=>{if(!init())return false;try{const tr=g.getTransform(),sc=Math.hypot(tr.a,tr.b),px=Math.round(clamp(HALF*2*sc,96,SZ));
    gl.viewport(0,0,px,px);gl.enable(gl.SCISSOR_TEST);gl.scissor(0,0,px,px);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);gl.disable(gl.SCISSOR_TEST);gl.useProgram(PR);cur=null;
