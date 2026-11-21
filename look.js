@@ -649,7 +649,7 @@ let SCX=null,HCX=null;
  async function runDL(){if(DL.run)return;DL.run=true;DL.stop=false;DL.fin=false;await scan();const q=missing();DL.tot=q.length;DL.done=0;DL.fail=0;let i=0;
   const worker=async()=>{while(i<q.length&&!DL.stop){const u=q[i++];let ok=await one(u);if(!ok)ok=await one(u);if(!ok)DL.fail++;DL.done++}};
   try{await Promise.all([0,1,2,3].map(worker))}catch(e){}DL.run=false;if(!DL.stop){try{if(!DL.fail&&!DL.full)localStorage.setItem(DK2,hsh(DL.list))}catch(e){}DL.fin=true}}
- /* dl6: FULL players are only sent through the download screen when 6 or more things were released at once from Dev Studio (window.COMBO_BIG = time of the newest such release) since their last finished download.
+ /* dl6: FULL players are only sent through the download screen when 5 or more things were released at once from Dev Studio (window.COMBO_BIG = time of the newest such release) since their last finished download.
     Smaller releases load their files while playing. Choosing FULL the first time, or tapping FULL in Settings, always downloads. */
  const BK='combo-dl-big',need=()=>{if(DL.ok)return false;if(!F().dl6)return true;let v=null;try{v=localStorage.getItem(BK)}catch(e){}if(v==null)return true;if((window.COMBO_BIG||0)>+v)return true;DL.ok=true;return false};
  function pick(m){setMode(m);DL.stop=true;DL.started=false;DL.fin=false;if(m==='full'||MD()){DL.ok=false;goto('dl')}else{DL.ok=true;goto('menu')}}
