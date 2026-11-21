@@ -33,6 +33,7 @@ function foot(f,a,c,C,ink,sil,back,out){g.save();g.translate(f.x,f.y);g.rotate(-
 function drawChar2(c,p,o){CEL=F().cel?1:0;const J=joints(p),Z2=F().dbz2?1:0,DZ=Z2||F().dbz?1:0,D=DZ||F().d25?1:0,sil=o.sil,ink=sil||INK,C=x=>sil||x,t=o.t||0,sw=o.sway||0,bk=(c.sc>1.07||c.dm>1)?1.14:1,hi=sil?null:tint(c.skin,.38);
  if(D){const tl0=p[0]*R,nx=Math.cos(tl0),ny=Math.sin(tl0),sh=(P,dx,dy)=>({x:P.x+dx,y:P.y+dy}),a=(DZ?12:-5)*bk,b=(DZ?-11.5:7)*bk,hA=(Z2?9:DZ?7.2:-3.6)*bk,hB=(Z2?-8.6:DZ?-6.8:4.6)*bk;J.shA=sh(J.sh,nx*a,ny*a);J.shB=sh(J.sh,nx*b,ny*b);J.af=J.af.map(q=>sh(q,nx*a,ny*a));J.ab=J.ab.map(q=>sh(q,nx*b,ny*b));J.hipA=sh(J.hip,hA,0);J.hipB=sh(J.hip,hB,0);J.lf=J.lf.map(q=>sh(q,hA,0));J.lb=J.lb.map(q=>sh(q,hB,0))}else{J.shA=J.shB=J.sh;J.hipA=J.hipB=J.hip}
  let BA=p[4]+p[5];if(DZ){let a1=p[4],a2=p[5];if(Math.abs(a1)<115){if(a1>0)a1*=.35;if(a1+a2>18)a2=a2*.45+(a1<0?4:0)}BA=a1+a2;const A1=a1*R,A2=(a1+a2)*R,m={x:J.shB.x+Math.sin(A1)*24,y:J.shB.y+Math.cos(A1)*24};J.ab=[m,{x:m.x+Math.sin(A2)*22,y:m.y+Math.cos(A2)*22}]}
+ let FAa=p[2]+p[3];if(DZ){let a1=p[2],a2=p[3];const k=clamp((62-Math.abs(a1))/30,0,1);if(a1>0&&a2>0){a1*=1-.38*k;a2*=1-.42*k}FAa=a1+a2;const A1=a1*R,A2=(a1+a2)*R,m={x:J.shA.x+Math.sin(A1)*24,y:J.shA.y+Math.cos(A1)*24};J.af=[m,{x:m.x+Math.sin(A2)*22,y:m.y+Math.cos(A2)*22}]}
  const LT=D&&!sil?'rgba(255,255,255,.17)':null;
  g.save();
  if(o.ground)g.translate(0,-Math.max(J.lf[1].y,J.lb[1].y));
@@ -112,8 +113,8 @@ function drawChar2(c,p,o){CEL=F().cel?1:0;const J=joints(p),Z2=F().dbz2?1:0,DZ=Z
  if(DZ&&!sil){const q=J.shA,tl2=p[0]*R,nx=Math.cos(tl2),ny=Math.sin(tl2),e=J.af[0],dx=e.x-q.x,dy=e.y-q.y,L=Math.hypot(dx,dy)||1;g.fillStyle=c.top;g.beginPath();g.ellipse(q.x-nx*4.2*bk,q.y-ny*4.2*bk+1.2,6.4*bk,5.3*bk,tl2,0,TAU);g.fill();g.beginPath();g.arc(q.x+dx/L*1.5,q.y+dy/L*1.5,4.9*bk,0,TAU);g.fill();
   g.strokeStyle='rgba(0,0,0,.26)';g.lineWidth=1.1;g.lineCap='round';g.beginPath();g.arc(q.x,q.y+.5,6.2*bk,tl2+Math.PI*.62,tl2+Math.PI*1.12);g.stroke()}
  if(!sil&&!c.bare){const w=J.af[1],e=J.af[0],dx=w.x-e.x,dy=w.y-e.y,L=Math.hypot(dx,dy)||1,x=w.x-dx/L*2.5,y=w.y-dy/L*2.5,nx=-dy/L*3.6*bk,ny=dx/L*3.6*bk;g.lineCap='butt';g.strokeStyle=INK;g.lineWidth=4;g.beginPath();g.moveTo(x-nx,y-ny);g.lineTo(x+nx,y+ny);g.stroke();g.strokeStyle=c.col;g.lineWidth=2.2;g.stroke();g.lineCap='round'}
- if(glove)hand(J.af[1],p[2]+p[3],C(c.col2),'rgba(0,0,0,.4)',ink,sil,true,gk);
- else{weapon(c,J.af[1],p[2]+p[3],o,false);hand(J.af[1],p[2]+p[3],C(c.skin),'rgba(120,50,40,.55)',ink,sil,grip,1)}
+ if(glove)hand(J.af[1],FAa,C(c.col2),'rgba(0,0,0,.4)',ink,sil,true,gk);
+ else{weapon(c,J.af[1],FAa,o,false);hand(J.af[1],FAa,C(c.skin),'rgba(120,50,40,.55)',ink,sil,grip,1)}
  if(glove&&!sil)circ(J.af[1].x+2,J.af[1].y-2,2.2,'#fff7d0');
  g.restore()}
 drawChar=function(c,p,o){if(F().body2||F().d25||F().cel||F().dbz||F().dbz2){try{return drawChar2(c,p,o)}catch(e){return _dc(c,p,o)}}return _dc(c,p,o)};
