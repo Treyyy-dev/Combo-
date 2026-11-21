@@ -1562,5 +1562,20 @@
   "game": {
    "flag": "xlines"
   }
+ },
+ {
+  "id": "update-fight-sounds",
+  "type": "update",
+  "name": "Fight Shouts and Pain Sounds",
+  "subtitle": "Every fighter shouts, grunts and screams",
+  "desc": "Fighters shout when they attack, grunt and scream when they are hit, and groan when they are knocked down. Plays in every match, in story fights and in cutscene fight exchanges.",
+  "status": "staged",
+  "created": 1795233516932,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "fgrunt"
+  }
  }
 ]
