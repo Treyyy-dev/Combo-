@@ -32,6 +32,7 @@ function foot(f,a,c,C,ink,sil,back,out){g.save();g.translate(f.x,f.y);g.rotate(-
  g.restore()}
 function drawChar2(c,p,o){CEL=F().cel?1:0;const J=joints(p),Z2=F().dbz2?1:0,DZ=Z2||F().dbz?1:0,D=DZ||F().d25?1:0,sil=o.sil,ink=sil||INK,C=x=>sil||x,t=o.t||0,sw=o.sway||0,bk=(c.sc>1.07||c.dm>1)?1.14:1,hi=sil?null:tint(c.skin,.38);
  if(D){const tl0=p[0]*R,nx=Math.cos(tl0),ny=Math.sin(tl0),sh=(P,dx,dy)=>({x:P.x+dx,y:P.y+dy}),a=(DZ?12:-5)*bk,b=(DZ?-11.5:7)*bk,hA=(Z2?9:DZ?7.2:-3.6)*bk,hB=(Z2?-8.6:DZ?-6.8:4.6)*bk;J.shA=sh(J.sh,nx*a,ny*a);J.shB=sh(J.sh,nx*b,ny*b);J.af=J.af.map(q=>sh(q,nx*a,ny*a));J.ab=J.ab.map(q=>sh(q,nx*b,ny*b));J.hipA=sh(J.hip,hA,0);J.hipB=sh(J.hip,hB,0);J.lf=J.lf.map(q=>sh(q,hA,0));J.lb=J.lb.map(q=>sh(q,hB,0))}else{J.shA=J.shB=J.sh;J.hipA=J.hipB=J.hip}
+ let BA=p[4]+p[5];if(DZ){let a1=p[4],a2=p[5];if(Math.abs(a1)<115){if(a1>0)a1*=.35;if(a1+a2>18)a2=a2*.45+(a1<0?4:0)}BA=a1+a2;const A1=a1*R,A2=(a1+a2)*R,m={x:J.shB.x+Math.sin(A1)*24,y:J.shB.y+Math.cos(A1)*24};J.ab=[m,{x:m.x+Math.sin(A2)*22,y:m.y+Math.cos(A2)*22}]}
  const LT=D&&!sil?'rgba(255,255,255,.17)':null;
  g.save();
  if(o.ground)g.translate(0,-Math.max(J.lf[1].y,J.lb[1].y));
@@ -48,10 +49,11 @@ function drawChar2(c,p,o){CEL=F().cel?1:0;const J=joints(p),Z2=F().dbz2?1:0,DZ=Z
  if(c.style===7){ribbon(J.neck.x-6,J.neck.y+4,88,22,30,-16,sw*.8,t,C(c.col),ink);ribbon(J.hip.x-3,J.hip.y-6,56,28,38,-10,sw*.6,t,C(c.topSh),ink)}
  const glove=c.weapon==='fist',gk=glove?(c.fistR||8.2)/5.6:1,grip=c.weapon!=='orb';
  /* back arm (drawn over the torso when the whole body faces the screen) */
- const backArm=()=>{limb2([[J.shB,J.ab[0],5.2*bk,4.3*bk,1,1.2,C(c.topSh)],[J.ab[0],J.ab[1],4.3*bk,3.2*bk,1.1,.6,C(c.bare?c.skinSh:c.topSh)]],ink,sil);
-  if(c.weapon==='dagger')weapon(c,J.ab[1],p[4]+p[5],o,true);
-  hand(J.ab[1],p[4]+p[5],C(glove?shade(c.col2.length===7?c.col2:'#cccccc',.8):c.skinSh),'rgba(0,0,0,.35)',ink,sil,glove||c.weapon==='dagger',gk*.95)};
- backArm();
+ const backArm=()=>{limb2([[J.shB,J.ab[0],(DZ?5.8:5.2)*bk,(DZ?4.6:4.3)*bk,1,1.2,C(DZ?c.top:c.topSh),DZ?c.topSh:null],[J.ab[0],J.ab[1],(DZ?4.6:4.3)*bk,3.2*bk,1.1,.6,C(c.bare?(DZ?c.skin:c.skinSh):DZ?c.top:c.topSh),DZ?(c.bare?c.skinSh:c.topSh):null]],ink,sil);
+  if(DZ&&!sil){const q=J.shB,tl2=p[0]*R,nx=Math.cos(tl2),ny=Math.sin(tl2),e=J.ab[0],dx=e.x-q.x,dy=e.y-q.y,L=Math.hypot(dx,dy)||1;g.fillStyle=c.top;g.beginPath();g.ellipse(q.x+nx*4.2*bk,q.y+ny*4.2*bk+1.2,6.2*bk,5.2*bk,tl2,0,TAU);g.fill();g.beginPath();g.arc(q.x+dx/L*1.5,q.y+dy/L*1.5,4.7*bk,0,TAU);g.fill();g.strokeStyle='rgba(0,0,0,.26)';g.lineWidth=1.1;g.lineCap='round';g.beginPath();g.arc(q.x,q.y+.5,6*bk,tl2-Math.PI*.12,tl2+Math.PI*.38);g.stroke()}
+  if(c.weapon==='dagger')weapon(c,J.ab[1],BA,o,true);
+  hand(J.ab[1],BA,C(glove?shade(c.col2.length===7?c.col2:'#cccccc',.8):c.skinSh),'rgba(0,0,0,.35)',ink,sil,glove||c.weapon==='dagger',gk*.95)};
+ if(!DZ)backArm();
  /* legs */
  limb2([[J.hipB,J.lb[0],7.2*bk,5.4*bk,1.2,1.8,C(c.pantsSh)],[J.lb[0],J.lb[1],5.4*bk,3.6,2,.3,C(c.pantsSh)]],ink,sil);foot(J.lb[1],p[8]+p[9],c,C,ink,sil,true,Z2?-1:0);
  limb2([[J.hipA,J.lf[0],7.9*bk,5.9*bk,1.2,2,C(c.pants),c.pantsSh,LT],[J.lf[0],J.lf[1],5.9*bk,3.9,2.2,.3,C(c.pants),c.pantsSh,LT]],ink,sil);foot(J.lf[1],p[6]+p[7],c,C,ink,sil,false,Z2?1:0);
@@ -96,6 +98,7 @@ function drawChar2(c,p,o){CEL=F().cel?1:0;const J=joints(p),Z2=F().dbz2?1:0,DZ=Z
   g.restore()}
  g.restore();
  if(!sil){const dm=o.dmg||0;if(dm>.5){const mx=(J.hip.x+J.sh.x)/2,my=(J.hip.y+J.sh.y)/2;g.fillStyle='rgba(150,16,28,.75)';g.beginPath();g.ellipse(mx+4,my-4,5,3.5,.5,0,TAU);g.ellipse(mx+7,my+1,2,3,0,0,TAU);g.fill();if(dm>.75){g.beginPath();g.ellipse(mx-2,my+10,4,2.6,-.4,0,TAU);g.fill();g.strokeStyle='#8a1420';g.lineWidth=1.3;g.beginPath();g.moveTo(J.af[0].x-3,J.af[0].y-3);g.lineTo(J.af[0].x+3,J.af[0].y+2);g.moveTo(J.lf[0].x-4,J.lf[0].y-6);g.lineTo(J.lf[0].x+2,J.lf[0].y-1);g.stroke()}}}
+ if(DZ)backArm();
  if(Z2){if(!sil){[J.shA].forEach(q=>{g.beginPath();g.arc(q.x,q.y+1,6.6*bk,Math.PI*.95,Math.PI*2.05);g.strokeStyle='rgba(0,0,0,.28)';g.lineWidth=1.2;g.stroke()})}}
  /* neck + head */
  limb2([[{x:J.neck.x,y:J.neck.y+2},{x:hx,y:hy+6},4.1*bk,3.5,.2,.2,C(c.skinSh)]],ink,sil);
