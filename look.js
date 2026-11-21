@@ -919,7 +919,7 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
    if(M.o==='draw'){go(M,17);const mid=(K.x+N.x)/2;K.x=mid-38;N.x=mid+38;K.face=1;N.face=-1;K.state='pose';K.pz=L1B;N.state='pose';N.pz=L1B;spark(mid,-84,'#fff',true);shake(20);G.flash=.4;sfx('hit');say(M,K,'d'+tier(M));return}
    go(M,14);N.hp=M.o==='win'?1:N.mhp;N.inv=M.o==='lose'?9:0;K.inv=0;K.meter=100;faceO(K,N);say(M,K,'ult');try{startUlt(K,N)}catch(e){go(M,15);M.hitx=N.x;M.loser=N;M.winner=K}}
  const st0=stepSummon;stepSummon=function(rdt){const M=G.sm;if(!M||!M.duel)return st0(rdt);const K=M.K,N=M.N;M.t+=rdt;M.st+=rdt;const col=RC[M.rar];let c={x:(K.x+N.x)/2,y:-70,z:1.1,rot:0},kk=Math.min(1,rdt*6);
-   if(M.ph===10){still(K);still(N);K.face=1;N.face=-1;if(D2()){if(M.st<.1)kk=1;K.hide=true;M.ots=K;M.front=N;if(M.st>.05&&!M.said.a){M.said.a=1;say(M,K,'face')}if(M.st>=1.9&&!M.said.b){M.said.b=1;say(M,N,'face')}
+   if(M.ph===10){still(K);still(N);K.face=1;N.face=-1;if(D2()){if(M.st<.1)kk=1;K.hide=true;M.ots=K;M.front=N;if(M.st>.05&&!M.said.a){M.said.a=1;say(M,K,'face')}if(M.st>=(F().jpvoice&&SV.set.vlang===1?2.5:1.9)&&!M.said.b){M.said.b=1;say(M,N,'face')}
       c={x:N.x-58,y:-104,z:lerp(2.1,2.3,M.st/3),rot:-.015};if(M.st>=3){K.hide=false;M.ots=null;M.front=null;go(M,11);kk=1}}
      else{if(M.st>.25&&!M.said.a){M.said.a=1;say(M,K,'face')}if(M.st>1.15&&!M.said.b){M.said.b=1;say(M,N,'face')}c={x:0,y:-74,z:lerp(1.02,1.16,M.st/2),rot:0};if(M.st>=2)go(M,11)}}
    else if(M.ph===11){K.inp.mx=1;N.inp.mx=-1;K.inp.guard=N.inp.guard=false;c.z=1.12;if(Math.abs(N.x-K.x)<130||M.st>2.2)go(M,12)}
