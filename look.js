@@ -326,4 +326,273 @@ let SCX=null,HCX=null;
    const k=s/140;g.save();g.translate(x+s*.5,y+s*.06+152*k);g.scale(k,k);drawFrontChar(c,{t:1.2,expr:'',arms:'front'});g.restore();
    const gr=g.createLinearGradient(0,y+s*.7,0,y+s);gr.addColorStop(0,'rgba(10,4,24,0)');gr.addColorStop(1,'rgba(10,4,24,.45)');g.fillStyle=gr;g.fillRect(x,y,s,s);g.restore()}catch(e){try{g.restore()}catch(x2){}}};
  const u0=update;update=function(rdt){u0(rdt);const on=!!F().icon2;if(on===IS)return;IS=on;try{const u=mkIcon(128),q=r=>document.querySelector('link[rel="'+r+'"]'),a=q('icon'),b=q('apple-touch-icon'),m=q('manifest');if(a&&u)a.href=u;if(location.protocol!=='blob:'){if(b)b.href=on?'icon2.png':'icon.png';if(m)m.href=on?'manifest2.json':'manifest.json'}}catch(e){}}}
+/* ================= flag "studio": the Treyyverse studio intro plays before the start menu =================
+   Ported from the "Treyyverse Studio Intro" page: 5 seconds on black, a four-hit combo by Kaito, Rin, Zero and Gou, then the TREYYVERSE logo with the first
+   eight fighters lined up under it. Plays once each time the game is opened, then the start menu shows. */
+{const mkIntro=()=>{const dpr=1,DUR=5;let W,H,u,cx,cy,OS;
+  const cl = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v));
+  const mix = (a, b, t) => a + (b - a) * t;
+  const sm = t => t * t * (3 - 2 * t);
+  const outBack = t => { const c = 1.9; return 1 + (c + 1) * Math.pow(t - 1, 3) + c * Math.pow(t - 1, 2); };
+  const prog = (t, a, b) => cl((t - a) / (b - a));
+  const rng = seed => () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
+  const C = n => CH.find(c => c.name === n);
+
+  // ---------- one fighter: drawn by the game's renderer on the game canvas, copied to a sprite, then placed with a colour rim so it reads on black
+  const SP = []; let MODE = 0, QI = 0;
+  function drawF(c, pose, px, py, s, f, rot, alpha, t, ground) {
+    if (alpha <= 0.01 || !c) return;
+    const k = s * (c.sc || 1), n = QI++;
+    if (MODE === 0) {
+      let sp = SP[n]; if (!sp) { sp = SP[n] = document.createElement('canvas'); }
+      if (sp.width !== OS) { sp.width = sp.height = OS; }
+      g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, OS, OS);
+      g.save(); g.beginPath(); g.rect(0, 0, OS, OS); g.clip();
+      g.setTransform(1, 0, 0, 1, OS / 2, OS / 2); g.rotate(rot * f); g.scale(f * k, k); g.translate(0, ground ? 75 : 72);
+      try { drawChar(c, pose, { t, sway: 0, ground: ground ? 1 : 0, expr: 'idle' }); } catch (e) {}
+      g.restore(); g.setTransform(1, 0, 0, 1, 0, 0);
+      const x = sp.getContext('2d'); x.clearRect(0, 0, OS, OS); x.drawImage(cv, 0, 0, OS, OS, 0, 0, OS, OS);
+      return;
+    }
+    const sp = SP[n]; if (!sp) return;
+    g.save(); g.globalAlpha = alpha; g.shadowColor = c.col; g.shadowBlur = 16 * u;
+    g.drawImage(sp, px - OS / 2, py - (ground ? 75 * k : 0) - OS / 2);
+    g.restore();
+  }
+
+  // ---------- the combo: keys = [t, x, y (hip, in u from centre), pose, rot]; a = fade in/out times
+  const SC = 0.95;
+  const combo = [
+    { c: C('KAITO'), f: 1, a: [0.3, 0.4, 1.22, 1.42],
+      keys: [[0.3, -340, 12, DASH, 0], [0.78, -118, 12, DASH, 0], [0.86, -92, 12, L4A, 0], [0.95, -70, 12, L4B, 0], [1.42, -62, 12, L4B, 0]] },
+    { c: C('RIN'), f: -1, a: [1.05, 1.15, 1.9, 2.1],
+      keys: [[1.05, 340, 46, DASH, 0], [1.45, 100, 46, DASH, 0], [1.53, 78, 42, HA, 0], [1.62, 60, 8, HB, 0], [2.1, 52, -60, HB, 0]] },
+    { c: C('ZERO'), f: 1, a: [1.98, 2.06, 2.42, 2.6],
+      keys: [[1.98, -82, -78, ALA, 0], [2.12, -76, -72, ALA, 0], [2.2, -58, -52, ALB, 0], [2.6, -50, -44, ALB, 0]] },
+    { c: C('GOU'), f: 1, a: [2.25, 2.3, 2.86, 3.05],
+      keys: [[2.25, -30, -500, AHA, 0], [2.7, -36, -128, AHA, 0], [2.8, -36, -100, AHB, 0], [3.05, -36, -92, AHB, 0]] }
+  ];
+  function sample(ks, t) {
+    let i = 0;
+    while (i < ks.length - 2 && t > ks[i + 1][0]) i++;
+    const a = ks[i], b = ks[i + 1], p = sm(prog(t, a[0], b[0]));
+    return { x: mix(a[1], b[1], p), y: mix(a[2], b[2], p), pose: lp(a[3], b[3], p), rot: mix(a[4], b[4], p) };
+  }
+  function drawCombo(t) {
+    for (const m of combo) {
+      if (t < m.a[0] || t > m.a[3]) continue;
+      const st = sample(m.keys, t);
+      const al = prog(t, m.a[0], m.a[1]) * (1 - prog(t, m.a[2], m.a[3]));
+      drawF(m.c, st.pose, cx + st.x * u, cy + st.y * u, SC * u, m.f, st.rot, al, t, false);
+    }
+  }
+
+  // ---------- the whole roster lines up under the logo
+  function drawLineup(t) {
+    const T0 = 3.4;
+    if (t < T0) return;
+    const one = W / u >= 640;
+    CH.slice(0, 8).forEach((c, i) => {
+      const p = prog(t, T0 + i * 0.07, T0 + i * 0.07 + 0.26);
+      if (p <= 0) return;
+      let x, y, s;
+      if (one) { x = (i - 3.5) * 78; y = 222; s = 0.78; }
+      else { x = ((i % 4) - 1.5) * 96; y = i < 4 ? 172 : 256; s = 0.56; }
+      const f = (one ? i < 4 : i % 4 < 2) ? 1 : -1;
+      const pose = IDLES[c.idle] || IDLE;
+      drawF(c, pose, cx + x * u, cy + y * u, s * u * mix(0.5, 1, outBack(p)), f, 0, cl(p * 1.5), t, true);
+    });
+  }
+
+  // ---------- effects ----------
+  const HITS = [
+    { t: 0.95, col: '#3fa9ff', label: '1 HIT', x: 82, y: -128, r: -0.12 },
+    { t: 1.62, col: '#ff5a36', label: '2 HITS', x: -86, y: -138, r: 0.1 },
+    { t: 2.2, col: '#b06bff', label: '3 HITS', x: 88, y: -142, r: -0.08 },
+    { t: 2.8, col: '#ffc23d', label: '4 HIT COMBO!', x: 0, y: -188, r: -0.04 }
+  ];
+  const LAST = HITS.length - 1, BOOM = HITS[LAST].t;
+  const parts = HITS.map((h, i) => {
+    const r = rng(77 + i * 991), big = i === LAST, n = big ? 76 : 26, arr = [];
+    for (let j = 0; j < n; j++) arr.push({ a: r() * 6.283, sp: 60 + r() * (big ? 340 : 170), life: 0.35 + r() * (big ? 0.9 : 0.4), sz: 1.5 + r() * 3.5,
+      col: r() < 0.35 ? '#fff' : (big ? HITS[j % 4].col : h.col), shard: big && r() < 0.4 });
+    return arr;
+  });
+  const lr = rng(5), speedLines = Array.from({ length: 26 }, () => ({ y: lr() * 2 - 1, x: lr(), len: 0.1 + lr() * 0.3, sp: 1.5 + lr() * 2.5 }));
+
+  function drawSpeedLines(t) {
+    const a = prog(t, 0.2, 0.5) * (1 - prog(t, 2.7, 3.0));
+    if (a <= 0) return;
+    g.save(); g.lineWidth = 1.2 * u; g.lineCap = 'round'; g.strokeStyle = `rgba(255,255,255,${0.1 * a})`;
+    for (const l of speedLines) {
+      const x = ((l.x + t * l.sp) % 1.4 - 0.2) * W, y = cy + l.y * H * 0.5;
+      g.beginPath(); g.moveTo(x, y); g.lineTo(x - l.len * W, y); g.stroke();
+    }
+    g.restore();
+  }
+
+  function drawOrb(t) {
+    if (t >= BOOM) return;
+    const a = prog(t, 0, 0.45);
+    let bump = 0; for (const h of HITS) if (t >= h.t) bump = Math.max(bump, 1 - prog(t, h.t, h.t + 0.25));
+    const r = (34 + Math.sin(t * 9) * 1.5 + bump * 9) * u * a;
+    if (r <= 0) return;
+    g.save();
+    g.shadowColor = '#b9a4ff'; g.shadowBlur = 40 * u * dpr;
+    const gr = g.createRadialGradient(cx - r * 0.3, cy - r * 0.3, r * 0.1, cx, cy, r);
+    gr.addColorStop(0, '#fff'); gr.addColorStop(0.45, '#cbbcff'); gr.addColorStop(1, '#5b3fd6');
+    g.fillStyle = gr; g.beginPath(); g.arc(cx, cy, r, 0, 7); g.fill();
+    g.shadowBlur = 0;
+    const hits = HITS.filter(h => t >= h.t).length, cr = rng(31);
+    g.strokeStyle = '#120a33'; g.lineWidth = 1.6 * u;
+    for (let i = 0; i < hits * 4; i++) {
+      let ang = cr() * 6.283, x = cx, y = cy;
+      g.beginPath(); g.moveTo(x, y);
+      for (let s = 0; s < 3; s++) { ang += (cr() - 0.5) * 1.2; x += Math.cos(ang) * r * 0.33; y += Math.sin(ang) * r * 0.33; g.lineTo(x, y); }
+      g.stroke();
+    }
+    g.restore();
+  }
+
+  function streak(p, x1, y1, x2, y2, col, w) {
+    g.globalAlpha = 1 - p; g.shadowColor = col; g.shadowBlur = 22 * u * dpr; g.lineCap = 'round';
+    g.strokeStyle = col; g.lineWidth = w * (1 - p * 0.7) * u;
+    g.beginPath(); g.moveTo(cx + x1 * u, cy + y1 * u); g.lineTo(cx + x2 * u, cy + y2 * u); g.stroke();
+    g.strokeStyle = '#fff'; g.lineWidth = w * 0.35 * (1 - p) * u; g.stroke();
+  }
+  function drawFx(t) {
+    g.save();
+    let p = prog(t, HITS[0].t - 0.02, HITS[0].t + 0.28); // Kaito: crescent
+    if (p > 0 && p < 1) {
+      g.globalAlpha = 1 - p; g.shadowColor = '#3fa9ff'; g.shadowBlur = 25 * u * dpr;
+      g.strokeStyle = '#eaf6ff'; g.lineCap = 'round'; g.lineWidth = (11 - p * 9) * u;
+      g.beginPath(); g.arc(cx - 50 * u, cy + 5 * u, (78 + p * 26) * u, -1.2, 0.75); g.stroke();
+      streak(p, -90, 70, 70 + p * 80, -60 - p * 50, '#3fa9ff', 4);
+    }
+    p = prog(t, HITS[1].t, HITS[1].t + 0.32); // Rin: rising flame
+    if (p > 0 && p < 1) { streak(p, 14, 40, 6, -70 - p * 90, '#ff5a36', 16); streak(p, 30, 30, 34, -40 - p * 70, '#ffc23d', 7); }
+    p = prog(t, HITS[2].t, HITS[2].t + 0.26); // Zero: cross cut
+    if (p > 0 && p < 1) { streak(p, -70, -60, 70 + p * 30, 60 + p * 30, '#b06bff', 5); streak(p, 70, -60, -70 - p * 30, 60 + p * 30, '#ff4d8d', 5); }
+    HITS.forEach((h, i) => { // rings
+      const big = i === LAST, rp = prog(t, h.t, h.t + (big ? 0.7 : 0.4));
+      if (rp > 0 && rp < 1) {
+        g.globalAlpha = 1 - rp; g.shadowColor = h.col; g.shadowBlur = 20 * u * dpr;
+        g.strokeStyle = h.col; g.lineWidth = (big ? 9 : 5) * (1 - rp) * u + 0.5;
+        g.beginPath(); g.arc(cx, cy, (30 + sm(rp) * (big ? 420 : 130)) * u, 0, 7); g.stroke();
+      }
+    });
+    g.shadowBlur = 8 * u * dpr;
+    HITS.forEach((h, i) => { // sparks and shards
+      const dt = t - h.t; if (dt < 0) return;
+      for (const q of parts[i]) {
+        const lf = dt / q.life; if (lf >= 1) continue;
+        const d = q.sp * (1 - Math.pow(1 - lf, 2.4)) * u;
+        const x = cx + Math.cos(q.a) * d, y = cy + Math.sin(q.a) * d + lf * lf * 40 * u;
+        g.globalAlpha = 1 - lf; g.fillStyle = q.col; g.shadowColor = q.col;
+        if (q.shard) {
+          g.save(); g.translate(x, y); g.rotate(q.a + dt * 7);
+          g.beginPath(); g.moveTo(0, -q.sz * 2.4 * u); g.lineTo(q.sz * 1.4 * u, q.sz * u); g.lineTo(-q.sz * 1.2 * u, q.sz * 1.3 * u); g.closePath(); g.fill(); g.restore();
+        } else { g.beginPath(); g.arc(x, y, q.sz * u * (1 - lf * 0.5), 0, 7); g.fill(); }
+      }
+    });
+    g.restore();
+  }
+
+  function drawHitText(t) {
+    HITS.forEach((h, i) => {
+      const big = i === LAST, end = h.t + (big ? 0.8 : 0.55);
+      if (t < h.t || t > end) return;
+      const p = prog(t, h.t, h.t + 0.16), fade = 1 - prog(t, end - 0.2, end);
+      g.save();
+      g.translate(cx + h.x * u, cy + h.y * u); g.rotate(h.r);
+      const sc = mix(2.2, 1, outBack(p)); g.scale(sc, sc);
+      g.globalAlpha = fade * p;
+      g.font = `${(big ? 30 : 24) * u}px Bungee, Bangers, Impact, sans-serif`;
+      g.textAlign = 'center'; g.textBaseline = 'middle';
+      g.shadowColor = h.col; g.shadowBlur = 18 * u * dpr;
+      g.lineWidth = 5 * u; g.strokeStyle = '#000'; g.lineJoin = 'round'; g.strokeText(h.label, 0, 0);
+      g.fillStyle = h.col; g.fillText(h.label, 0, 0);
+      g.restore();
+    });
+  }
+
+  // ---------- logo ----------
+  const WORD = 'TREYYVERSE';
+  function drawLogo(t) {
+    const T0 = BOOM + 0.12;
+    if (t < T0) return;
+    g.save();
+    g.textBaseline = 'middle'; g.textAlign = 'center';
+    g.font = '100px Bungee, Bangers, Impact, sans-serif';
+    const full = g.measureText(WORD).width;
+    const fs = Math.min(100 * (W * 0.9) / full, 62 * u, 120);
+    g.font = `${fs}px Bungee, Bangers, Impact, sans-serif`;
+    const ws = [...WORD].map(ch => g.measureText(ch).width), total = ws.reduce((a, b) => a + b, 0);
+    let x = cx - total / 2;
+    const pulse = 0.5 + 0.5 * Math.sin((t - T0) * 5);
+    [...WORD].forEach((ch, i) => {
+      const p = prog(t, T0 + i * 0.055, T0 + i * 0.055 + 0.24), lx = x + ws[i] / 2; x += ws[i];
+      if (p <= 0) return;
+      g.save(); g.translate(lx, cy);
+      const sc = mix(3.4, 1, outBack(p)); g.scale(sc, sc);
+      g.globalAlpha = cl(p * 1.6);
+      const isY = i === 3 || i === 4;
+      g.shadowColor = isY ? '#ffd23f' : '#7fd9ff'; g.shadowBlur = (12 + pulse * 12 + (1 - p) * 30) * u * dpr;
+      const gr = g.createLinearGradient(0, -fs / 2, 0, fs / 2);
+      if (isY) { gr.addColorStop(0, '#fff3b0'); gr.addColorStop(0.5, '#ffd23f'); gr.addColorStop(1, '#ff8a1f'); }
+      else { gr.addColorStop(0, '#fff'); gr.addColorStop(0.55, '#fff'); gr.addColorStop(1, '#9fe9ff'); }
+      g.fillStyle = gr; g.fillText(ch, 0, 0);
+      g.restore();
+    });
+    const bp = sm(prog(t, 3.6, 4.0));
+    if (bp > 0) {
+      const bw = total * 0.92 * bp, by = cy + fs * 0.62;
+      const gr = g.createLinearGradient(cx - bw / 2, 0, cx + bw / 2, 0);
+      gr.addColorStop(0, '#3fa9ff'); gr.addColorStop(0.5, '#ffe14d'); gr.addColorStop(1, '#ff5a36');
+      g.shadowColor = '#ffe14d'; g.shadowBlur = 10 * u * dpr; g.fillStyle = gr;
+      g.fillRect(cx - bw / 2, by, bw, Math.max(2, 3 * u));
+    }
+    const tp = prog(t, 3.9, 4.4);
+    if (tp > 0) {
+      g.globalAlpha = tp; g.shadowBlur = 0; g.fillStyle = '#d7dbe6';
+      const ts = Math.max(11, fs * 0.3);
+      g.font = `700 ${ts}px Rajdhani, system-ui, sans-serif`;
+      const sp = ts * mix(1.0, 0.55, sm(tp));
+      if ('letterSpacing' in g) { g.letterSpacing = sp + 'px'; g.fillText('GAME STUDIO', cx + sp / 2, cy + fs * 0.62 + ts * 1.25); g.letterSpacing = '0px'; }
+      else g.fillText('G A M E   S T U D I O', cx, cy + fs * 0.62 + ts * 1.25);
+    }
+    g.restore();
+  }
+
+  // ---------- frame ----------
+  function frame(t) {
+    g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    g.fillStyle = '#000'; g.fillRect(0, 0, W, H);
+    let amp = 0;
+    HITS.forEach((h, i) => { if (t >= h.t) amp = Math.max(amp, (i === LAST ? 16 : 7) * (1 - prog(t, h.t, h.t + (i === LAST ? 0.5 : 0.25)))); });
+    g.save();
+    if (amp > 0) g.translate(Math.sin(t * 91) * amp * u, Math.cos(t * 77) * amp * u);
+    drawSpeedLines(t);
+    drawOrb(t);
+    drawCombo(t);
+    drawFx(t);
+    drawLineup(t);
+    drawLogo(t);
+    drawHitText(t);
+    g.restore();
+    const fl = 1 - prog(t, BOOM, BOOM + 0.4);
+    if (t >= BOOM && fl > 0) { g.fillStyle = `rgba(255,255,255,${fl * 0.9})`; g.fillRect(0, 0, W, H); }
+  }
+
+  return{DUR,size(w,h){W=w;H=h;u=Math.min(W/420,H/520);cx=W/2;cy=H/2;OS=Math.ceil(Math.min(440*u,W,H))},
+   draw(t){MODE=0;QI=0;drawCombo(t);drawLineup(t);MODE=1;QI=0;frame(t);g.setTransform(1,0,0,1,0,0)},free(){SP.length=0}}};
+ let IN=null,T0=0,DONE=false,TT=0;const LSK='combo-studio';
+ const want=()=>{try{if(F().studio){try{localStorage.setItem(LSK,'1')}catch(e){}return true}return localStorage.getItem(LSK)==='1'}catch(e){return !!F().studio}};
+ const t0=SCR.title;SCR.title=function(){const now=performance.now();if(!TT)TT=now;
+  if(!DONE&&!IN){if(want()&&now-TT<1500){try{if(!document.getElementById('bungee-font')){const l=document.createElement('link');l.id='bungee-font';l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Bungee&display=swap';document.head.appendChild(l);if(document.fonts&&document.fonts.load)document.fonts.load('64px Bungee')}}catch(e){}
+    try{IN=mkIntro();T0=now}catch(e){IN=null;DONE=true}}
+   else if(now-TT>=1500)DONE=true}
+  if(IN){const t=(now-T0)/1000;if(t>=IN.DUR+.35){IN.free();IN=null;DONE=true}else{G.ui=[];try{IN.size(cv.width,cv.height);IN.draw(Math.min(t,IN.DUR));if(t>IN.DUR){g.fillStyle='rgba(0,0,0,'+Math.min(1,(t-IN.DUR)/.35)+')';g.fillRect(0,0,cv.width,cv.height)}}catch(e){IN=null;DONE=true}return}}
+  return t0()};
+ setTimeout(()=>{try{if(!F().studio)localStorage.setItem(LSK,'0')}catch(e){}},4000)}
 })();

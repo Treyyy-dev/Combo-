@@ -1667,5 +1667,20 @@
   "game": {
    "flag": "icon2"
   }
+ },
+ {
+  "id": "update-studio-intro",
+  "type": "update",
+  "name": "Treyyverse Studio Intro",
+  "subtitle": "Plays before the start menu",
+  "desc": "The 5-second Treyyverse studio intro plays each time the game is opened, before the start menu.",
+  "status": "staged",
+  "created": 1795235285931,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "studio"
+  }
  }
 ]
