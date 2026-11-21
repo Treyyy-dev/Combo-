@@ -1652,5 +1652,20 @@
   "game": {
    "flag": "maildel"
   }
+ },
+ {
+  "id": "update-icon-kenko",
+  "type": "update",
+  "name": "New Game Icon",
+  "subtitle": "Kenko, facing forward",
+  "desc": "The game icon is now Kenko facing forward with her hands together in front, in the lobby, on the browser tab and when the game is added to a home screen.",
+  "status": "staged",
+  "created": 1795235122075,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "icon2"
+  }
  }
 ]
