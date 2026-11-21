@@ -2269,5 +2269,65 @@
   "game": {
    "flag": "feat5"
   }
+ },
+ {
+  "id": "update-low-attacks",
+  "type": "update",
+  "name": "Low Attacks",
+  "subtitle": "Attack while crouched",
+  "desc": "You can now attack while crouched. Light gives a low attack and heavy gives a low heavy. Every fighter has their own pair: a low kick, low jab or double palm, and a sweep, rising uppercut or slide kick.",
+  "status": "staged",
+  "created": 1795250235574,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "lowatk"
+  }
+ },
+ {
+  "id": "update-own-attacks",
+  "type": "update",
+  "name": "Own Attack Moves",
+  "subtitle": "Different light and heavy attacks per fighter",
+  "desc": "Every fighter now has their own light attack chain and heavy attack: jabs, crosses, kicks, elbows, knees, hooks and more. Damage and speed are the same as before.",
+  "status": "staged",
+  "created": 1795250235575,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "nmoves"
+  }
+ },
+ {
+  "id": "update-jumps-blocks",
+  "type": "update",
+  "name": "Own Jumps And Blocks",
+  "subtitle": "Different jump and block styles per fighter",
+  "desc": "Fighters now jump and block in their own way. There are five jump styles, including a tuck and a front flip, and five block styles.",
+  "status": "staged",
+  "created": 1795250235576,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "airblk"
+  }
+ },
+ {
+  "id": "update-living-idle",
+  "type": "update",
+  "name": "Living Idle Poses",
+  "subtitle": "Own stance, looking around, small moves",
+  "desc": "Every fighter now stands in their own stance and feels alive: they shift their weight, look around and make small moves like rolling their shoulders or bouncing.",
+  "status": "staged",
+  "created": 1795250235577,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "idle2"
+  }
  }
 ]

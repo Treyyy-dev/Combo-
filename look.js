@@ -316,8 +316,8 @@ let SCX=null,HCX=null;
   const wr=fn=>function(){const n0=G.proj.length,r=fn.apply(this,arguments);for(let k=G.proj.length-1;k>=n0;k--)fixP(G.proj[k],ds,pj);return r};
   if(m.ev)m.ev=m.ev.map(e=>Object.assign({},e,{f:wr(e.f)}));if(m.on)m.on=wr(m.on);m._u=1;return m}
  function vary(c,m0){const h=hs(c.name),o=Object.assign({},m0);try{o.S=(m0.S||[]).map((m,i)=>tw(m,h,i));if(m0.U)o.U=tw(m0.U,h,2)}catch(e){return m0}return o}
- let UN=-1,UT=0;function hook(){CH.forEach(c=>{if(!c||!c.name)return;const d=Object.getOwnPropertyDescriptor(c,'mv');if(d&&d.get&&d.get._u)return;const m=c.mv;if(!m)return;c._m0=m;c._mu=null;const gt=function(){return F().umoves&&this._m0?(this._mu||(this._mu=vary(this,this._m0))):this._m0};gt._u=1;try{Object.defineProperty(c,'mv',{configurable:true,get:gt,set(v){this._m0=v;this._mu=null}})}catch(e){}})}
- const _uu=update;update=function(rdt){if(F().umoves&&(CH.length!==UN||G.t-UT>2)){UN=CH.length;UT=G.t;try{hook()}catch(e){}}_uu(rdt)}}
+ let UN=-1,UT=0;function hook(){CH.forEach(c=>{if(!c||!c.name)return;const d=Object.getOwnPropertyDescriptor(c,'mv');if(d&&d.get&&d.get._u)return;const m=c.mv;if(!m)return;c._m0=m;c._mu=null;const gt=function(){const b=F().umoves&&this._m0?(this._mu||(this._mu=vary(this,this._m0))):this._m0;return b&&F().nmoves&&window.COMBO_NMV?window.COMBO_NMV(this,b):b};gt._u=1;try{Object.defineProperty(c,'mv',{configurable:true,get:gt,set(v){this._m0=v;this._mu=null}})}catch(e){}})}
+ const _uu=update;update=function(rdt){if((F().umoves||F().nmoves)&&(CH.length!==UN||G.t-UT>2)){UN=CH.length;UT=G.t;try{hook()}catch(e){}}_uu(rdt)}}
 /* ================= flag "icon2": new game icon =================
    Kenko facing forward from about the knees up with her hands together in front, on her own world background. Used for the lobby icon and the browser tab icon;
    the home-screen icon links switch to icon2.png / manifest2.json while the flag is on. */
@@ -964,4 +964,44 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
    if(!B||!B.f||!B.f.length||pity)return pl5();const r0=Math.random;let first=true;Math.random=function(){if(first){first=false;return r0()<P5?0:.999}return r0()};try{return pl5()}finally{Math.random=r0}};
  const gb0=SCR.gacha;if(gb0)SCR.gacha=function(){if(!F().feat5)return gb0();const t0=txt;txt=function(s){if(typeof s==='string'){if(s.indexOf('RATE UP: ')===0)arguments[0]=s.replace('1 in 5 summons','5 in 100 summons').replace('half of all summons','5 in 100 summons');
      else if(s.indexOf(' here are ')>0&&s.indexOf('rate-up fighter')>0)arguments[0]=s.replace('1 in 5 summons','5 in 100 summons').replace('Half of all summons','5 in 100 summons')}return t0.apply(this,arguments)};try{return gb0()}finally{txt=t0}}}
+/* ===== Own moves and motion for every fighter. Each part has its own flag; all choices come from a hash of the fighter's name, so a fighter always moves the same way. =====
+   lowatk : attacks while crouched. Light = a low attack, heavy = a low heavy. Three kinds of each, one pair per fighter (low kick / low jab / low double palm; sweep / rising uppercut / slide kick).
+   nmoves : the four-hit light chain and the heavy attack use different animations per fighter (jab, cross, kick, elbow, knee, hook, side kick; finisher slam, axe kick, hook or side kick; heavy uppercut, knee, hook or high kick).
+            Timing, damage, reach and knockback are NOT changed, only the poses.
+   airblk : five jump styles (default, tuck, front flip, arms up, scissor) and five block styles (default, crossed arms, one forearm, low brace, side turn).
+   idle2  : six standing stances and a living idle: weight shifting, looking around every few seconds, and a small gesture now and then (shoulder roll, bounce, neck crack, weapon-arm flourish). Not used in story cutscenes. */
+{const hs=n=>{let x=2166136261;n=String(n);for(let i=0;i<n.length;i++){x^=n.charCodeAt(i);x=Math.imul(x,16777619)}return x>>>0},HC=new Map(),H=c=>{let v=HC.get(c.name);if(v==null){v=hs(c.name+'~mv');HC.set(c.name,v)}return v};
+ const ELB=[[-10,0,-60,120,-20,60,20,-26,-22,-12,0,0],[24,-4,70,110,-40,70,34,-34,-30,-8,0,0]],KNE=[[-6,0,20,80,-30,70,30,-60,-14,-10,0,0],[-14,4,-20,70,40,70,100,-100,-8,-16,0,0]],
+  HOK=[[-20,0,-70,60,-10,60,22,-28,-22,-12,0,0],[28,-8,110,-60,-50,70,38,-38,-30,-8,0,0]],SDK=[[-12,0,20,80,-20,70,50,-110,-12,-10,0,0],[-26,8,-40,60,40,60,112,0,-10,-18,0,0]],
+  AXE=[[-14,-4,10,80,-20,70,150,-10,-12,-10,0,0],[10,2,-30,60,30,65,70,-4,-10,-16,0,0]],HIK=[[-10,0,10,80,-20,70,40,-90,-12,-10,0,0],[-30,10,-40,50,40,60,150,-10,-10,-20,0,0]];
+ const P1=[[L1A,L1B],[L2A,L2B],[L3A,L3B],ELB,KNE,HOK,SDK],P4=[[L4A,L4B],AXE,HOK,SDK,[L4A,L4B]],PH=[[HA,HB],KNE,HOK,HIK,[HA,HB]];
+ /* nmoves */
+ try{window.COMBO_NMV=(c,b)=>{if(c._nb===b&&c._nv)return c._nv;const h=H(c),ix=[0,1,2,3,4,5,6];let x=h;for(let k=6;k>0;k--){x=(Math.imul(x,1103515245)+12345)>>>0;const j=x%(k+1),t=ix[k];ix[k]=ix[j];ix[j]=t}
+   const pk=[P1[ix[0]],P1[ix[1]],P1[ix[2]],P4[(h>>>7)%P4.length]],L=b.L.map((m,i)=>m.pose?m:Object.assign({},m,{pa:pk[i][0],pb:pk[i][1]})),hp=PH[(h>>>11)%PH.length],Hv=b.H.pose?b.H:Object.assign({},b.H,{pa:hp[0],pb:hp[1]});
+   c._nb=b;c._nv={L,H:Hv,AL:b.AL,AH:b.AH,S:b.S,U:b.U};return c._nv}}catch(e){}
+ /* lowatk */
+ const LO=c=>{if(c._lo)return c._lo;const h=H(c),r=c.range||0,CR=CROUCH,
+   LP=[[[14,-6,25,55,-25,60,40,-120,10,-95,0,0],[22,-2,30,60,-45,70,86,-6,8,-100,0,0]],[[20,-6,-20,110,-25,60,58,-105,10,-95,0,0],[30,-8,70,10,-45,70,58,-105,10,-95,0,0]],[[18,-4,-30,100,-40,100,58,-105,10,-95,0,0],[34,-10,75,5,65,10,58,-105,10,-95,0,0]]][(h>>>3)%3],
+   hk=(h>>>5)%3,L={k:'CL',low:1,dur:.26,can:.1,pa:LP[0],pb:LP[1],adv:120,sw:1,hits:[{t0:.07,t1:.14,x:0,y:-58,w:70+r,h:58,d:24,kx:130,ky:0,st:.34,hs:.05}]},
+   Hm=hk===0?{k:'CH',low:1,dur:.46,can:.22,pa:[24,-2,40,40,-50,60,30,-110,14,-100,0,0],pb:[34,6,60,20,-70,40,95,2,-6,-112,0,4],adv:150,sw:3,hits:[{t0:.13,t1:.22,x:0,y:-52,w:96+r,h:52,d:46,kx:160,ky:-480,l:1,hs:.1,big:1}]}
+     :hk===1?{k:'CH',low:1,dur:.46,can:.2,pa:CR,pb:HB,adv:180,sw:5,hits:[{t0:.12,t1:.21,x:-5,y:-190,w:76+r,h:190,d:46,kx:40,ky:-880,l:1,hs:.1,big:1}]}
+     :{k:'CH',low:1,dur:.5,can:.3,pa:[30,0,20,60,-30,60,70,-60,20,-90,0,6],pb:[-30,14,-40,40,-60,30,88,2,60,-30,0,18],adv:520,sw:3,hits:[{t0:.1,t1:.3,x:0,y:-50,w:90+r,h:50,d:46,kx:220,ky:-420,l:1,hs:.09,big:1}]};
+   return c._lo={L,H:Hm}};
+ const ta0=tryAct;tryAct=function(f,o,mode){try{if(F().lowatk&&mode===0&&f&&f.state==='crouch'&&f.y>=0&&f.c){const b=f.inp.buf;if(!(b.ult>0&&f.meter>=100)&&!(b.s1>0&&f.cd[0]<=0)&&!(b.s2>0&&f.cd[1]<=0)){
+     if(b.heavy>0){b.heavy=0;f.chain=0;startMove(f,LO(f.c).H,o);return 1}if(b.light>0){b.light=0;f.chain=0;startMove(f,LO(f.c).L,o);return 1}}}}catch(e){}return ta0(f,o,mode)};
+ const mi0=mvId;mvId=function(f){const m=f&&f.mv;if(m&&m.low)return m.k;return mi0(f)};const mo0=mvOf;mvOf=function(f,id){if(id==='CL'||id==='CH'){const q=LO(f.c);return id==='CL'?q.L:q.H}return mo0(f,id)};
+ /* airblk + idle2 */
+ const JV=[null,[10,6,20,100,10,100,95,-125,80,-120,0,0],null,[-8,-10,-160,-10,-150,-10,30,-50,-20,-40,0,0],[-4,-8,-30,40,40,50,80,-20,-60,-30,0,0]],FV=[null,null,null,[20,10,-150,-10,-160,-10,20,-30,-30,-50,0,0],null],
+  GV=[null,[-4,4,95,150,80,150,20,-30,-25,-14,0,0],[-12,2,40,135,-30,60,24,-34,-28,-12,0,0],[10,2,70,110,55,118,46,-80,-4,-70,0,5],[-18,10,72,96,18,122,8,-18,-32,-22,0,0]];
+ const po0=poseOf;poseOf=function(f){const p=po0(f);try{if(!f||!f.c||!p)return p;const fl=F(),st=f.state;
+   if(st==='air'&&fl.airblk){const v=H(f.c)%5,J=JV[v]||JUMP,Fa=FV[v]||FALL;let q=f.vy<0?J.slice():lp(J,Fa,clamp(f.vy/500,0,1));if(v===2&&f.vy<120){const k=clamp((f.vy+900)/1020,0,1);q=lp([14,8,30,95,20,95,90,-120,78,-116,0,0],q,k*k*k);q[10]=-360*ease(k)}return q}
+   if(st==='guard'&&fl.airblk){const v=(H(f.c)>>>4)%5;return GV[v]||p}
+   if(st==='idle'&&fl.idle2&&G.mode!=='scene'&&!(G.intro&&G.intro.sp===f)){const h=H(f.c),q=p.slice(),t=f.at+(h%977)/97,sv=(h>>>8)%6;
+     if(sv===1){q[0]+=6;q[6]+=12;q[8]-=12;q[7]-=14;q[9]-=10;q[11]+=5}else if(sv===2){q[0]-=6;q[2]-=15;q[3]-=20;q[4]+=10}else if(sv===3){q[0]-=9;q[1]+=5;q[2]+=24;q[3]-=28}
+     else if(sv===4){q[6]-=6;q[8]+=6;q[11]-=Math.abs(Math.sin(t*5.2))*3.5;q[2]+=10;q[4]-=10}else if(sv===5){q[2]=lerp(q[2],40,.7);q[3]=lerp(q[3],118,.7);q[4]=lerp(q[4],20,.7);q[5]=lerp(q[5],122,.7)}
+     const ws=.5+((h>>>12)%5)*.1,s=Math.sin(t*ws*TAU*.5);q[0]+=s*2.4;q[6]+=s*3;q[8]+=s*3;q[11]+=Math.abs(s)*1.6;
+     const LT=5+((h>>>16)%5),lk=t%LT;if(lk<1.5){const e=Math.sin(lk/1.5*Math.PI);q[1]+=e*(((h>>>20)&1)?15:-13);q[0]+=e*2}
+     const GT=8+((h>>>21)%6),gk=(t+3.1)%GT;if(gk<1.1){const e=Math.sin(gk/1.1*Math.PI),g2=Math.sin(gk/1.1*Math.PI*2),gv=(h>>>24)%4;
+       if(gv===0){q[2]-=e*22;q[4]+=e*22;q[0]-=e*3}else if(gv===1){q[11]-=Math.abs(g2)*7;q[7]-=Math.abs(g2)*10;q[9]-=Math.abs(g2)*10}else if(gv===2){q[1]+=g2*16}else{q[2]+=e*58;q[3]-=e*36;q[1]-=e*4}}
+     return q}}catch(e){}return p}}
 })();
