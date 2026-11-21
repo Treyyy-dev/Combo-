@@ -56,6 +56,8 @@ async function dbInit() {
       const seen = await pool.query('insert into combo_seen (id) values ($1) on conflict do nothing', [id + '@' + (parseInt(it.rev, 10) || 1)]);
       if (!seen.rowCount) continue;
       const data = Object.assign({}, it); delete data.id;
+      // "release": true on an item means Trey asked for it to go live without pressing RELEASE himself: it is put straight into the live list, once per rev.
+      if (it.release === true) { delete data.release; data.status = 'released'; data.releasedAt = Date.now(); await pool.query("insert into combo_items (id, col, data) values ($1, 'live', $2::jsonb) on conflict (id) do update set col = 'live', data = excluded.data, updated_at = now()", [id, JSON.stringify(data)]); continue; }
       await pool.query("insert into combo_items (id, col, data) values ($1, 'staged', $2::jsonb) on conflict (id) do update set data = excluded.data, updated_at = now() where combo_items.col = 'staged'", [id, JSON.stringify(data)]);
     }
     dbReady = true; await refreshLive();

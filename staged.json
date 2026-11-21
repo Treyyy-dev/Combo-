@@ -2508,6 +2508,8 @@
   ],
   "game": {
    "flag": "devkeyset"
-  }
+  },
+  "release": true,
+  "rev": 2
  }
 ]
