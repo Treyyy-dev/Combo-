@@ -64,5 +64,7 @@ const _du=drawSummonUI;drawSummonUI=function(){_du();const M=G.sm;if(!M||!M.say|
  const _ug=update;update=function(rdt){_ug(rdt);if(!gon()||G.mode!=='fight')return;(G.f||[]).forEach(f=>{if(!f||!f.c)return;gwarm(f);const hp=f.hp,st=f.state;
    if(f._ghp!=null&&f._gc===f.c&&hp<f._ghp-.5&&hp>0){const d=(f._ghp-hp)/f.mhp;if(d>=.1||st==='launch')gplay(f,'s',500);else gplay(f,'h',380)}
    if(st==='down'&&f._gst!=='down'&&hp>0)setTimeout(()=>gplay(f,'m',900),350);
-   f._ghp=hp;f._gc=f.c;f._gst=st})}}
+   f._ghp=hp;f._gc=f.c;f._gst=st})};
+ /* list of fighter voice and fight sound clip addresses for the FULL download (flag "dlset") */
+ try{window.COMBO_AUD_VOICE=()=>{const o=[],add=X=>X.V.forEach(v=>{for(const k in v){const e=v[k];if(e&&X.CH[e[0]])o.push(BASE+X.CH[e[0]]+'/'+e[1]+'.wav')}});if(on())add(D);if(on()&&FLAGS.jpvoice)add(J);if(gon())GS.T.forEach((T,v)=>T.forEach(t=>o.push(BASE+GS.P+'/'+GS.C[v]+'/'+t+'.wav')));return o}}catch(e){}}
 })();

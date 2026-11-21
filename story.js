@@ -1850,4 +1850,6 @@ function envScreen(){const E=SC.env,t=G.t;g.save();
  if(E.wipe>=0){const k=E.wipe,a=k<.5?clamp((k-.3)*5,0,1):clamp((.7-k)*5,0,1);if(a>0){g.fillStyle='rgba(5,2,12,'+a+')';g.fillRect(0,0,W,H)}}
  g.restore()}
 try{window.CBACK=drawBackChar}catch(e){}
+/* list of story voice clip addresses for the FULL download (flag "dlset") */
+try{window.COMBO_AUD_STORY=()=>{const o=[];if(!F().voice1)return o;for(const k in VO){const v=VO[k];v.t.forEach(t=>o.push(VBASE+v.p+'/'+v.c+'/'+t[0]+'.wav'))}if(F().xlines)for(const k in XL)XL[k].l.forEach(x=>o.push(VBASE+XP+'/'+XL[k].c+'/'+x[3]+'.wav'));return o}}catch(e){}
 })();

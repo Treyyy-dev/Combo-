@@ -615,4 +615,67 @@ let SCX=null,HCX=null;
    else DONE=true}
   if(IN){const t=(now-T0)/1000;if(t>=IN.DUR+.35){IN.free();IN=null;DONE=true}else{G.ui=[];try{IN.size(cv.width,cv.height);IN.draw(Math.min(t,IN.DUR));if(t>IN.DUR){g.fillStyle='rgba(0,0,0,'+Math.min(1,(t-IN.DUR)/.35)+')';g.fillRect(0,0,cv.width,cv.height)}}catch(e){IN=null;DONE=true}return}}
   return t0()}}
+/* ================= flags "dlset", "updmsg", "uid" =================
+   dlset: a settings button at the top right of the lobby (Google sign-in, MIN / FULL download). MIN = the game only, voices load while playing.
+     FULL = every released voice file is fetched before the lobby opens and kept on the device (Cache Storage, served by sw.js); each update adds its files.
+     The game still needs the internet either way. First start asks which one; the choice can be switched in Settings.
+   updmsg: when something is released while the game is open, players in the lobby are sent back to the start screen with a NEW UPDATE message
+     (players in a match get it when they are back in the lobby). live.js fills window.COMBO_UPD with the names of new releases.
+   uid: "USER ID" at the top right of the lobby, hidden until tapped. */
+{const CN='combo-audio-v1',MK='combo-dl-mode',DK2='combo-dl-done',DL={mode:null,list:[],have:null,done:0,fail:0,bytes:0,tot:0,run:false,stop:false,cors:null,full:false,ok:false,fin:false,started:false};
+ try{DL.mode=localStorage.getItem(MK)}catch(e){}if(DL.mode!=='min'&&DL.mode!=='full')DL.mode=null;
+ const web=()=>/^https?:$/.test(location.protocol),note=t=>{G.note={t,T:2.8}};
+ const manifest=()=>{let o=[];try{if(window.COMBO_AUD_STORY)o=o.concat(COMBO_AUD_STORY())}catch(e){}try{if(window.COMBO_AUD_VOICE)o=o.concat(COMBO_AUD_VOICE())}catch(e){}return Array.from(new Set(o))};
+ const hsh=a=>{let x=5381;for(const u of a)for(let k=Math.max(0,u.length-12);k<u.length-4;k++)x=((x*33)^u.charCodeAt(k))>>>0;return a.length+':'+x};
+ const sw=()=>{try{if(web()&&'serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}};
+ /* MIN plays in LOW quality; FULL can go up to HIGH (the player's last choice comes back) */
+ function qfix(){try{const st=SV.set;if(DL.mode==='min'){if(st.q!==0){if(st.q0==null)st.q0=st.q;st.q=0;save();resize()}}else if(DL.mode==='full'&&st.q0!=null){st.q=st.q0;delete st.q0;save();resize()}}catch(e){}}
+ function setMode(m){DL.mode=m;try{localStorage.setItem(MK,m)}catch(e){}if(m==='full')sw();if(F().dlset)qfix()}
+ async function scan(){if(DL.have)return;const h=new Set();try{if(window.caches){const c=await caches.open(CN);(await c.keys()).forEach(r=>h.add(r.url))}}catch(e){}DL.have=h}
+ function missing(){const L=manifest();DL.list=L;let d=null;try{d=localStorage.getItem(DK2)}catch(e){}if(d===hsh(L))return[];return L.filter(u=>!(DL.have&&DL.have.has(u)))}
+ async function one(u){
+  if(DL.cors!==false&&window.caches&&!DL.full){try{const r=await fetch(u,{mode:'cors'});if(!r.ok)throw new Error('http');const b=await r.blob();DL.bytes+=b.size;try{const c=await caches.open(CN);await c.put(u,new Response(b,{headers:{'content-type':b.type||'audio/wav','content-length':String(b.size)}}));DL.have.add(u)}catch(q){DL.full=true}DL.cors=true;return true}catch(e){if(DL.cors===true)return false}}
+  try{await fetch(u,{mode:'no-cors'});if(DL.cors==null)DL.cors=false;return true}catch(e){return false}}
+ async function runDL(){if(DL.run)return;DL.run=true;DL.stop=false;DL.fin=false;await scan();const q=missing();DL.tot=q.length;DL.done=0;DL.fail=0;let i=0;
+  const worker=async()=>{while(i<q.length&&!DL.stop){const u=q[i++];let ok=await one(u);if(!ok)ok=await one(u);if(!ok)DL.fail++;DL.done++}};
+  try{await Promise.all([0,1,2,3].map(worker))}catch(e){}DL.run=false;if(!DL.stop){try{if(!DL.fail&&!DL.full)localStorage.setItem(DK2,hsh(DL.list))}catch(e){}DL.fin=true}}
+ function pick(m){setMode(m);DL.stop=true;DL.started=false;DL.fin=false;if(m==='full'){DL.ok=false;goto('dl')}else{DL.ok=true;goto('menu')}}
+ if(DL.mode==='full')setTimeout(()=>{if(F().dlset)sw()},3000);
+ const g0=goto;goto=function(m){if(m!=='menu')G.set2=false;if(F().dlset&&m==='menu'&&G.mode==='title'&&web()){if(!DL.mode)return g0('dlpick');if(DL.mode==='full'&&!DL.ok)return g0('dl')}return g0(m)};
+ SCR.dlpick=function(){scr();const n=manifest().length,bw=Math.min(330,(W-60)/2),y=96,h=160,x0=W/2-bw-10;
+  [['min','MIN DOWNLOAD','Small and quick.','Voices load while you play,','so a line can start a little late.','#2f4f8f','Plays in LOW quality.'],['full','FULL DOWNLOAD',n+' voice files.','Bigger and slower to get,','then voices play right away.','#2f7a5f','Quality can go up to HIGH.']].forEach((q,k)=>{const x=x0+k*(bw+20);button(x,y,bw,h,'',q[5],()=>pick(q[0]),20);txt(q[1],x+bw/2,y+36,Math.min(26,bw*.085),'#fff',INK,'center',FB,5);[q[2],q[3],q[4],q[6]].forEach((t,j)=>txt(t,x+bw/2,y+72+j*20,14,j===3?'#ffe14d':'#fff',null,'center',FU))});
+  txt('You can switch any time in Settings, at the top right of the lobby.',W/2,y+h+28,13.5,'#e6dcff',null,'center',FU);txt('Every update adds its new files. The game still needs the internet to play.',W/2,y+h+48,13.5,'#e6dcff',null,'center',FU);hdr('CHOOSE YOUR DOWNLOAD','title',true)};
+ SCR.dl=function(){scr();if(!DL.run&&!DL.fin&&!DL.started){DL.started=true;DL.stop=false;runDL()}
+  if(DL.fin){DL.ok=true;DL.fin=false;DL.started=false;if(DL.full)note('Your device is out of room. The rest loads as you play.');else if(DL.fail)note(DL.fail+' files did not download. They load as you play.');goto('menu');return}
+  const tot=DL.tot,k=tot?DL.done/tot:0,bw=Math.min(560,W-60),bx=(W-bw)/2,by=150;txt('DOWNLOADING',W/2,104,30,'#ffe14d',INK,'center',FB,7);
+  rr(bx,by,bw,26,13);g.fillStyle='#120a22';g.fill();g.strokeStyle='#fff';g.lineWidth=2;g.stroke();if(k>0){rr(bx+3,by+3,Math.max(20,(bw-6)*k),20,10);g.fillStyle='#7fdcff';g.fill()}
+  txt(tot?DL.done+' / '+tot+' files'+(DL.bytes?'   ·   '+Math.round(DL.bytes/1048576)+' MB':''):'Checking what you already have...',W/2,by+50,17,'#fff',null,'center',FU);
+  txt(DL.cors===false?'Your browser is pre-loading the files.':'Files are kept on this device so voices play right away.',W/2,by+74,13,'#e6dcff',null,'center',FU);
+  txt('Keep the game open. You can also switch to MIN and play now.',W/2,by+94,13,'#e6dcff',null,'center',FU);
+  button((W-320)/2,by+120,320,44,'SWITCH TO MIN DOWNLOAD','#3a2a5e',()=>pick('min'),18);hdr('UPDATE',null,true)};
+ BACK.dlpick='title';BACK.dl='title';
+ /* settings panel */
+ let LX=0;{const ge0=gems;gems=function(){return LX=ge0()}}
+ function panel(){G.ui=[];g.fillStyle='rgba(6,2,18,.86)';g.fillRect(0,0,W,H);const w=Math.min(520,W-40),h=306,x=(W-w)/2,y=(H-h)/2;rr(x,y,w,h,14);g.fillStyle='#1a0f33';g.fill();g.strokeStyle='#fff';g.lineWidth=3;g.stroke();txt('SETTINGS',W/2,y+34,28,'#ffe14d',INK,'center',FB,6);
+  const GG=window.COMBO_G,ga=GG&&GG.get?GG.get():null,full=DL.mode==='full',bw=(w-48-12)/2;
+  button(x+24,y+60,w-48,44,ga?'SIGN OUT':'SIGN IN WITH GOOGLE',ga?'#3a2a5e':'#2f4f8f',()=>{if(!F().gsign||!GG){note('Google sign-in is not switched on yet');return}if(ga)GG.out();else GG.open()},20,ga?String(ga.name||'Google').slice(0,16)+' · saved':'Save progress');
+  txt('DOWNLOAD',W/2,y+126,14,'#e6dcff',null,'center',FU);
+  button(x+24,y+140,bw,44,'MIN DOWNLOAD',!full?'#2f7a5f':'#3a2a5e',()=>{if(DL.mode!=='min'){setMode('min');DL.ok=true;note('MIN download: LOW quality, voices load while you play')}},18,!full?'ON':'');
+  button(x+36+bw,y+140,bw,44,'FULL DOWNLOAD',full?'#2f7a5f':'#3a2a5e',()=>{if(!web()){note('Downloads work on the game website');return}setMode('full');DL.ok=false;DL.started=false;DL.fin=false;G.set2=false;g0('dl')},18,full?'ON':'');
+  txt(full?'FULL: every voice file is kept on this device. Quality up to HIGH.':'MIN: voices load as they play. Quality stays LOW.',W/2,y+206,13.5,'#fff',null,'center',FU);txt('Each update adds its new files. The game still needs the internet.',W/2,y+225,12.5,'#e6dcff',null,'center',FU);
+  button(W/2-70,y+h-52,140,38,'CLOSE','#3a2a5e',()=>{G.set2=false},18);
+  if(G.note){g.save();g.font='700 16px '+FU;const nw=g.measureText(G.note.t).width+36;g.globalAlpha=clamp(G.note.T*3,0,1);rr((W-nw)/2,y-44,nw,36,10);g.fillStyle='rgba(10,4,24,.96)';g.fill();g.strokeStyle='#ff7ad1';g.lineWidth=2;g.stroke();txt(G.note.t,W/2,y-26,16,'#fff',null,'center',FU);g.restore()}
+  if(GG&&GG.pend&&GG.pend())drawConfirm()}
+ {const cf0=SCR.config;SCR.config=function(){if(F().dlset&&DL.mode==='min'){const st=SV.set;if(st.q!==0){const tap=st.q0!=null;if(!tap)st.q0=st.q;st.q=0;save();resize();if(tap)note('MIN download plays in LOW. Pick FULL in Settings for higher.')}}return cf0()}}
+ const me0=SCR.menu;SCR.menu=function(){me0();const f=F();if(f.dlset)qfix();
+  if(f.uid){const t='USER ID: '+(G.uidOn?String(SV.pid||'none'):'TAP TO SHOW');txt(t,W-14,50,11,G.uidOn?'#fff':'#cbbfe6',INK,'right',FU,3);hit(W-210,43,200,15,()=>{G.uidOn=!G.uidOn;sfx('ui')})}
+  if(f.dlset){const x=(LX||W-330)-46,y=12,foc=hit(x,y,38,34,()=>{G.set2=true;sfx('ui')});rr(x,y,38,34,10);g.fillStyle='rgba(10,4,24,.6)';g.fill();if(foc){g.strokeStyle='#ffe14d';g.lineWidth=3;g.stroke()}
+   g.save();g.translate(x+19,y+17);g.strokeStyle='#fff';g.lineWidth=4;g.lineCap='butt';for(let k=0;k<8;k++){const a=k*TAU/8;g.beginPath();g.moveTo(Math.cos(a)*7,Math.sin(a)*7);g.lineTo(Math.cos(a)*12,Math.sin(a)*12);g.stroke()}g.lineWidth=3.5;g.beginPath();g.arc(0,0,7.5,0,TAU);g.stroke();circ(0,0,2.6,'#fff');g.restore();
+   if(G.set2)panel()}};
+ /* new update message */
+ let UPD=null;const up0=update;update=function(rdt){up0(rdt);const q=window.COMBO_UPD;if(!q||!q.length)return;DL.ok=false;DL.started=false;DL.fin=false;if(!F().updmsg){q.length=0;return}
+  if(G.mode==='menu'||G.mode==='title'){UPD={names:(UPD?UPD.names:[]).concat(q.splice(0)),t:0};G.set2=false;if(G.mode==='menu')goto('title')}};
+ const ti0=SCR.title;SCR.title=function(){ti0();if(!UPD||!G.ui.length)return;const now=performance.now();if(!UPD.t)UPD.t=now;if(now-UPD.t>12000){UPD=null;return}
+  g.setTransform(S*dpr,0,0,S*dpr,0,0);const nm=UPD.names.slice(0,4),more=UPD.names.length-nm.length,w=Math.min(460,W-40),h=62+nm.length*20+(more?20:0),x=(W-w)/2,y=H*.34;g.save();g.globalAlpha=clamp((now-UPD.t)/250,0,1)*clamp((12000-(now-UPD.t))/500,0,1);
+  rr(x,y,w,h,14);g.fillStyle='rgba(16,8,34,.94)';g.fill();g.strokeStyle='#ffe14d';g.lineWidth=3;g.stroke();txt('NEW UPDATE',W/2,y+30,28,'#ffe14d',INK,'center',FB,6);nm.forEach((t,k)=>txt(t,W/2,y+60+k*20,15,'#fff',null,'center',FU));if(more)txt('+ '+more+' more',W/2,y+60+nm.length*20,14,'#e6dcff',null,'center',FU);g.restore()}}
 })();

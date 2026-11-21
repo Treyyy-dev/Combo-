@@ -1727,5 +1727,50 @@
   "game": {
    "flag": "gsign"
   }
+ },
+ {
+  "id": "update-settings-download",
+  "type": "update",
+  "name": "Settings + Downloads",
+  "subtitle": "Gear button, MIN or FULL download",
+  "desc": "Adds a settings button at the top right of the lobby with Sign in with Google, MIN download and FULL download. Sign in with Google leaves Configure. The first start asks MIN or FULL and keeps using it until it is switched in Settings. MIN is small, voices load while you play and quality stays LOW. FULL gets every voice file before the lobby opens and quality can go up to HIGH. Each update adds its new files. The game still needs the internet.",
+  "status": "staged",
+  "created": 1795237924033,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "dlset"
+  }
+ },
+ {
+  "id": "update-new-update-message",
+  "type": "update",
+  "name": "New Update Message",
+  "subtitle": "Lobby players go back to the start screen",
+  "desc": "When something is released, players in the lobby see NEW UPDATE with the names of what was released and go back to the start screen. Players in a match finish first and get it when they are back in the lobby. Releasing several at once from Dev Studio gives one message.",
+  "status": "staged",
+  "created": 1795237924034,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "updmsg"
+  }
+ },
+ {
+  "id": "update-user-id",
+  "type": "update",
+  "name": "User ID",
+  "subtitle": "Top right of the lobby, hidden until tapped",
+  "desc": "Shows USER ID at the top right of the lobby. It starts hidden. Tap it to show the id and tap again to hide it.",
+  "status": "staged",
+  "created": 1795237924035,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "uid"
+  }
  }
 ]

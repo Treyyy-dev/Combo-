@@ -67,7 +67,7 @@ function remap(old){let ch=false;const n=CH.length,fix=i=>{i=i|0;if(i<NB)return 
 function flagSync(){const docs=L.live||[],F={};docs.forEach(d=>{if(d.type==='update'){const k=str(obj(d.game).flag,30);if(k)F[k]=1}});for(const k in L.pvf||{})F[k]=1;FLAGS=F;L.bc=null;
  if(F.featured){L.bans=[];try{FEAT=docs.filter(d=>d.releasedAt>0&&(d.type==='banner'||d.type==='character')).sort((x,y)=>y.releasedAt-x.releasedAt).map(d=>{if(d.type==='banner')return mkBan(d);const ci=findCh(str(d.name,20).toUpperCase().replace(/[^A-Z]/g,'').slice(0,8));if(ci<0||!CH[ci].live)return null;const c=CH[ci];return{n:c.name,d:'Featured  \u00b7  '+c.title,col:c.col,f:[ci],el:c.el,stage:c.el%STAGES.length,key:'feat-'+str(d.id,60)}}).filter(Boolean).slice(0,8)}catch(e){FEAT=[]}}
  else{FEAT=[];L.bans=docs.filter(d=>d.type==='banner').slice(-4).map(mkBan)}}
-function apply(docs){
+function apply(docs){try{const rel=(Array.isArray(docs)?docs:[]).filter(d=>d&&d.releasedAt>0&&d.name),ids=rel.map(d=>String(d.id));if(window.__LIVEIDS){const nw=rel.filter(d=>window.__LIVEIDS.indexOf(String(d.id))<0);if(nw.length)window.COMBO_UPD=(window.COMBO_UPD||[]).concat(nw.map(d=>String(d.name).slice(0,40)))}window.__LIVEIDS=ids}catch(e){}
  docs=docs.filter(d=>d&&d.name&&TNAME[d.type]).sort((a,b)=>(a.releasedAt||0)-(b.releasedAt||0)||String(a.id).localeCompare(String(b.id)));
  const sig=JSON.stringify(docs);if(sig===L.sig)return;if(L.test){L.pending=docs;return}L.sig=sig;L.live=docs;
  let old=CH.slice(NB).map(c=>c.name);if(L.first){L.first=false;try{const q=JSON.parse(localStorage.getItem(CN));if(Array.isArray(q))old=q.map(String)}catch(e){}}
@@ -102,6 +102,7 @@ function say(t){G.note={t,T:2.6}}
 async function move(it,toLive){if(L.busy||!L.db)return;L.busy=true;try{const b=body(it);
   if(toLive){b.releasedAt=Date.now();b.status='released';await L.db.doc('live/'+it.id).set(b);await L.db.doc('staged/'+it.id).delete();say(it.name+' is LIVE');sfx('ult')}
   else{b.releasedAt=0;b.status='staged';await L.db.doc('staged/'+it.id).set(b);await L.db.doc('live/'+it.id).delete();say(it.name+' pulled back')}}catch(e){say('That did not save. Try again.')}L.busy=false;L.sel=0}
+async function moveMany(its){if(L.busy||!L.db)return;L.busy=true;let n=0;for(const it of its){try{const b=body(it);b.releasedAt=Date.now()+n;b.status='released';await L.db.doc('live/'+it.id).set(b);await L.db.doc('staged/'+it.id).delete();n++}catch(e){}}say(n===its.length?n+' items are LIVE':n+' of '+its.length+' went live. Try the rest again.');if(n)sfx('ult');L.busy=false;L.sel=0;L.pick=null;L.mp=null}
 async function scrap(it){if(L.busy||!L.db)return;L.busy=true;try{await L.db.doc('staged/'+it.id).delete();say(it.name+' scrapped')}catch(e){say('That did not save. Try again.')}L.busy=false;L.sel=0}
 function testIt(it,P){untest();const T={nch:CH.length,nst:STAGES.length,name:''};
  if(it.type==='character'){let ci=findChLive(P.c.name);if(ci<0){if(CH.some(c=>c.name===P.c.name)){say('Another fighter already uses that name');return}ci=CH.length;TALK[P.c.name]=P.c._talk;T.name=P.c.name;CH.push(seat(P.c,ci))}
@@ -118,19 +119,20 @@ function lines(t,x,y,w,size,col,max){g.font='700 '+size+'px '+FU;wrap(String(t),
 function pickTog(it){const n=str(it.name,20).toUpperCase(),P=L.pick;if(!P)return;const i=P.indexOf(n);if(i>=0)P.splice(i,1);else if(P.length>=4)say('Up to 4 fighters');else P.push(n)}
 async function devNew(id,d){if(L.busy||!L.db)return;L.busy=true;try{await L.db.doc('staged/'+id).set(d);say(d.name+' is in STAGED');L.tab=0;L.sel=0;G.devpg=0}catch(e){say('That did not save. Try again.')}L.busy=false}
 function devTools(x,y,w){if(!L.db)return;const bw=Math.min(150,(w-16)/3);
- if(L.pick){const n=L.pick.length;txt(n?L.pick.join(', '):'Tap up to 4 fighters in the list',x+bw*2+16,y+16,11.5,'#e6dcff',null,'left',FU);
-  button(x,y,bw,30,'MAKE BANNER '+n+'/4',n?'#2f7a5f':'#3a2a5e',()=>{if(!n){say('Pick at least one fighter');return}const names=L.pick.slice(),c0=CH[findCh(names[0])],nm=names.join(' + ').length<=18?names.join(' + '):names[0]+' +'+(names.length-1);L.pick=null;
+ if(L.pick){const n=L.pick.length,mp=L.mp||[];
+  button(x,y,bw,30,'MAKE BANNER '+n+'/4',n?'#2f7a5f':'#3a2a5e',()=>{if(!n){say('Pick at least one fighter');return}const names=L.pick.slice(),c0=CH[findCh(names[0])],nm=names.join(' + ').length<=18?names.join(' + '):names[0]+' +'+(names.length-1);L.pick=null;L.mp=null;
    devNew('banner-'+Date.now().toString(36),{type:'banner',name:nm,subtitle:'Rate up: '+names.join(', ').slice(0,60),desc:names.join(', ')+(names.length>1?' are':' is')+' featured together on this banner.',status:'staged',created:Date.now(),colors:[c0&&c0.col||'#b8324f'],game:{featured:names,el:c0?c0.el|0:0}})},13);
-  button(x+bw+8,y,bw,30,'CANCEL','#7a1f2b',()=>{L.pick=null},13);return}
+  button(x+bw+8,y,bw,30,L.tab?'STAGED ONLY':'RELEASE '+mp.length,mp.length&&!L.tab?'#2f7a5f':'#3a2a5e',()=>{if(L.tab){say('Open the STAGED tab to release');return}const its=L.staged.filter(q=>mp.includes(q.id));if(!its.length){say('Tap items in the list first');return}G.cf={text:'Release '+its.length+' item'+(its.length>1?'s':'')+'?',sub:'They all go into the live game right away',yes:()=>moveMany(its)}},13);
+  button(x+bw*2+16,y,bw,30,'CANCEL','#7a1f2b',()=>{L.pick=null;L.mp=null},13);return}
  button(x,y,bw,30,'ADD HINT','#1d6f8f',()=>{const cur=(L.tab?L.live:L.staged)[L.sel],pre=cur&&cur.type==='character'?'A new fighter is coming soon.':cur&&cur.type==='map'?'A new map is coming soon.':cur&&cur.type==='banner'?'A new banner is coming soon.':cur&&cur.type==='mode'?'A new mode is coming soon.':'Something new is coming soon.';
   try{ask('Hint for the mailbox',150,v=>{if(v)devNew('hint-'+Date.now().toString(36),{type:'hint',name:'COMING SOON',subtitle:'',desc:String(v).slice(0,150),status:'staged',created:Date.now(),colors:['#7fdcff'],game:{}})},pre)}catch(e){}},13);
- button(x+bw+8,y,bw,30,'SELECT','#8a3fb8',()=>{L.pick=[]},13)}
+ button(x+bw+8,y,bw,30,'SELECT','#8a3fb8',()=>{L.pick=[];L.mp=[]},13)}
 function drawDev(){untest();if(L.pending){const p=L.pending;L.pending=null;apply(p)}
  if(L.remote&&!L.busy&&performance.now()-(L.at||0)>20000){L.at=performance.now();api('list').then(take).catch(()=>{})}
  scr();const lx=14,ly=58,lw=Math.min(250,W*.3),list=L.tab?L.live:L.staged;
  ['STAGED  '+L.staged.length,'LIVE  '+L.live.length].forEach((t,i)=>button(lx+i*(lw/2+2),ly,lw/2-2,30,t,i===L.tab?'#b8324f':'#3a2a5e',()=>{L.tab=i;L.sel=0;G.devpg=0},15));
  const rh=40,rows=Math.max(1,Math.floor((H-ly-38-44)/rh)),np=Math.max(1,Math.ceil(list.length/rows));L.pg=G.devpg=Math.min(np-1,G.devpg|0);L.sel=Math.min(Math.max(0,list.length-1),L.sel|0);
- list.slice(L.pg*rows,L.pg*rows+rows).forEach((it,k)=>{const i=L.pg*rows+k,y=ly+38+k*rh,sel=i===L.sel,pk=!!(L.pick&&it.type==='character'&&L.pick.includes(str(it.name,20).toUpperCase())),foc=hit(lx,y,lw,rh-5,()=>{if(L.pick&&it.type==='character')pickTog(it);else L.sel=i});rr(lx,y,lw,rh-5,8);g.fillStyle=pk?'#2f7a5f':sel?'#2a1c5c':'rgba(10,4,24,.6)';g.fill();g.strokeStyle=foc?'#ffe14d':sel?'#fff':'rgba(255,255,255,.22)';g.lineWidth=sel||foc?3:1.5;g.stroke();
+ list.slice(L.pg*rows,L.pg*rows+rows).forEach((it,k)=>{const i=L.pg*rows+k,y=ly+38+k*rh,sel=i===L.sel,pk=!!(L.pick&&(L.mp||[]).includes(it.id)),foc=hit(lx,y,lw,rh-5,()=>{if(L.pick){L.mp=L.mp||[];const q=L.mp.indexOf(it.id);if(q>=0)L.mp.splice(q,1);else L.mp.push(it.id);if(it.type==='character'){const nm=str(it.name,20).toUpperCase(),on=L.pick.includes(nm);if(on!==(q<0))pickTog(it)}}else L.sel=i});rr(lx,y,lw,rh-5,8);g.fillStyle=pk?'#2f7a5f':sel?'#2a1c5c':'rgba(10,4,24,.6)';g.fill();g.strokeStyle=foc?'#ffe14d':sel?'#fff':'rgba(255,255,255,.22)';g.lineWidth=sel||foc?3:1.5;g.stroke();
   rr(lx+6,y+7,58,rh-19,5);g.fillStyle=TCOL[it.type];g.fill();txt(TNAME[it.type],lx+35,y+(rh-5)/2+.5,10.5,'#10061e',null,'center',FU);txt(str(it.name,18).toUpperCase(),lx+72,y+(rh-5)/2+1,Math.min(17,(lw-80)/(str(it.name,18).length*.58+1)),'#fff',INK,'left')});
  if(np>1)pager(lx+(lw-156)/2,H-38,'devpg',np);
  const x0=lx+lw+16,pw=W-x0-14,py=92,ph=H-py-66,it=list[L.sel];devTools(x0,58,pw);
@@ -218,7 +220,9 @@ function askKey(){try{ask('Dev key',90,v=>{if(v)devLogin(v,false)})}catch(e){}}
 async function remote(){let ok=false;try{const r=await fetch('live.json',{cache:'no-store'});if(r.ok){const q=await r.json();if(Array.isArray(q)){ok=true;try{window.LIVE_READY=1}catch(e){}apply(q)}}}catch(e){}if(!ok)return;L.canKey=true;
  let key='';try{key=localStorage.getItem(DK)||''}catch(e){}if(key)await devLogin(key,true);
  const open=()=>{if(location.hash!=='#dev')return;if(L.owner){if(SCR[G.mode]&&G.mode!=='dev')goto('dev')}else{if(G.mode==='title')goto('menu');askKey()}};
- window.addEventListener('hashchange',open);open()}
+ window.addEventListener('hashchange',open);open();
+ /* flag "updmsg": while the game is open, look for new releases every 45 seconds */
+ let lastTxt='';setInterval(async()=>{try{if(!FLAGS.updmsg||G.mode==='dev'||L.busy)return;const r=await fetch('live.json',{cache:'no-store'});if(!r.ok)return;const t=await r.text();if(t===lastTxt)return;const first=!lastTxt;lastTxt=t;if(first&&window.__LIVEIDS){const q0=JSON.parse(t);if(Array.isArray(q0)&&q0.filter(d=>d&&d.releasedAt>0).length===window.__LIVEIDS.length)return}const q=JSON.parse(t);if(Array.isArray(q))apply(q)}catch(e){}},45000)}
 
 /* ---------- data ---------- */
 const rows=s=>s.docs.map(d=>Object.assign({},d.data(),{id:d.id}));

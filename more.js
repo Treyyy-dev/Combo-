@@ -151,10 +151,12 @@ function addOpp(r,op,R){if(R.frs||SV.friends.includes(op.name))return;BF.sent[op
      ov.appendChild(tl);ov.appendChild(bx);ov.appendChild(cn);document.body.appendChild(ov);google.accounts.id.renderButton(bx,{theme:'filled_blue',size:'large',type:'standard',text:'signin_with',shape:'pill'})}catch(e){gClose();note('Could not open Google sign-in')}};
    if(window.google&&google.accounts&&google.accounts.id)start();else{const sc=document.createElement('script');sc.src='https://accounts.google.com/gsi/client';sc.async=true;sc.onload=start;sc.onerror=()=>note('Could not reach Google');document.head.appendChild(sc)}})}
  function gOut(){const t=GA;if(!t)return;if(DIRTY)upload();setTimeout(()=>{api('/api/auth/out','POST').catch(()=>{}).then(()=>{GA=null;keep();DIRTY=false;note('Signed out. Progress stays on this device.')})},DIRTY?900:0)}
- const c0=SCR.config;SCR.config=function(){c0();if(!F().gsign)return;const w=Math.min(340,W-36),x=(W-w)/2,y=H-46;
+ try{window.COMBO_G={open:gOpen,out:gOut,get:()=>GA}}catch(e){}
+ const c0=SCR.config;SCR.config=function(){c0();if(!F().gsign||F().dlset)return;const w=Math.min(340,W-36),x=(W-w)/2,y=H-46;
   if(GA){button(x,y,w,36,'SIGN OUT','#3a2a5e',gOut,17,String(GA.name||'Google').slice(0,16)+' · saved')}else button(x,y,w,36,'SIGN IN WITH GOOGLE','#2f4f8f',gOpen,17,'Save progress');
   if(G.note){g.save();g.font='700 16px '+FU;const nw=g.measureText(G.note.t).width+36;g.globalAlpha=clamp(G.note.T*3,0,1);rr((W-nw)/2,H-90,nw,36,10);g.fillStyle='rgba(10,4,24,.96)';g.fill();g.strokeStyle='#ff7ad1';g.lineWidth=2;g.stroke();txt(G.note.t,W/2,H-72,16,'#fff',null,'center',FU);g.restore()}
   if(G.cf&&PEND){PEND.seen=true;drawConfirm()}};
+ try{window.COMBO_G.pend=()=>{if(G.cf&&PEND){PEND.seen=true;return true}return false}}catch(e){}
  const u0=update;update=function(rdt){u0(rdt);if(!F().gsign)return;if(PEND&&PEND.seen&&!G.cf){PEND=null;upload()}if(!GA)return;
   if(!CHK){CHK=true;api('/api/save','GET').then(r=>{if(r&&r.save&&r.save.owned&&r.save.team&&r.saveAt&&r.saveAt>(SV.gsat||0))loadSave(r.save,r.saveAt);else if(r&&!r.save)upload()}).catch(e=>{if(e===401){GA=null;keep()}})}
   if(DIRTY&&!BUSY&&!PEND&&performance.now()-UPT>8000)upload()}}
