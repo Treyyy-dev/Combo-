@@ -1983,5 +1983,20 @@
   "game": {
    "flag": "sqtab"
   }
+ },
+ {
+  "id": "update-download-game-files",
+  "type": "update",
+  "name": "Download Game Files",
+  "subtitle": "Downloads always fetch the game's own files too",
+  "desc": "The download screen now also fetches the game's own updated files, on both FULL and MIN, plus any new voice files. A big release always shows the download, and the game restarts itself at the end if its files changed.",
+  "status": "staged",
+  "created": 1795241671089,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "dlgame"
+  }
  }
 ]
