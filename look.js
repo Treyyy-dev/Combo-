@@ -1408,7 +1408,11 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
    if(o.ground)gy=-Math.max(T2(J.lf[1])[1],T2(J.lb[1])[1]);
    const P3=(q,z)=>{const a=T2(q);return[a[0],-(a[1]+gy),z]},t=o.t||0,sw=(o.sway==null?.15:o.sway)+.12,bk=(c.sc>1.07||c.dm>1)?1.14:1,bare=!!c.bare;
    const hip=P3(J.hip,0),neck=P3(J.neck,0),shC=P3(J.sh,0),sp=nm(sb(neck,hip)),fw=nm(cr(sp,[0,0,1]));
-   const SW=15.6*bk,HW=7.6*bk,shF=ad(shC,[0,0,SW]),shB=ad(shC,[0,0,-SW]),elF=P3(J.af[0],SW+2),haF=P3(J.af[1],SW),elB=P3(J.ab[0],-SW-2),haB=P3(J.ab[1],-SW),hpF=ad(hip,[0,0,HW]),hpB=ad(hip,[0,0,-HW]),knF=P3(J.lf[0],HW+1.5),ftF=P3(J.lf[1],HW+1.5),knB=P3(J.lb[0],-HW-1.5),ftB=P3(J.lb[1],-HW-1.5);
+   const SW=15.6*bk,HW=7.6*bk;
+   /* body faces the player (Trey): in the side view the chest is turned toward the camera around the spine (the waist less, the hips least); the head still looks at the opponent. The arms and legs hang from the turned shoulders and hips. */
+   const tw=view==='s'?.95:0,rt0=cr(fw,sp),rotv=a=>{const c=Math.cos(a),s2=Math.sin(a);return[ad(ml(fw,c),ml(rt0,s2)),ad(ml(rt0,c),ml(fw,-s2))]},FT=rotv(tw),FM=rotv(tw*.72),FH=rotv(tw*.45),fwT=FT[0],rtT=FT[1],fwM=FM[0],rtM=FM[1],fwH=FH[0],rtH=FH[1];
+   const shF=ad(shC,ml(rtT,SW)),shB=ad(shC,ml(rtT,-SW)),elF=ad(P3(J.af[0],0),ml(rtT,SW+2)),haF=ad(P3(J.af[1],0),ml(rtT,SW)),elB=ad(P3(J.ab[0],0),ml(rtT,-SW-2)),haB=ad(P3(J.ab[1],0),ml(rtT,-SW)),hpF=ad(hip,ml(rtH,HW)),hpB=ad(hip,ml(rtH,-HW)),knF=ad(P3(J.lf[0],0),ml(rtH,HW+1.5)),ftF=ad(P3(J.lf[1],0),ml(rtH,HW+1.5)),knB=ad(P3(J.lb[0],0),ml(rtH,-HW-1.5)),ftB=ad(P3(J.lb[1],0),ml(rtH,-HW-1.5));
+   const tor=(O,ry,rx,rz,col,F2)=>ell3(O,ml(F2[0],rx),ml(sp,ry),ml(F2[1],rz),col);
    const fem=isFem(c),top=c.top,topS=c.topSh||c.top,skin=c.skin,pants=c.pants,slv=bare?skin:top,st=c.style|0;
    /* cloth behind the body first (order does not matter for depth, only kept readable) */
    const K=c.name+'|'+view+'|';
@@ -1424,10 +1428,16 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
    leg(hpB,knB,ftB,p[8]+p[9]);leg(hpF,knF,ftF,p[6]+p[7]);
    /* torso, belt, pelvis, neck */
    const mid=ml(ad(hip,shC),.5),tl=ln(sb(shC,hip));/* stronger build (Trey: make the body look stronger): wide chest over a narrower waist, chest muscles, shoulders, thicker arms and legs */
-   ell(ad(mid,ml(sp,-4)),sp,tl/2+5,8.4*bk,10.6*bk,top);/* fit waist with abs: three rows of two */for(let r=0;r<3;r++)[3.1,-3.1].forEach(z=>ell3(ad(hip,ad(ml(sp,12.5+r*6.2),ad(ml(fw,(7.9-r*.15)*bk),[0,0,z*bk]))),ml(fw,2.5),ml(sp,2.8),[0,0,2.9*bk],top));{const ab=(u,d,z)=>ad(hip,ad(ml(sp,u),ad(ml(fw,d*bk),[0,0,z*bk]))),lc=topS===top?'#00000055':topS,li=(A,B)=>cyl(A,B,.75,.75,topS,1,1);li(ab(10.5,10.5,0),ab(28.5,10.4,0));[15.6,21.8].forEach(u=>{li(ab(u,10.4,0),ab(u,9.4,5.6));li(ab(u,10.4,0),ab(u,9.4,-5.6))});[1,-1].forEach(k=>{const pc=(d,z)=>ad(shC,ad(ml(sp,-13.4),ad(ml(fw,d*bk),[0,0,z*k*bk])));li(pc(11.6,.8),pc(11.9,6));li(pc(11.9,6),pc(9.6,11.5))});li(ad(shC,ad(ml(sp,-13),ml(fw,11.3*bk))),ad(shC,ad(ml(sp,-3),ml(fw,10.6*bk))))}ell(ad(shC,ml(sp,-7)),sp,13,11.4*bk,17*bk,top);[6.6,-6.6].forEach(z=>ell3(ad(shC,ad(ml(sp,-7.5),ad(ml(fw,7.4*bk),[0,0,z*bk]))),ml(fw,4.6),ml(sp,6),[0,0,6.6*bk],top));ell(ad(neck,ml(sp,-3)),sp,5,7.5*bk,11*bk,top);ell(ad(hip,ml(sp,1)),sp,8.5,9.4*bk,12.6*bk,pants);ell(ad(hip,ml(sp,8)),sp,2.6,10.3*bk,14.2*bk,c.col2);
-   ell(ad(mid,ad(ml(sp,6),ml(fw,7.6*bk))),sp,tl/2-3,2.2,2.2,c.col);
+   tor(ad(mid,ml(sp,-4)),tl/2+5,8.4*bk,10.6*bk,top,FM);/* fit waist with abs: three rows of two */for(let r=0;r<3;r++)[3.1,-3.1].forEach(z=>ell3(ad(hip,ad(ml(sp,12.5+r*6.2),ad(ml(fwM,(7.9-r*.15)*bk),ml(rtM,z*bk)))),ml(fwM,2.5),ml(sp,2.8),ml(rtM,2.9*bk),top));
+   {const ab=(u,d,z)=>ad(hip,ad(ml(sp,u),ad(ml(fwM,d*bk),ml(rtM,z*bk)))),li=(A,B)=>cyl(A,B,.75,.75,topS,1,1);li(ab(10.5,10.5,0),ab(28.5,10.4,0));[15.6,21.8].forEach(u=>{li(ab(u,10.4,0),ab(u,9.4,5.6));li(ab(u,10.4,0),ab(u,9.4,-5.6))});[1,-1].forEach(k=>{const pc=(d,z)=>ad(shC,ad(ml(sp,-13.4),ad(ml(fwT,d*bk),ml(rtT,z*k*bk))));li(pc(11.6,.8),pc(11.9,6));li(pc(11.9,6),pc(9.6,11.5))});li(ad(shC,ad(ml(sp,-13),ml(fwT,11.3*bk))),ad(shC,ad(ml(sp,-3),ml(fwT,10.6*bk))))}
+   tor(ad(shC,ml(sp,-7)),13,11.4*bk,17*bk,top,FT);[6.6,-6.6].forEach(z=>ell3(ad(shC,ad(ml(sp,-7.5),ad(ml(fwT,7.4*bk),ml(rtT,z*bk)))),ml(fwT,4.6),ml(sp,6),ml(rtT,6.6*bk),top));tor(ad(neck,ml(sp,-3)),5,7.5*bk,11*bk,top,FT);tor(ad(hip,ml(sp,1)),8.5,9.4*bk,12.6*bk,pants,FH);tor(ad(hip,ml(sp,8)),2.6,10.3*bk,14.2*bk,c.col2,FH);
+   ell3(ad(mid,ad(ml(sp,6),ml(fwM,7.6*bk))),ml(fwM,2.2),ml(sp,tl/2-3),ml(rtM,2.2),c.col);
    /* arms */
-   const arm=(s,e,h,back)=>{sph(s,7.6*bk,slv);cap(s,e,6.2*bk,5*bk,slv);ell(ml(ad(s,e),.5),sb(e,s),ln(sb(e,s))*.36,6.9*bk,6.5*bk,slv);cap(e,h,5.3*bk,3.9*bk,bare?skin:topS);sph(h,c.weapon==='fist'?6.2:5.1,c.weapon==='fist'?c.col2:skin)};
+   /* hands with fingers (Trey: give them fingers): a palm, four fingers in two joints curled into a loose fist, and a thumb. Fist fighters wear the glove colour. */
+   const hand=(h,e,back)=>{const f=nm(sb(h,e)),u=nm(cr(f,[0,0,1])),zc=[0,0,back?1:-1],col=c.weapon==='fist'?c.col2:skin,k=c.weapon==='fist'?1.18:1;ell3(ad(h,ml(f,1.6)),ml(f,3.5*k),ml(u,3.9*k),cr(nm(f),u).map(v=>v*2.3*k),col);
+     [-2.85,-.95,.95,2.85].forEach((o2,i)=>{const b0=ad(h,ad(ml(f,3.6*k),ml(u,o2*k))),L=(i===0||i===3?2.9:3.5)*k,b1=ad(b0,ad(ml(f,L),ml(zc,.7))),b2=ad(b1,ad(ml(f,.9),ml(zc,2.7*k)));cyl(b0,b1,1.15*k,1.05*k,col,0,2);sph(b1,1.05*k,col,0,2);cyl(b1,b2,1.05*k,.9*k,col,0,2);sph(b2,.9*k,col,0,2)});
+     const t0=ad(h,ad(ml(f,.8),ml(u,3.4*k))),t1=ad(t0,ad(ml(f,2.6*k),ad(ml(u,1.5*k),ml(zc,1.3))));cyl(t0,t1,1.3*k,1.1*k,col,0,2);sph(t1,1.1*k,col,0,2)};
+   const arm=(s,e,h,back)=>{sph(s,7.6*bk,slv);cap(s,e,6.2*bk,5*bk,slv);ell(ml(ad(s,e),.5),sb(e,s),ln(sb(e,s))*.36,6.9*bk,6.5*bk,slv);cap(e,h,5.3*bk,3.9*bk,bare?skin:topS);hand(h,e,back)};
    arm(shB,elB,haB,1);arm(shF,elF,haF,0);
    /* head */
    const ha=((p[0]||0)*.5+(p[1]||0))*R0+ra,HS=.84,hu=[Math.sin(ha)*HS,Math.cos(ha)*HS,0],hf=[Math.cos(ha)*HS,-Math.sin(ha)*HS,0],hs=[0,0,HS],nk=ad(neck,ml(sp,-2)),hc=ad(neck,ml(hu,14.6+6/HS)),/* the head sits 6 higher than the shoulders so a real neck shows */hp=(a,b,s)=>ad(hc,ad(ml(hf,a),ad(ml(hu,b),ml(hs,s))));
@@ -1461,7 +1471,10 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
    else if(wp==='orb'){const q=W(11),pl=1+.08*Math.sin(t*6);sph(q,6.4*pl,c.col,1);sph(ad(q,[1.5,2,2]),2.2,'#ffffff',1,1)}};
  const POSEF=[-2,-2,10,12,-10,14,7,-5,-7,-5,0,0];
  /* woman's head (Trey: give girls a woman's head; he chose "by their voice"): fighters whose voice is one of the four girl voices (Rin 1, Yuki 2, Hana 5, Cocky Girl 7 in voice.js order) */
- const FEMC={},isFem=c=>{let f=FEMC[c.name];if(f==null){f=false;try{if(window.COMBO_VOICEOF)f=[1,2,5,7].includes(window.COMBO_VOICEOF(c.name))}catch(e){}FEMC[c.name]=f}return f};
+ /* every fighter is labelled girl or boy (Trey: "label each girl and boy and put man head on boys"; the voice rule before this gave some boys a woman's head).
+    The main and released fighters are labelled by hand in GIRLS / BOYS. Every other fighter gets a fixed label from how their name ends (KENKO, MIRA, YUMI = girl; NETO, RILU, KENJI = boy). window.COMBO_SEX(name) gives the label; to fix one, add the name to GIRLS or BOYS. */
+ const GIRLS='RIN YUKI MIRA NOVA HANA LUNA AOI SERA NIKO MEI EMI VEGA MIRELLA SOLENNE NYXIA ZEPHRA LUMEIRA KENKO'.split(' '),BOYS='KAITO ZERO GOU REN AKIRA SORA TETSU JIN KURO BRAN DAI YORU KAI RAIZO SHIRO GIN TORA ASH KAZURO DRAVEN TORIK BRAMOS ONIKAI VESPER NETO'.split(' ');
+ const FEMC={},sexOf=n=>{n=String(n||'').toUpperCase();let f=FEMC[n];if(f==null){if(GIRLS.includes(n))f=true;else if(BOYS.includes(n))f=false;else{const e=n.slice(-1),e2=n.slice(-2);f=e==='A'||/([AEIOUY]E|LLE|NNE|TTE|INE|LIE)$/.test(n)||(e==='I'&&!/[JHTZGDBR]I$/.test(n))||['KO','YU','MI'].includes(e2)}FEMC[n]=f}return f},isFem=c=>sexOf(c.name);try{window.COMBO_SEX=n=>sexOf(n)?'girl':'boy'}catch(e){}
  /* render one fighter and stamp it into the 2D picture at the current drawing position */
  const render=(c,p,o,yaw,view)=>{if(!init())return false;try{const tr=g.getTransform(),sc=Math.hypot(tr.a,tr.b),px=Math.round(clamp(HALF*2*sc,96,SZ));
    gl.viewport(0,0,px,px);gl.enable(gl.SCISSOR_TEST);gl.scissor(0,0,px,px);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);gl.disable(gl.SCISSOR_TEST);gl.useProgram(PR);cur=null;
