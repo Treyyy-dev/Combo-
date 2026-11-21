@@ -1577,5 +1577,35 @@
   "game": {
    "flag": "fgrunt"
   }
+ },
+ {
+  "id": "update-anime-sfx",
+  "type": "update",
+  "name": "Anime Fight Sound Effects",
+  "subtitle": "Punches, blades, skills and ultimates",
+  "desc": "New fight sounds: punches thud and crack, blades ring, heavy hits get a sharp ring, skills and shots sound like their element, and guard, dash, jump, ultimate and KO sounds are fuller.",
+  "status": "staged",
+  "created": 1795233922237,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "sfx2"
+  }
+ },
+ {
+  "id": "update-unique-skills",
+  "type": "update",
+  "name": "Unique Skill and Ultimate Looks",
+  "subtitle": "Every fighter's moves look like their own",
+  "desc": "Skills and ultimates now show each fighter's element: lightning, fire, ice, shadow, stone, stars, wind, void, water, blossoms, wild or holy light, in their own colours with a pattern unique to that fighter.",
+  "status": "staged",
+  "created": 1795233922238,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "uniq"
+  }
  }
 ]
