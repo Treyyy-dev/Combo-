@@ -1952,5 +1952,20 @@
   "game": {
    "flag": "lobbychar"
   }
+ },
+ {
+  "id": "update-square-buttons",
+  "type": "update",
+  "name": "Square Menu Buttons",
+  "subtitle": "Lobby and match buttons are square tiles",
+  "desc": "The big buttons on the lobby and on the Match, Offline and Online screens are now square tiles in a grid. They do the same things as before.",
+  "status": "staged",
+  "created": 1795240821933,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "sqbtn"
+  }
  }
 ]

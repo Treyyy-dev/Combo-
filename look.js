@@ -790,4 +790,23 @@ let SCX=null,HCX=null;
  const mc1=miniChar;miniChar=function(){if(ARM===2){ARM=3;return}return mc1.apply(this,arguments)};
  const tx1=txt;txt=function(){if(ARM>=3){ARM++;if(ARM>=5)disarm();return}if(ARM){disarm()}return tx1.apply(this,arguments)};
  const m1=SCR.menu;SCR.menu=function(){REQ=!!F().lobbychar;try{return m1.apply(this,arguments)}finally{REQ=false;disarm()}}}
+/* sqbtn: the big buttons on the lobby and on the MATCH, OFFLINE and ONLINE screens are square tiles in a grid. Same buttons, same order, same actions; only their shape and place change.
+   Small info lines on the match screens move to the bottom of the screen so the tiles do not cover them. */
+{const tile=(x,y,s,b,foc)=>{g.save();rr(x,y,s,s,Math.max(8,s*.1));g.fillStyle=b.col;g.fill();const gr=g.createLinearGradient(0,y,0,y+s);gr.addColorStop(0,'rgba(255,255,255,.16)');gr.addColorStop(1,'rgba(10,4,24,.3)');g.fillStyle=gr;g.fill();g.strokeStyle=foc?'#ffe14d':'#fff';g.lineWidth=foc?5:3;g.stroke();g.restore();
+   const L=String(b.label||''),ws=L.split(' '),two=ws.length>1&&L.length>9,l1=two?ws.slice(0,Math.ceil(ws.length/2)).join(' '):L,l2=two?ws.slice(Math.ceil(ws.length/2)).join(' '):'';
+   let fs=Math.min(26,s*.2);g.save();g.font='900 '+fs+'px '+FB;const mw=Math.max(g.measureText(l1).width,l2?g.measureText(l2).width:0);g.restore();if(mw>s-16)fs*=(s-16)/mw;
+   const D=b.desc?String(b.desc).split(' · ').slice(0,3):[],ds=Math.min(12,s*.095),th=fs*(two?2.05:1)+(D.length?6+D.length*(ds+3):0);let ty=y+s/2-th/2+fs*.5;
+   txt(l1,x+s/2,ty,fs,'#fff',INK,'center',FB,5);if(two){ty+=fs*1.05;txt(l2,x+s/2,ty,fs,'#fff',INK,'center',FB,5)}ty+=fs*.5+6+ds*.5;
+   D.forEach(d=>{let q=ds;g.save();g.font='700 '+q+'px '+FU;const w=g.measureText(d).width;g.restore();if(w>s-12)q*=(s-12)/w;txt(d,x+s/2,ty,q,'#fff',INK,'center',FU,3);ty+=ds+3})};
+ const wrapScr=(m,menu)=>{const d0=SCR[m];if(!d0)return;let pn=0;SCR[m]=function(){if(!F().sqbtn)return d0.apply(this,arguments);const B=[],T=[],b0=button,t0=txt,f0=G.focus;G.focus=f0-pn;
+   button=function(x,y,w,h,label,col,fn,size,desc){if(w>=200&&h>=30&&!G.set2){B.push({x,y,w,h,label,col,fn,desc});return false}return b0.apply(this,arguments)};
+   if(!menu)txt=function(s,x,y,size){if(B.length&&size<=14.5&&y>56&&y<H-4&&typeof s==='string'){T.push(Array.prototype.slice.call(arguments));return}return t0.apply(this,arguments)};
+   try{d0.apply(this,arguments)}finally{button=b0;txt=t0}
+   if(G.mode!==m)return;G.focus=f0;pn=B.length;if(!B.length)return;const old=G.ui,TL=[],kb=lastDev!=='touch';try{g.setTransform(S*dpr,0,0,S*dpr,0,0);const gap=10,n=B.length;let ax,ay,aw,ah;
+    if(menu){ax=Math.min.apply(null,B.map(b=>b.x));ay=Math.min.apply(null,B.map(b=>b.y));aw=Math.max.apply(null,B.map(b=>b.w));ah=Math.max.apply(null,B.map(b=>b.y+b.h))-ay}
+    else{ax=18;aw=W-36;ay=Math.max(58,Math.min.apply(null,B.map(b=>b.y))-6);ah=H-ay-(T.length?T.length*16+18:14)}
+    let best=0,bc=1;for(let c=1;c<=n;c++){const r=Math.ceil(n/c),sd=Math.min((aw-(c-1)*gap)/c,(ah-(r-1)*gap)/r);if(sd>best){best=sd;bc=c}}const sd=Math.min(best,menu?999:200),rows=Math.ceil(n/bc),gw=bc*sd+(bc-1)*gap,gh=rows*sd+(rows-1)*gap,ox=ax+(aw-gw)/2,oy=ay+(ah-gh)/2;
+    B.forEach((b,k)=>{const r=k/bc|0,inRow=r===rows-1?n-r*bc:bc,rx=ox+(gw-(inRow*sd+(inRow-1)*gap))/2;const tx=rx+(k%bc)*(sd+gap),ty=oy+r*(sd+gap);TL.push({x:tx,y:ty,w:sd,h:sd,fn:b.fn});tile(tx,ty,sd,b,kb&&k===f0)});G.ui=TL.concat(old);
+    T.forEach((a,k)=>{a[1]=W/2;a[2]=H-12-(T.length-1-k)*16;a[6]='center';txt.apply(null,a)});if(G.focus>=G.ui.length)G.focus=0}catch(e){}}};
+ wrapScr('menu',true);wrapScr('match');wrapScr('offline');wrapScr('online')}
 })();
