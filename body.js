@@ -31,7 +31,7 @@ function foot(f,a,c,C,ink,sil,back,out){g.save();g.translate(f.x,f.y);g.rotate(-
    g.strokeStyle=c.col;g.lineWidth=1.6;g.beginPath();g.moveTo(-3.4,-3.4);g.lineTo(3.4,-3.9);g.stroke()}}
  g.restore()}
 function drawChar2(c,p,o){CEL=F().cel?1:0;const J=joints(p),Z2=F().dbz2?1:0,DZ=Z2||F().dbz?1:0,D=DZ||F().d25?1:0,sil=o.sil,ink=sil||INK,C=x=>sil||x,t=o.t||0,sw=o.sway||0,bk=(c.sc>1.07||c.dm>1)?1.14:1,hi=sil?null:tint(c.skin,.38);
- if(D){const tl0=p[0]*R,nx=Math.cos(tl0),ny=Math.sin(tl0),sh=(P,dx,dy)=>({x:P.x+dx,y:P.y+dy}),a=(DZ?-11.5:-5)*bk,b=(DZ?12:7)*bk,hA=(Z2?-8.6:DZ?-6.8:-3.6)*bk,hB=(Z2?9:DZ?7.2:4.6)*bk;J.shA=sh(J.sh,nx*a,ny*a);J.shB=sh(J.sh,nx*b,ny*b);J.af=J.af.map(q=>sh(q,nx*a,ny*a));J.ab=J.ab.map(q=>sh(q,nx*b,ny*b));J.hipA=sh(J.hip,hA,0);J.hipB=sh(J.hip,hB,0);J.lf=J.lf.map(q=>sh(q,hA,0));J.lb=J.lb.map(q=>sh(q,hB,0))}else{J.shA=J.shB=J.sh;J.hipA=J.hipB=J.hip}
+ if(D){const tl0=p[0]*R,nx=Math.cos(tl0),ny=Math.sin(tl0),sh=(P,dx,dy)=>({x:P.x+dx,y:P.y+dy}),a=(DZ?12:-5)*bk,b=(DZ?-11.5:7)*bk,hA=(Z2?9:DZ?7.2:-3.6)*bk,hB=(Z2?-8.6:DZ?-6.8:4.6)*bk;J.shA=sh(J.sh,nx*a,ny*a);J.shB=sh(J.sh,nx*b,ny*b);J.af=J.af.map(q=>sh(q,nx*a,ny*a));J.ab=J.ab.map(q=>sh(q,nx*b,ny*b));J.hipA=sh(J.hip,hA,0);J.hipB=sh(J.hip,hB,0);J.lf=J.lf.map(q=>sh(q,hA,0));J.lb=J.lb.map(q=>sh(q,hB,0))}else{J.shA=J.shB=J.sh;J.hipA=J.hipB=J.hip}
  const LT=D&&!sil?'rgba(255,255,255,.17)':null;
  g.save();
  if(o.ground)g.translate(0,-Math.max(J.lf[1].y,J.lb[1].y));
@@ -53,10 +53,10 @@ function drawChar2(c,p,o){CEL=F().cel?1:0;const J=joints(p),Z2=F().dbz2?1:0,DZ=Z
   hand(J.ab[1],p[4]+p[5],C(glove?shade(c.col2.length===7?c.col2:'#cccccc',.8):c.skinSh),'rgba(0,0,0,.35)',ink,sil,glove||c.weapon==='dagger',gk*.95)};
  if(!Z2)backArm();
  /* legs */
- limb2([[J.hipB,J.lb[0],7.2*bk,5.4*bk,1.2,1.8,C(c.pantsSh)],[J.lb[0],J.lb[1],5.4*bk,3.6,2,.3,C(c.pantsSh)]],ink,sil);foot(J.lb[1],p[8]+p[9],c,C,ink,sil,true,Z2?1:0);
- limb2([[J.hipA,J.lf[0],7.9*bk,5.9*bk,1.2,2,C(c.pants),c.pantsSh,LT],[J.lf[0],J.lf[1],5.9*bk,3.9,2.2,.3,C(c.pants),c.pantsSh,LT]],ink,sil);foot(J.lf[1],p[6]+p[7],c,C,ink,sil,false,Z2?-1:0);
- if(Z2){const hy=J.hip.y;smooth([[J.hipA.x-8.6*bk,hy-4],[J.hipA.x-8.2*bk,hy+7],[J.hipA.x-2*bk,hy+13],[(J.hipA.x+J.hipB.x)/2,hy+17],[J.hipB.x+2*bk,hy+13],[J.hipB.x+8.2*bk,hy+7],[J.hipB.x+8.6*bk,hy-4],[(J.hipA.x+J.hipB.x)/2,hy-8]]);g.strokeStyle=ink;g.lineWidth=4;g.stroke();g.fillStyle=C(c.pants);g.fill();
-  if(!sil){g.strokeStyle='rgba(0,0,0,.3)';g.lineWidth=1.2;g.lineCap='round';g.beginPath();const mx=(J.hipA.x+J.hipB.x)/2;g.moveTo(mx,hy+2);g.lineTo(mx,hy+16);g.moveTo(J.hipA.x-6*bk,hy+8);g.quadraticCurveTo(J.hipA.x,hy+12,mx-1,hy+15);g.moveTo(J.hipB.x+6*bk,hy+8);g.quadraticCurveTo(J.hipB.x,hy+12,mx+1,hy+15);g.stroke();
+ limb2([[J.hipB,J.lb[0],7.2*bk,5.4*bk,1.2,1.8,C(c.pantsSh)],[J.lb[0],J.lb[1],5.4*bk,3.6,2,.3,C(c.pantsSh)]],ink,sil);foot(J.lb[1],p[8]+p[9],c,C,ink,sil,true,Z2?-1:0);
+ limb2([[J.hipA,J.lf[0],7.9*bk,5.9*bk,1.2,2,C(c.pants),c.pantsSh,LT],[J.lf[0],J.lf[1],5.9*bk,3.9,2.2,.3,C(c.pants),c.pantsSh,LT]],ink,sil);foot(J.lf[1],p[6]+p[7],c,C,ink,sil,false,Z2?1:0);
+ if(Z2){const hy=J.hip.y,HL=J.hipA.x<J.hipB.x?J.hipA:J.hipB,HR=HL===J.hipA?J.hipB:J.hipA;smooth([[HL.x-8.6*bk,hy-4],[HL.x-8.2*bk,hy+7],[HL.x-2*bk,hy+13],[(HL.x+HR.x)/2,hy+17],[HR.x+2*bk,hy+13],[HR.x+8.2*bk,hy+7],[HR.x+8.6*bk,hy-4],[(HL.x+HR.x)/2,hy-8]]);g.strokeStyle=ink;g.lineWidth=4;g.stroke();g.fillStyle=C(c.pants);g.fill();
+  if(!sil){g.strokeStyle='rgba(0,0,0,.3)';g.lineWidth=1.2;g.lineCap='round';g.beginPath();const mx=(J.hipA.x+J.hipB.x)/2;g.moveTo(mx,hy+2);g.lineTo(mx,hy+16);g.moveTo(HL.x-6*bk,hy+8);g.quadraticCurveTo(HL.x,hy+12,mx-1,hy+15);g.moveTo(HR.x+6*bk,hy+8);g.quadraticCurveTo(HR.x,hy+12,mx+1,hy+15);g.stroke();
    [J.lf[0],J.lb[0]].forEach((k,i)=>{g.beginPath();g.ellipse(k.x,k.y,4.2*bk,5*bk,0,0,TAU);g.fillStyle=i?'rgba(255,255,255,.07)':'rgba(255,255,255,.13)';g.fill();g.strokeStyle='rgba(0,0,0,.32)';g.lineWidth=1.1;g.stroke()})}}
  if(CEL&&!sil){const h=J.hipA,k=J.lf[0],f=J.lf[1],L1=(P,Q,t,n)=>{const dx=Q.x-P.x,dy=Q.y-P.y,L=Math.hypot(dx,dy)||1;return[P.x+dx*t+dy/L*n,P.y+dy*t-dx/L*n]};g.lineCap='round';
   g.strokeStyle=c.col;g.lineWidth=1.5;g.beginPath();let q=L1(h,k,.12,3.2*bk);g.moveTo(q[0],q[1]);q=L1(h,k,.95,2.6*bk);g.lineTo(q[0],q[1]);q=L1(k,f,.9,1.6);g.lineTo(q[0],q[1]);g.stroke();
