@@ -1907,5 +1907,20 @@
   "game": {
    "flag": "mindl"
   }
+ },
+ {
+  "id": "update-bg-25d",
+  "type": "update",
+  "name": "2.5D Backgrounds",
+  "subtitle": "More depth on every map, story place and menu",
+  "desc": "Maps in matches and story get two more depth layers on the ground: stage props just behind the fighters and dark props close to the camera, which slide at their own speed when the camera moves. Story scenes get a slow camera drift. Menu screens get a floor that runs toward you.",
+  "status": "staged",
+  "created": 1795240184467,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "bg25"
+  }
  }
 ]

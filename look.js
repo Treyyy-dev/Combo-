@@ -727,4 +727,33 @@ let SCX=null,HCX=null;
   }finally{CUR=pc}}}
 /* iconfull: every character face icon (fighter tiles, profile pictures, team circles, match portraits, quest list faces) is zoomed out so the whole head shows. The game icon is not changed. */
 {const dh0=drawHead;drawHead=function(c,x,y,sc,flip,expr,dmg,sil){if(F().iconfull&&expr!=='yell')sc*=.58;return dh0(c,x,y,sc,flip,expr,dmg,sil)}}
+/* bg25: 2.5D backgrounds. Matches, intros and story scenes get two more depth layers on the ground: a row of stage props just behind the fighters and a row of dark props
+   close to the camera, both placed on the floor's own perspective so they slide at their own speed when the camera moves; the floor is shaded darker toward the horizon.
+   Story scenes add a slow camera drift so the layers are seen moving. Menu screens get a perspective floor that scrolls toward the camera. Indoor story places are left alone. */
+{const B=()=>F().bg25,ROOM={dojo:1,inn:1,cave:1},room=()=>{try{const e=window.COMBO_ENV&&COMBO_ENV();return !!(e&&ROOM[e])}catch(x){return false}};
+ const prop=(kind,x,y,s,st,sil,k)=>{const dk=sil?'rgba(8,4,20,.9)':st.bc||'#1b1038';
+  if(kind==='torii'){g.fillStyle=dk;g.fillRect(x-3*s,y-34*s,6*s,34*s);g.fillRect(x-10*s,y-3*s,20*s,3*s);g.fillRect(x-9*s,y-50*s,18*s,16*s);g.beginPath();g.moveTo(x-13*s,y-50*s);g.lineTo(x,y-60*s);g.lineTo(x+13*s,y-50*s);g.fill();
+   if(!sil){g.fillStyle='#ffcf7a';g.globalAlpha=.75+.2*Math.sin(G.t*3+k);g.fillRect(x-6*s,y-47*s,12*s,10*s);g.globalAlpha=1}}
+  else if(kind==='neon'){g.fillStyle=sil?dk:'#07061a';g.fillRect(x-2.5*s,y-78*s,5*s,78*s);g.fillRect(x-2.5*s,y-78*s,26*s,4*s);g.fillRect(x-9*s,y-4*s,18*s,4*s);
+   if(!sil){const nc=k%2?'#ff5ac8':'#5af0ff';g.fillStyle=nc;g.fillRect(x+12*s,y-74*s,12*s,4*s);g.globalAlpha=.16;g.beginPath();g.moveTo(x+12*s,y-70*s);g.lineTo(x+24*s,y-70*s);g.lineTo(x+40*s,y);g.lineTo(x-4*s,y);g.fill();g.globalAlpha=1}}
+  else if(kind==='ice'){poly([[x-16*s,y],[x-7*s,y-46*s],[x,y-18*s],[x+8*s,y-64*s],[x+18*s,y]],sil?dk:'#bfe8ff',sil?null:'#fff',sil?0:1.5);if(!sil)poly([[x+3*s,y],[x+8*s,y-64*s],[x+12*s,y]],'#effaff')}
+  else if(kind==='rock'){poly([[x-22*s,y],[x-12*s,y-30*s],[x-2*s,y-22*s],[x+7*s,y-44*s],[x+20*s,y-16*s],[x+26*s,y]],sil?dk:'#160708');if(!sil){g.strokeStyle='rgba(255,120,30,.8)';g.lineWidth=1.6*s;g.beginPath();g.moveTo(x+7*s,y-42*s);g.lineTo(x+3*s,y-24*s);g.lineTo(x+9*s,y);g.stroke()}}
+  else{const h=(k%3===0?30:54)*s;g.fillStyle=sil?dk:'#eef4fb';g.fillRect(x-8*s,y-h,16*s,h);g.fillRect(x-12*s,y-5*s,24*s,5*s);if(k%3)g.fillRect(x-12*s,y-h-5*s,24*s,6*s);if(!sil){g.fillStyle='#c6d6ea';g.fillRect(x-8*s,y-h,4.5*s,h)}}};
+ const row=(front)=>{const st=STAGES[G.stg||0],z=cam.z,hy=cam.ay-26*z-cam.y*z*.6,fh=Math.max(1,H-hy),dy=front?fh*1.04:Math.min(15*z,fh*.2),f=z*(.62+2.2*dy/300),step=front?760:330,off=front?380:165,y=hy+dy,s=f*(front?1.5:.92);
+  for(let i=-9;i<=9;i++){const wx=i*step+off;if(!front&&(Math.abs(wx)<95||Math.abs(Math.abs(wx)-620)<95))continue;const x=W/2+(wx-cam.x)*f;if(x<-90||x>W+90)continue;
+   if(!front){g.fillStyle='rgba(0,0,0,.28)';g.beginPath();g.ellipse(x,y,16*s,3.2*s,0,0,TAU);g.fill()}prop(st.mid,x,y,s,st,front,i+20)}};
+ const bg0=drawBG;drawBG=function(){bg0();if(!B()||room())return;try{g.save();const z=cam.z,hy=cam.ay-26*z-cam.y*z*.6,fh=Math.max(1,H-hy);
+   const sh=g.createLinearGradient(0,hy,0,hy+fh*.42);sh.addColorStop(0,'rgba(6,2,18,.42)');sh.addColorStop(1,'rgba(6,2,18,0)');g.fillStyle=sh;g.fillRect(0,hy,W,fh*.42);
+   const nr=g.createLinearGradient(0,hy+fh*.6,0,H);nr.addColorStop(0,'rgba(255,255,255,0)');nr.addColorStop(1,'rgba(255,255,255,.07)');g.fillStyle=nr;g.fillRect(0,hy+fh*.6,W,fh*.4);
+   row(false);g.restore()}catch(e){try{g.restore()}catch(x){}}};
+ const fg0=drawFG;drawFG=function(){fg0();if(!B()||room())return;try{g.save();row(true);g.restore()}catch(e){try{g.restore()}catch(x){}}};
+ /* story scenes: slow camera drift */
+ if(SCR.scene){const sc0=SCR.scene;SCR.scene=function(){if(!B()||G.mode!=='scene')return sc0();const o=Math.sin(G.t*.32)*34;cam.x+=o;try{return sc0()}finally{if(G.mode==='scene')cam.x-=o}}}
+ /* menu screens: perspective floor */
+ const s0=scr;scr=function(){s0();if(!B()||G.mode==='scene')return;try{g.save();const y0=H*.72,fh=H-y0,dr=(G.t*14)%90;
+   const fl=g.createLinearGradient(0,y0,0,H);fl.addColorStop(0,'rgba(10,4,24,.5)');fl.addColorStop(1,'rgba(10,4,24,.12)');g.fillStyle=fl;g.fillRect(0,y0,W,fh);
+   const hz=g.createLinearGradient(0,y0-26,0,y0+6);hz.addColorStop(0,'rgba(255,170,220,0)');hz.addColorStop(1,'rgba(255,170,220,.22)');g.fillStyle=hz;g.fillRect(0,y0-26,W,32);
+   g.strokeStyle='rgba(255,255,255,.13)';g.lineWidth=1.2;g.beginPath();g.rect(0,y0,W,fh);g.clip();
+   for(let i=-16;i<=16;i++){const wx=i*90-dr;g.beginPath();g.moveTo(W/2+wx*.3,y0);g.lineTo(W/2+wx*2.1,H);g.stroke()}
+   const ph=(G.t*.22)%1;for(let j=0;j<8;j++){const d=(j+ph)/8,y=y0+fh*d*d;g.globalAlpha=.25+d*.75;g.beginPath();g.moveTo(0,y);g.lineTo(W,y);g.stroke()}g.restore()}catch(e){try{g.restore()}catch(x){}}}}
 })();

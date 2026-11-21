@@ -1851,5 +1851,5 @@ function envScreen(){const E=SC.env,t=G.t;g.save();
  g.restore()}
 try{window.CBACK=drawBackChar}catch(e){}
 /* list of story voice clip addresses for the FULL download (flag "dlset") */
-try{window.COMBO_AUD_STORY=()=>{const o=[];if(!F().voice1)return o;for(const k in VO){const v=VO[k];v.t.forEach(t=>o.push(VBASE+v.p+'/'+v.c+'/'+t[0]+'.wav'))}if(F().xlines)for(const k in XL)XL[k].l.forEach(x=>o.push(VBASE+XP+'/'+XL[k].c+'/'+x[3]+'.wav'));return o}}catch(e){}
+try{window.COMBO_ENV=()=>{try{return G.mode==='scene'&&SC&&SC.env?SC.env.set:null}catch(e){return null}};window.COMBO_AUD_STORY=()=>{const o=[];if(!F().voice1)return o;for(const k in VO){const v=VO[k];v.t.forEach(t=>o.push(VBASE+v.p+'/'+v.c+'/'+t[0]+'.wav'))}if(F().xlines)for(const k in XL)XL[k].l.forEach(x=>o.push(VBASE+XP+'/'+XL[k].c+'/'+x[3]+'.wav'));return o}}catch(e){}
 })();
