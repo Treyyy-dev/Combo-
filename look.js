@@ -679,9 +679,18 @@ let SCX=null,HCX=null;
   g.setTransform(S*dpr,0,0,S*dpr,0,0);const nm=UPD.names.slice(0,4),more=UPD.names.length-nm.length,w=Math.min(460,W-40),h=62+nm.length*20+(more?20:0),x=(W-w)/2,y=H*.34;g.save();g.globalAlpha=clamp((now-UPD.t)/250,0,1)*clamp((12000-(now-UPD.t))/500,0,1);
   rr(x,y,w,h,14);g.fillStyle='rgba(16,8,34,.94)';g.fill();g.strokeStyle='#ffe14d';g.lineWidth=3;g.stroke();txt('NEW UPDATE',W/2,y+30,28,'#ffe14d',INK,'center',FB,6);nm.forEach((t,k)=>txt(t,W/2,y+60+k*20,15,'#fff',null,'center',FU));if(more)txt('+ '+more+' more',W/2,y+60+nm.length*20,14,'#e6dcff',null,'center',FU);g.restore()}}
 /* conn: tapping start keeps the start screen up with "CONNECTING TO COMBO" at the bottom for 8 seconds, then carries on to wherever start led before. */
-{const T=8000;let t0=0,on=false,pass=false;const gc0=goto;goto=function(m){if(F().conn&&m==='menu'&&G.mode==='title'&&!pass){if(!on){on=true;t0=performance.now();sfx('ui')}return}if(m!=='title')on=false;return gc0(m)};
+{const T=8000;let t0=0,on=false,pass=false,up=false,busy=false,last=0;const gc0=goto;goto=function(m){if(F().conn&&m==='menu'&&G.mode==='title'&&!pass){if(!on){on=true;up=false;last=0;t0=performance.now();sfx('ui')}return}if(m!=='title')on=false;return gc0(m)};
  const ct0=SCR.title;SCR.title=function(){if(!on||!F().conn){on=false;return ct0()}
   const tx0=txt;txt=function(s){if(typeof s==='string'&&/TO START$/.test(s))return;return tx0.apply(this,arguments)};try{ct0()}finally{txt=tx0}
   G.ui=[];const e=performance.now()-t0;g.setTransform(S*dpr,0,0,S*dpr,0,0);g.globalAlpha=1;txt('CONNECTING TO COMBO'+'.'.repeat(1+((e/450|0)%3)),W/2,H*.93,24,'#fff',INK,'center',FB,7);
-  if(e>=T){on=false;pass=true;try{goto('menu')}finally{pass=false}}}}
+  const need=F().rcover&&window.COMBO_SRV;if(need&&!up&&!busy&&performance.now()-last>2000){busy=true;last=performance.now();const tt=t0;
+   fetch('live.json?c='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(q=>{if(Array.isArray(q)&&tt===t0){up=true;try{if(window.COMBO_REMOTE)COMBO_REMOTE()}catch(x){}}}).catch(()=>{}).then(()=>{busy=false})}
+  if(e>=T&&(!need||up)){on=false;pass=true;try{goto('menu')}finally{pass=false}}}
+ /* rcover: keep a copy of the game's own files on the device (see sw.js) so the studio intro and start screen show even while the game server is still waking up */
+ const SH='combo-shell-v1',FILES=['./','live.js','story.js','voice.js','more.js','body.js','look.js','icon.png','icon2.png','manifest.json','manifest2.json'];let kept=false;
+ const keep=async()=>{if(kept||!window.COMBO_SRV||!window.caches||!/^https?:$/.test(location.protocol))return;kept=true;try{
+   if(!F().rcover){if(window.LIVE_READY)await caches.delete(SH);return}
+   if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});const c=await caches.open(SH);
+   for(const f of FILES){try{const u=new URL(f,location.href);u.search='';u.hash='';const r=await fetch(u.href,{cache:'no-store'});if(r.status===200&&r.headers.get('x-combo')==='1')await c.put(u.href,r)}catch(x){}}}catch(x){}};
+ {let n=0;const iv=setInterval(()=>{n++;if(window.LIVE_READY||n>=8){clearInterval(iv);keep()}},1000)}}
 })();

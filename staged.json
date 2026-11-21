@@ -1787,5 +1787,20 @@
   "game": {
    "flag": "conn"
   }
+ },
+ {
+  "id": "update-server-cover",
+  "type": "update",
+  "name": "Cover Server Wake-Up",
+  "subtitle": "Intro and start screen show while the server wakes",
+  "desc": "The game keeps a copy of its own files on your device. When the game server is still waking up, the studio intro and start screen show right away, and the start screen keeps saying CONNECTING TO COMBO past 8 seconds until the server answers. Needs the Connecting update.",
+  "status": "staged",
+  "created": 1795238307039,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "rcover"
+  }
  }
 ]

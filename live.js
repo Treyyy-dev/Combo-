@@ -228,7 +228,7 @@ async function remote(){let ok=false;try{const r=await fetch('live.json',{cache:
 const rows=s=>s.docs.map(d=>Object.assign({},d.data(),{id:d.id}));
 try{const q=JSON.parse(localStorage.getItem(CK));if(Array.isArray(q))apply(q)}catch(e){}
 (async()=>{let c=null;try{if(window.claude&&window.claude.use)c=await window.claude.use('db')}catch(e){}L.ready=true;
- if(!c){remote();return}
+ if(!c){try{window.COMBO_SRV=1;window.COMBO_REMOTE=()=>{if(!window.LIVE_READY)remote()}}catch(e){}remote();return}
  L.db=c;
  try{c.collection('live').onSnapshot(s=>{if(s.metadata&&s.metadata.fromCache&&!s.docs.length)return;try{window.LIVE_READY=1}catch(e){}apply(rows(s))},()=>{})}catch(e){}
  let u=null,ow=false;try{u=await window.claude.use('user');if(u)ow=!!(await u.isOwner())}catch(e){u=null}

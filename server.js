@@ -205,7 +205,7 @@ const server = http.createServer((req, res) => {
   if (!file.startsWith(ROOT) || !TYPES[path.extname(file)] || path.basename(file) === 'server.js' || path.basename(file) === 'package.json' || path.basename(file) === 'staged.json') { res.writeHead(404); return res.end('Not found'); }
   fs.readFile(file, (err, data) => {
     if (err) { res.writeHead(404); return res.end('Not found'); }
-    res.writeHead(200, { 'content-type': TYPES[path.extname(file)], 'cache-control': 'no-cache' });
+    res.writeHead(200, { 'content-type': TYPES[path.extname(file)], 'cache-control': 'no-cache', 'x-combo': '1' });
     res.end(data);
   });
 });
