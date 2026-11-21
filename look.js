@@ -659,10 +659,12 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
   try{await Promise.all([0,1,2,3].map(worker))}catch(e){}DL.run=false;if(!DL.stop){try{if(!DL.fail&&!DL.full)localStorage.setItem(DK2,hsh(DL.list))}catch(e){}DL.fin=true}}
  /* dl6: FULL players are only sent through the download screen when 5 or more things were released at once from Dev Studio (window.COMBO_BIG = time of the newest such release) since their last finished download.
     Smaller releases load their files while playing. Choosing FULL the first time, or tapping FULL in Settings, always downloads. */
+ /* dlafter: a download never starts from the Settings on the start screen. Picking MIN or FULL there only saves the choice; the download screen comes
+    after the player taps start and CONNECTING has finished, the same as the very first time (choose MIN / FULL, then download). */
  const BK='combo-dl-big',need=()=>{if(DL.ok)return false;if(!F().dl6)return true;let v=null;try{v=localStorage.getItem(BK)}catch(e){}if(v==null)return true;if((window.COMBO_BIG||0)>+v)return true;DL.ok=true;return false};
  function pick(m){setMode(m);DL.stop=true;DL.started=false;DL.fin=false;if(m==='full'||MD()){DL.ok=false;goto('dl')}else{DL.ok=true;goto('menu')}}
  setTimeout(()=>{if(F().dlset&&(DL.mode==='full'||MD()))sw()},3000);
- const g0=goto;goto=function(m){if(m!=='menu')G.set2=false;if(F().dlset&&m==='menu'&&G.mode==='title'&&web()){if(!DL.mode)return g0('dlpick');if((DL.mode==='full'||MD())&&need())return g0('dl')}return g0(m)};
+ const g0=goto;goto=function(m){if(m!=='menu')G.set2=false;if(F().dlset&&m==='menu'&&G.mode==='title'&&web()){if(!DL.mode)return g0('dlpick');if((DL.mode==='full'||MD())&&(need()||(F().dlafter&&DL.force))){DL.force=false;return g0('dl')}}return g0(m)};
  SCR.dlpick=function(){scr();const n=manifest().length,bw=Math.min(330,(W-60)/2),y=96,h=160,x0=W/2-bw-10;
   [['min','MIN DOWNLOAD',F().mindl?'Small: fight sounds only.':'Small and quick.','Voices load while you play,','so a line can start a little late.','#2f4f8f','Plays in LOW quality.'],['full','FULL DOWNLOAD',n+' voice files.','Bigger and slower to get,','then voices play right away.','#2f7a5f','Quality can go up to HIGH.']].forEach((q,k)=>{const x=x0+k*(bw+20);button(x,y,bw,h,'',q[5],()=>pick(q[0]),20);txt(q[1],x+bw/2,y+36,Math.min(26,bw*.085),'#fff',INK,'center',FB,5);[q[2],q[3],q[4],q[6]].forEach((t,j)=>txt(t,x+bw/2,y+72+j*20,14,j===3?'#ffe14d':'#fff',null,'center',FU))});
   txt(F().setstart?'You can switch any time in Settings, at the top right of the start screen.':'You can switch any time in Settings, at the top right of the lobby.',W/2,y+h+28,13.5,'#e6dcff',null,'center',FU);txt('Every update adds its new files. The game still needs the internet to play.',W/2,y+h+48,13.5,'#e6dcff',null,'center',FU);hdr('CHOOSE YOUR DOWNLOAD','title',true)};
@@ -732,8 +734,8 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
   /* set1st: before the player has picked MIN or FULL, Settings only offers sign-in; the download choice comes when they tap start */
   if(first){txt('Tap start to choose MIN or FULL download.',W/2,y+128,13.5,'#e6dcff',null,'center',FU)}else{
   txt('DOWNLOAD',W/2,y+126,14,'#e6dcff',null,'center',FU);
-  button(x+24,y+140,bw,44,'MIN DOWNLOAD',!full?'#2f7a5f':'#3a2a5e',()=>{if(DL.mode!=='min'){setMode('min');if(MD()&&web()){DL.ok=false;DL.started=false;DL.fin=false;DL.stop=true;G.set2=false;g0('dl');return}DL.ok=true;note('MIN download: LOW quality, voices load while you play')}},18,!full?'ON':'');
-  button(x+36+bw,y+140,bw,44,'FULL DOWNLOAD',full?'#2f7a5f':'#3a2a5e',()=>{if(!web()){note('Downloads work on the game website');return}setMode('full');DL.ok=false;DL.started=false;DL.fin=false;G.set2=false;g0('dl')},18,full?'ON':'');
+  button(x+24,y+140,bw,44,'MIN DOWNLOAD',!full?'#2f7a5f':'#3a2a5e',()=>{if(DL.mode!=='min'){setMode('min');if(MD()&&web()){DL.ok=false;DL.started=false;DL.fin=false;DL.stop=true;if(F().dlafter&&G.mode==='title'){DL.force=true;note('MIN picked. Tap start to download.');return}G.set2=false;g0('dl');return}DL.ok=true;note('MIN download: LOW quality, voices load while you play')}},18,!full?'ON':'');
+  button(x+36+bw,y+140,bw,44,'FULL DOWNLOAD',full?'#2f7a5f':'#3a2a5e',()=>{if(!web()){note('Downloads work on the game website');return}setMode('full');DL.ok=false;DL.started=false;DL.fin=false;if(F().dlafter&&G.mode==='title'){DL.force=true;note('FULL picked. Tap start to download.');return}G.set2=false;g0('dl')},18,full?'ON':'');
   txt(full?'FULL: every voice file is kept on this device. Quality up to HIGH.':'MIN: voices load as they play. Quality stays LOW.',W/2,y+206,13.5,'#fff',null,'center',FU);txt('Each update adds its new files. The game still needs the internet.',W/2,y+225,12.5,'#e6dcff',null,'center',FU)}
   button(W/2-70,y+h-52,140,38,'CLOSE','#3a2a5e',()=>{G.set2=false},18);
   if(G.note){g.save();g.font='700 16px '+FU;const nw=g.measureText(G.note.t).width+36;g.globalAlpha=clamp(G.note.T*3,0,1);rr((W-nw)/2,y-44,nw,36,10);g.fillStyle='rgba(10,4,24,.96)';g.fill();g.strokeStyle='#ff7ad1';g.lineWidth=2;g.stroke();txt(G.note.t,W/2,y-26,16,'#fff',null,'center',FU);g.restore()}
@@ -752,12 +754,12 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
    if(st){const x=W-52,y=12;gear(x,y,false);G.ui.unshift({x,y,w:38,h:34,fn:()=>{G.set2=true}});n++}
    if(ui){const t='USER ID: '+(G.uidOn?String(SV.pid||'none'):'TAP TO SHOW');txt(t,14,26,12,G.uidOn?'#fff':'#cbbfe6',INK,'left',FU,3);G.ui.unshift({x:8,y:12,w:230,h:28,fn:()=>{G.uidOn=!G.uidOn}});n++}
    G.focus=n}}
- /* new update message */
+ /* new update message. updshort: the message only says COMBO UPDATE, without the names of what was released */
  let UPD=null;const up0=update;update=function(rdt){up0(rdt);const q=window.COMBO_UPD;if(!q||!q.length)return;DL.ok=false;DL.started=false;DL.fin=false;if(!F().updmsg){q.length=0;return}
   if(G.mode==='menu'||G.mode==='title'){UPD={names:(UPD?UPD.names:[]).concat(q.splice(0)),t:0};G.set2=false;if(G.mode==='menu')goto('title')}};
  const ti0=SCR.title;SCR.title=function(){ti0();if(!UPD||!G.ui.length)return;const now=performance.now();if(!UPD.t)UPD.t=now;if(now-UPD.t>12000){UPD=null;return}
-  g.setTransform(S*dpr,0,0,S*dpr,0,0);const nm=UPD.names.slice(0,4),more=UPD.names.length-nm.length,w=Math.min(460,W-40),h=62+nm.length*20+(more?20:0),x=(W-w)/2,y=H*.34;g.save();g.globalAlpha=clamp((now-UPD.t)/250,0,1)*clamp((12000-(now-UPD.t))/500,0,1);
-  rr(x,y,w,h,14);g.fillStyle='rgba(16,8,34,.94)';g.fill();g.strokeStyle='#ffe14d';g.lineWidth=3;g.stroke();txt('NEW UPDATE',W/2,y+30,28,'#ffe14d',INK,'center',FB,6);nm.forEach((t,k)=>txt(t,W/2,y+60+k*20,15,'#fff',null,'center',FU));if(more)txt('+ '+more+' more',W/2,y+60+nm.length*20,14,'#e6dcff',null,'center',FU);g.restore()}}
+  g.setTransform(S*dpr,0,0,S*dpr,0,0);const sh=!!F().updshort,nm=sh?[]:UPD.names.slice(0,4),more=sh?0:UPD.names.length-nm.length,w=Math.min(460,W-40),h=sh?60:62+nm.length*20+(more?20:0),x=(W-w)/2,y=H*.34;g.save();g.globalAlpha=clamp((now-UPD.t)/250,0,1)*clamp((12000-(now-UPD.t))/500,0,1);
+  rr(x,y,w,h,14);g.fillStyle='rgba(16,8,34,.94)';g.fill();g.strokeStyle='#ffe14d';g.lineWidth=3;g.stroke();txt(sh?'COMBO UPDATE':'NEW UPDATE',W/2,y+30,28,'#ffe14d',INK,'center',FB,6);nm.forEach((t,k)=>txt(t,W/2,y+60+k*20,15,'#fff',null,'center',FU));if(more)txt('+ '+more+' more',W/2,y+60+nm.length*20,14,'#e6dcff',null,'center',FU);g.restore()}}
 /* conn: tapping start keeps the start screen up with "CONNECTING TO COMBO" at the bottom for 8 seconds, then carries on to wherever start led before. */
 {const T=8000;let t0=0,on=false,pass=false,up=false,busy=false,last=0;const gc0=goto;goto=function(m){if(F().conn&&m==='menu'&&G.mode==='title'&&!pass){if(!on){on=true;up=false;last=0;t0=performance.now();sfx('ui')}return}if(m!=='title')on=false;return gc0(m)};
  const ct0=SCR.title;SCR.title=function(){if(!on||!F().conn){on=false;G.cnn=false;return ct0()}G.cnn=true;

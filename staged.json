@@ -2104,5 +2104,35 @@
   "game": {
    "flag": "dripmx"
   }
+ },
+ {
+  "id": "update-download-after-connect",
+  "type": "update",
+  "name": "Download After Connecting",
+  "subtitle": "Downloads only start after you tap start",
+  "desc": "A download never starts from Settings on the start screen any more. Picking MIN or FULL there saves your choice, and the download screen shows after you tap start and CONNECTING has finished, the same as the first time you open the game.",
+  "status": "staged",
+  "created": 1795245991859,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "dlafter"
+  }
+ },
+ {
+  "id": "update-combo-update-message",
+  "type": "update",
+  "name": "Combo Update Message",
+  "subtitle": "The update message just says COMBO UPDATE",
+  "desc": "When something is released, the message on the start screen only says COMBO UPDATE. The names of what was released are not listed.",
+  "status": "staged",
+  "created": 1795245991860,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "updshort"
+  }
  }
 ]
