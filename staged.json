@@ -2064,7 +2064,8 @@
   "type": "update",
   "name": "Combo Shout",
   "subtitle": "The start screen fighters shout COMBO together",
-  "desc": "When the start screen shows, the two fighters on it shout COMBO at the same time, matched to the same length. In English, or in Japanese when VOICES is set to Japanese.",
+  "desc": "When the start screen shows, the two fighters on it shout COMBO at the same time, matched to the same length, and then the music starts. Every fighter has a COMBO shout in their own voice. In English, or in Japanese when VOICES is set to Japanese.",
+  "rev": 2,
   "status": "staged",
   "created": 1795244720927,
   "colors": [
