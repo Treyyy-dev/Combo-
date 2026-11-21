@@ -82,6 +82,9 @@ function apply(docs){try{const rel=(Array.isArray(docs)?docs:[]).filter(d=>d&&d.
      stages, fighters and banners one at a time and moves to the next every 4 seconds */
   let out=nw;if(FLAGS.newsgrp){const by={};nw.forEach(m=>{if(m.bt>0)(by[m.bt]=by[m.bt]||[]).push(m)});const done={};out=[];nw.forEach(m=>{const q=m.bt>0?by[m.bt]:null;if(!q||q.length<2){out.push(m);return}if(done[m.bt])return;done[m.bt]=1;
     const names=q.map(z=>z.title);out.push({id:'news-grp-'+m.bt,news:1,grp:q,at:Math.max.apply(null,q.map(z=>z.at)),pt:'group',pn:'',pf:[],tag:'NEW',col:'#ffd36e',title:q.length+' NEW THINGS',text:names.join('  \u00b7  '),full:'',sub:''})})}
+  /* flag "newsnew": a player whose save was made after this update was released does not get the old news: they get the last post from before they started, and everything after it.
+     The time a save was made is the end of its player id (SV.pid). Players from before the update keep all their news. */
+  if(FLAGS.newsnew){try{const born=parseInt(String(SV.pid||'').slice(-8),36),rel=(window.COMBO_RELS||{}).newsnew||0;if(born>1e12&&rel>1e11&&born>rel){let cut=0;out.forEach(m=>{if(m.at<=born&&m.at>cut)cut=m.at});out=out.filter(m=>m.at>=cut)}}catch(e){}}
   MAILS.unshift.apply(MAILS,out)}catch(e){}
  try{localStorage.setItem(CK,sig);localStorage.setItem(CN,JSON.stringify(L.names))}catch(e){}}
 

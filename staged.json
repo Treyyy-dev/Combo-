@@ -2344,5 +2344,20 @@
   "game": {
    "flag": "dl4"
   }
+ },
+ {
+  "id": "update-news-new-players",
+  "type": "update",
+  "name": "News For New Players",
+  "subtitle": "New players only get the latest news",
+  "desc": "A new player no longer gets all the old news. They get the last post from before they started, and everything after it.",
+  "status": "staged",
+  "created": 1795250712604,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "newsnew"
+  }
  }
 ]
