@@ -1341,4 +1341,30 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
  try{window.COMBO_SND=()=>({state:typeof AC!=='undefined'&&AC?AC.state:null,want})}catch(e){}}
 /* devquiet: the Dev Studio has no music (story.js wantTrack) and leaving it (BACK or Escape) goes to the start screen, where start connects as usual. TEST still comes back to the studio. */
 {const gq0=goto;goto=function(m){if(F().devquiet&&G.mode==='dev'&&m==='menu'){G.set2=false;return gq0('title')}return gq0(m)}}
+/* tlayout: custom layout for the mobile buttons. Configure, CONTROLS, MOBILE gets a CUSTOM LAYOUT button that opens an editor: drag each button anywhere, and change the size and see-through of the one that is selected.
+   Saved per button in SV.tl[action]=[x as a share of the screen width, y as a share of the height, size multiplier, opacity]. With the flag off the saved layout is ignored. The move stick is not a button (drag anywhere on the left half), so it is not in the editor. */
+{const ON=()=>!!F().tlayout,get=a=>(SV.tl&&Array.isArray(SV.tl[a]))?SV.tl[a]:null;let OP={};
+ const tb0=tbs;tbs=function(){const L=tb0();if(!ON())return L;OP={};L.forEach(b=>{const q=get(b.a);if(q){b.x=clamp(+q[0]||0,0,1)*cw;b.y=clamp(+q[1]||0,0,1)*ch;b.r=b.r*clamp(+q[2]||1,.5,2);b.o=clamp(+q[3]||1,.2,1)}else b.o=1;OP[Math.round(b.x)+','+Math.round(b.y)]=b.o});return L};
+ const dt0=drawTouch;drawTouch=function(){if(!ON())return dt0();const si0=skillIcon,c0=circ,al=(x,y)=>{const o=OP[Math.round(x)+','+Math.round(y)];if(o!=null&&o<1)g.globalAlpha=g.globalAlpha*o};
+   skillIcon=function(x,y){al(x,y);return si0.apply(this,arguments)};circ=function(x,y){al(x,y);return c0.apply(this,arguments)};try{dt0()}finally{skillIcon=si0;circ=c0}};
+ /* editor */
+ const E={sel:null,drag:null};const put=(b,ch2)=>{SV.tl=SV.tl||{};const q=get(b.a)||[b.x/cw,b.y/ch,1,1];ch2(q);SV.tl[b.a]=q};
+ const base=a=>tb0().find(b=>b.a===a);
+ SCR.tlay=function(){scr();const L=tbs();g.setTransform(dpr,0,0,dpr,0,0);g.fillStyle='rgba(6,2,18,.55)';g.fillRect(0,0,cw,ch);
+   L.forEach(b=>{const sel=E.sel===b.a;g.globalAlpha=b.o;c0d(b.x,b.y,b.r,sel?'rgba(255,225,77,.3)':'rgba(20,10,40,.6)',sel?'#ffe14d':'rgba(255,255,255,.7)',3);txt(b.l,b.x,b.y+1,b.r*(b.l.length>3?.5:.62),'#fff',INK);g.globalAlpha=1;if(sel){g.setLineDash([6,5]);c0d(b.x,b.y,b.r+7,null,'#ffe14d',2);g.setLineDash([])}});
+   g.setTransform(S*dpr,0,0,S*dpr,0,0);const sb=L.find(b=>b.a===E.sel),q=sb?(get(sb.a)||[0,0,1,1]):null,bw=Math.min(104,(W-28-6*6)/7),x0=(W-(bw*7+36))/2,y=10,B=(i,l,c,fn,d)=>button(x0+i*(bw+6),y,bw,34,l,c,fn,14,d);
+   B(0,'DONE','#2f7a5f',()=>{save();E.sel=null;goto('binds')});B(1,'RESET ALL','#7a1f2b',()=>{delete SV.tl;E.sel=null;save()});
+   const ch1=(i,d)=>()=>{if(!sb){G.note={t:'Tap a button first',T:1.6};return}put(sb,q2=>{q2[i]=clamp(Math.round(((+q2[i]||1)+d)*10)/10,i===2?.5:.2,i===2?2:1)});save()};
+   B(2,'SIZE −','#3a2a5e',ch1(2,-.1));B(3,'SIZE +','#3a2a5e',ch1(2,.1));B(4,'FADE −','#3a2a5e',ch1(3,-.1));B(5,'FADE +','#3a2a5e',ch1(3,.1));B(6,'RESET ONE','#5a3a1f',()=>{if(sb&&SV.tl){delete SV.tl[sb.a];save()}});
+   txt(sb?sb.l+'   ·   size '+Math.round((q[2]||1)*100)+'%   ·   see-through '+Math.round((q[3]||1)*100)+'%':'Drag a button to move it. Tap one to pick it, then change its size or how see-through it is.',W/2,58,13,'#fff',INK,'center',FU,3);
+   txt('MOVE: drag anywhere on the left half (it has no button)',W*.2,H-16,11,'#e6dcff',INK,'center',FU,3);
+   if(G.note){g.save();g.font='700 15px '+FU;const nw=g.measureText(G.note.t).width+30;rr((W-nw)/2,H*.5-17,nw,34,10);g.fillStyle='rgba(10,4,24,.94)';g.fill();txt(G.note.t,W/2,H*.5,15,'#fff',null,'center',FU);g.restore()}};
+ const c0d=(x,y,r,f,st,lw)=>circ(x,y,r,f,st,lw);
+ try{BACK.tlay='binds'}catch(e){}
+ const onUI=(x,y)=>G.ui.some(u=>x>=u.x&&x<=u.x+u.w&&y>=u.y&&y<=u.y+u.h);
+ try{cv.addEventListener('pointerdown',e=>{if(G.mode!=='tlay'||!ON())return;const p=PXY(e),x=p[0],y=p[1];if(onUI(x/S,y/S))return;let best=null,bd=1e9;tbs().forEach(b=>{const d=Math.hypot(x-b.x,y-b.y);if(d<b.r*1.25&&d<bd){bd=d;best=b}});if(!best){E.sel=null;return}E.sel=best.a;E.drag={id:e.pointerId,a:best.a,dx:best.x-x,dy:best.y-y}});
+  cv.addEventListener('pointermove',e=>{const D=E.drag;if(!D||D.id!==e.pointerId||G.mode!=='tlay')return;const p=PXY(e),b=tbs().find(q=>q.a===D.a);if(!b)return;const nx=clamp((p[0]+D.dx)/cw,.03,.97),ny=clamp((p[1]+D.dy)/ch,.16,.97);put(b,q=>{q[0]=nx;q[1]=ny})});
+  const up=e=>{if(E.drag&&E.drag.id===e.pointerId){E.drag=null;try{save()}catch(x){}}};cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up)}catch(e){}
+ const sb0=SCR.binds;if(sb0)SCR.binds=function(){sb0();if(!ON()||(G.btab||0)!==1)return;const has=SV.tl&&Object.keys(SV.tl).length;button(W/2-200,102+236,400,38,'CUSTOM LAYOUT','#2f4f8f',()=>{E.sel=null;goto('tlay')},20,has?'ON':'Drag, size, see-through')};
+ try{window.COMBO_TLAY=E}catch(e){}}
 })();

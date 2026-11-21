@@ -2586,5 +2586,35 @@
   "game": {
    "flag": "devquiet"
   }
+ },
+ {
+  "id": "update-subtitles-only",
+  "type": "update",
+  "name": "Subtitles Only",
+  "subtitle": "No talk box in cutscenes",
+  "desc": "The talk boxes are gone. In cutscenes the speaker's face shows with no square around it, next to their name and the words, with no rectangle behind them. The lines fighters say before and after a match also lose their rectangle and keep the name and the words.",
+  "status": "staged",
+  "created": 1795266590738,
+  "colors": [
+   "#7fdcff"
+  ],
+  "game": {
+   "flag": "dlgsub"
+  }
+ },
+ {
+  "id": "update-custom-layout",
+  "type": "update",
+  "name": "Custom Mobile Layout",
+  "subtitle": "Move, resize and fade the touch buttons",
+  "desc": "You can make your own button layout on mobile. Go to CONFIGURE, CONTROLS, MOBILE and tap CUSTOM LAYOUT. Drag any button where you want it, then change its size and how see-through it is. RESET puts everything back.",
+  "status": "staged",
+  "created": 1795266590739,
+  "colors": [
+   "#3fa9ff"
+  ],
+  "game": {
+   "flag": "tlayout"
+  }
  }
 ]

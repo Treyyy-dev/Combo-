@@ -1621,7 +1621,12 @@ function sceneStep(rdt){if(!SC)return;if(F().cine2)rdt*=SMUL();const dt=rdt;cam.
  if(SC.spd>0)SC.spd-=rdt;if(SC.card){SC.card.t+=rdt;if(SC.card.t>2.6)SC.card=null}SC.list.forEach(f=>{if(f.em){f.em[1]+=rdt;if(f.em[1]>1.6)f.em=null}});
  cam.x=c.x;cam.y=c.y;cam.z=c.z;cam.rot=c.rot||0;cam.ay=lerp(GY,H*.46,clamp(c.z-1.1,0,1))}
 /* dlg2: all speech in one box at the bottom, with the speaker's face in a square and the words next to it */
-function dialog(f,b){const C2=F().cine2,ps=Math.min(64,H*.17),pad=9,bw=Math.min(W-24,760),bh=ps+pad*2,bx=(W-bw)/2,by=H-bh-(C2?10:H*.08+8),fs=17,lh=fs*1.26,tx=bx+(f?ps+pad*2+4:pad+14),mw=bx+bw-14-tx;
+function dialog(f,b){
+ /* dlgsub (own flag, dlg2 was already released): no rectangle and no square: the speaker's face (no frame), their name and the words as subtitles at the bottom (Trey: show the speaker without the square, keep the words, delete the rectangle) */
+ if(F().dlgsub){const fs=18,lh=fs*1.28,mw=Math.min(W*.82,700);g.save();g.globalAlpha=clamp(SC.t*8,0,1);g.font=(f?'700 ':'italic 700 ')+fs+'px '+FU;const ls=wrap(b.line,mw).slice(0,3),yb=H-(F().cine2?16:H*.08+14),y0=yb-ls.length*lh;if(f)txt(f.c.name,W/2,y0-12,15,f.c.col,INK,'center',FB,4);
+  /* the speaker's face with no square around it, left of the words */
+  if(f){let mx=g.measureText(f.c.name).width;ls.forEach(l=>{mx=Math.max(mx,g.measureText(l).width)});const ps=Math.min(60,H*.16),hx=Math.max(ps*.6,W/2-mx/2-ps*1.05),hy=yb-ps*.42,talk=SC.t<typed(b)&&((SC.t*9)|0)%2===0;try{drawHead(f.c,hx,hy,ps/42,1,f.ex||(talk?'yell':''),0)}catch(e){}g.font='700 '+fs+'px '+FU}
+  let n=(SC.t*cps(b))|0;ls.forEach((l,i)=>{const s2=l.slice(0,Math.max(0,n));n-=l.length+1;g.font=(f?'700 ':'italic 700 ')+fs+'px '+FU;if(s2)txt(s2,W/2-g.measureText(l).width/2,y0+lh*(i+.5),fs,'#fff',INK,'left',FU,4)});g.restore();return}const C2=F().cine2,ps=Math.min(64,H*.17),pad=9,bw=Math.min(W-24,760),bh=ps+pad*2,bx=(W-bw)/2,by=H-bh-(C2?10:H*.08+8),fs=17,lh=fs*1.26,tx=bx+(f?ps+pad*2+4:pad+14),mw=bx+bw-14-tx;
  g.save();g.globalAlpha=clamp(SC.t*8,0,1);rr(bx,by,bw,bh,12);g.fillStyle='rgba(8,4,20,.9)';g.fill();g.lineWidth=3;g.strokeStyle=f?f.c.col:'rgba(255,255,255,.55)';g.stroke();
  if(f){const px=bx+pad,py=by+pad,c=f.c;g.save();rr(px,py,ps,ps,8);g.fillStyle=c.col;g.fill();g.clip();const gr=g.createLinearGradient(0,py,0,py+ps);gr.addColorStop(0,'rgba(255,255,255,.28)');gr.addColorStop(1,'rgba(0,0,0,.3)');g.fillStyle=gr;g.fillRect(px,py,ps,ps);
    const talk=SC.t<typed(b)&&((SC.t*9)|0)%2===0;try{drawHead(c,px+ps*.46,py+ps*.5,ps/42,1,f.ex||(talk?'yell':''),0)}catch(e){}g.restore();rr(px,py,ps,ps,8);g.lineWidth=3;g.strokeStyle='#fff';g.stroke();
