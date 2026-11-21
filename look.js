@@ -678,4 +678,10 @@ let SCX=null,HCX=null;
  const ti0=SCR.title;SCR.title=function(){ti0();if(!UPD||!G.ui.length)return;const now=performance.now();if(!UPD.t)UPD.t=now;if(now-UPD.t>12000){UPD=null;return}
   g.setTransform(S*dpr,0,0,S*dpr,0,0);const nm=UPD.names.slice(0,4),more=UPD.names.length-nm.length,w=Math.min(460,W-40),h=62+nm.length*20+(more?20:0),x=(W-w)/2,y=H*.34;g.save();g.globalAlpha=clamp((now-UPD.t)/250,0,1)*clamp((12000-(now-UPD.t))/500,0,1);
   rr(x,y,w,h,14);g.fillStyle='rgba(16,8,34,.94)';g.fill();g.strokeStyle='#ffe14d';g.lineWidth=3;g.stroke();txt('NEW UPDATE',W/2,y+30,28,'#ffe14d',INK,'center',FB,6);nm.forEach((t,k)=>txt(t,W/2,y+60+k*20,15,'#fff',null,'center',FU));if(more)txt('+ '+more+' more',W/2,y+60+nm.length*20,14,'#e6dcff',null,'center',FU);g.restore()}}
+/* conn: tapping start keeps the start screen up with "CONNECTING TO COMBO" at the bottom for 8 seconds, then carries on to wherever start led before. */
+{const T=8000;let t0=0,on=false,pass=false;const gc0=goto;goto=function(m){if(F().conn&&m==='menu'&&G.mode==='title'&&!pass){if(!on){on=true;t0=performance.now();sfx('ui')}return}if(m!=='title')on=false;return gc0(m)};
+ const ct0=SCR.title;SCR.title=function(){if(!on||!F().conn){on=false;return ct0()}
+  const tx0=txt;txt=function(s){if(typeof s==='string'&&/TO START$/.test(s))return;return tx0.apply(this,arguments)};try{ct0()}finally{txt=tx0}
+  G.ui=[];const e=performance.now()-t0;g.setTransform(S*dpr,0,0,S*dpr,0,0);g.globalAlpha=1;txt('CONNECTING TO COMBO'+'.'.repeat(1+((e/450|0)%3)),W/2,H*.93,24,'#fff',INK,'center',FB,7);
+  if(e>=T){on=false;pass=true;try{goto('menu')}finally{pass=false}}}}
 })();

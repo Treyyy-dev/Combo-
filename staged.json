@@ -1772,5 +1772,20 @@
   "game": {
    "flag": "uid"
   }
+ },
+ {
+  "id": "update-connecting-screen",
+  "type": "update",
+  "name": "Connecting",
+  "subtitle": "Start screen says connecting for 8 seconds",
+  "desc": "When you tap start, the bottom of the start screen says CONNECTING TO COMBO for 8 seconds, then the game carries on.",
+  "status": "staged",
+  "created": 1795238046491,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "conn"
+  }
  }
 ]
