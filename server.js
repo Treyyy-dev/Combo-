@@ -10,7 +10,7 @@ const crypto = require('crypto');
 
 const PORT = process.env.PORT || 10000;
 const ROOT = __dirname;
-const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.png': 'image/png', '.svg': 'image/svg+xml', '.json': 'application/json' };
+const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.png': 'image/png', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml', '.json': 'application/json' };
 const MAX_MSG = 16 * 1024;
 const RELAY = new Set(['i', 's', 'k', 'h', 'v', 'map', 'tg', 'bi']);
 

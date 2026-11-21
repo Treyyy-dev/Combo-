@@ -2164,5 +2164,20 @@
   "game": {
    "flag": "newsgrp"
   }
+ },
+ {
+  "id": "update-news-pictures",
+  "type": "update",
+  "name": "News Pictures",
+  "subtitle": "Update posts show a picture",
+  "desc": "Update posts in the NEWS now show a picture of what changed.",
+  "status": "staged",
+  "created": 1795246862670,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "newspic"
+  }
  }
 ]
