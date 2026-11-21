@@ -1547,5 +1547,20 @@
   "game": {
    "flag": "views2"
   }
+ },
+ {
+  "id": "update-extra-lines",
+  "type": "update",
+  "name": "Extra Story Lines",
+  "subtitle": "3 new voiced lines in every story quest",
+  "desc": "Each of the 40 story quests ends with three new lines, 120 in all, voiced in English by the same voices.",
+  "status": "staged",
+  "created": 1795233092559,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "xlines"
+  }
  }
 ]
