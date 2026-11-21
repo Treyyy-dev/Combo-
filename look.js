@@ -1405,8 +1405,9 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
  const model=(c,p,o,view)=>{const J=joints(p),R0=Math.PI/180,ra=(p[10]||0)*R0,ca=Math.cos(ra),sa=Math.sin(ra);let gy=0;
    /* taller (Trey: make them taller): the skeleton is 14% longer from the feet up; the head and the thickness of the body stay the same, so they read as taller, not just bigger */
    const TALL=1.14,T2=q=>{let x=q.x*TALL,y=q.y*TALL;if(p[10]||p[11]){const y2=y+75;const rx=x*ca-y2*sa,ry=x*sa+y2*ca;x=rx;y=ry+(p[11]||0)-75}return[x,y]};
-   if(o.ground)gy=-Math.max(T2(J.lf[1])[1],T2(J.lb[1])[1]);
-   const P3=(q,z)=>{const a=T2(q);return[a[0],-(a[1]+gy),z]},t=o.t||0,sw=(o.sway==null?.15:o.sway)+.12,bk=(c.sc>1.07||c.dm>1)?1.14:1,bare=!!c.bare;
+   /* feet touch the ground in every pose (Trey): the model is moved up or down so the sole of its lowest foot sits exactly on the floor line (jumps still rise, because the game lifts the whole fighter). Poses where the body is tipped over (knocked down, flips) are left alone. */
+   const SOLE=5.4,snap=o.ground||Math.abs(p[10]||0)<40;if(snap)gy=-Math.max(T2(J.lf[1])[1],T2(J.lb[1])[1]);
+   const P3=(q,z)=>{const a=T2(q);return[a[0],-(a[1]+gy)+(snap?SOLE:0),z]},t=o.t||0,sw=(o.sway==null?.15:o.sway)+.12,bk=(c.sc>1.07||c.dm>1)?1.14:1,bare=!!c.bare;
    const hip=P3(J.hip,0),neck=P3(J.neck,0),shC=P3(J.sh,0),sp=nm(sb(neck,hip)),fw=nm(cr(sp,[0,0,1]));
    /* boys' shoulders are a little wider than girls' (Trey) */const SW=(isFem(c)?15.6:17.4)*bk,HW=7.6*bk;
    /* body faces the player (Trey): in the side view the chest is turned toward the camera around the spine (the waist less, the hips least); the head still looks at the opponent. The arms and legs hang from the turned shoulders and hips. */
@@ -1425,7 +1426,7 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
    if(st===3){cloth(K+'s1',ad(neck,[-4,-3,3]),[-1,-.12,0],60,4,c.col2,t,sw);cloth(K+'s2',ad(neck,[-3,-5,-3]),[-1,-.3,0],44,3.4,c.col2,t+1,sw)}
    /* legs */
    const leg=(h,k,f,ang)=>{cap(h,k,8.2*bk,6*bk,pants);cap(k,f,5.6*bk,4.2*bk,pants);ell(ad(ml(ad(k,f),.5),ad(ml(sb(k,f),.12),[-1.6,0,0])),sb(f,k),ln(sb(f,k))*.3,6.4*bk,6*bk,pants);/* feet that look like feet (Trey): ankle, heel, the top of the foot sloping down, a squared toe box and a flat sole. Flat on the floor when standing; in the air the foot follows the shin. */
-     const sh=nm(sb(f,k)),air=f[1]>9,td=air?nm([-sh[1]+sh[0]*.45,sh[0]+sh[1]*.45,0]):[1,0,0],up=[-td[1],td[0],0],zz=[0,0,1],at=(a,b2)=>ad(f,ad(ml(td,a),ml(up,b2))),SH='#2b2438';
+     const sh=nm(sb(f,k)),air=f[1]>(snap?SOLE+7:9),td=air?nm([-sh[1]+sh[0]*.45,sh[0]+sh[1]*.45,0]):[1,0,0],up=[-td[1],td[0],0],zz=[0,0,1],at=(a,b2)=>ad(f,ad(ml(td,a),ml(up,b2))),SH='#2b2438';
      sph(at(-.5,1.2),4.3*bk,pants);ell3(at(-3.2,-1.6),ml(td,4),ml(up,3.6),ml(zz,3.9),SH);ell3(at(3.6,-.6),ml(td,7.2),ml(up,3.5),ml(zz,4.3),SH);blk3(at(10.2,-2.1),ml(td,4.2),ml(up,2.5),ml(zz,4.6),SH);
      blk3(at(4,-4.4),ml(td,11.2),ml(up,1),ml(zz,4.9),'#f2ecff',1);cyl(at(1.5,2.2),at(8.6,.4),.9,.9,c.col,1,1)};
    leg(hpB,knB,ftB,p[8]+p[9]);leg(hpF,knF,ftF,p[6]+p[7]);
