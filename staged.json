@@ -1622,5 +1622,20 @@
   "game": {
    "flag": "mailarrow"
   }
+ },
+ {
+  "id": "update-unique-moves",
+  "type": "update",
+  "name": "Unique Moves",
+  "subtitle": "Every fighter's skills and ultimate play differently",
+  "desc": "Each fighter now has their own version of their two skills and ultimate: different cooldown and power, number of hits, reach and knockback, shot speed and size, and how the ultimate splits its damage between the flurry and the finisher.",
+  "status": "staged",
+  "created": 1795234173033,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "umoves"
+  }
  }
 ]

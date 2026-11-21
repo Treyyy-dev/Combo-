@@ -298,4 +298,24 @@ let SCX=null,HCX=null;
   case 10:for(let i=0;i<3;i++){const p=clamp((st*2.2-i*.25)%1.2,0,1),x0=vx-150+i*50,x1=x0+200;g.strokeStyle=i%2?B:A;g.lineWidth=14*(1-p)+3;g.beginPath();g.moveTo(x0,vy-260);g.quadraticCurveTo(lerp(x0,x1,.5)+40,vy-130,lerp(x0,x1,p),lerp(vy-260,vy+10,p));g.stroke()}break;
   default:for(let i=0;i<n;i++){const x=vx+(i-(n-1)/2)*80,w=18+10*Math.sin(T*8+i);g.fillStyle=i%2?'rgba(255,255,255,.55)':A;g.globalAlpha=k*.6;g.fillRect(x-w/2,-800,w,800)}g.globalAlpha=k;g.strokeStyle=B;g.lineWidth=5;g.beginPath();g.ellipse(vx,vy-190,60,14,0,0,TAU);g.stroke()}
   g.restore()}}
+/* ================= flag "umoves": every fighter's two skills and ultimate play differently =================
+   The 8 shared move types stay, but each fighter gets their own version of each one, fixed by their name:
+   rhythm (frequent: 20% shorter cooldown, 15% less damage / charged: 25% longer cooldown, 20% more damage), hit pattern (fewer heavier hits / more lighter hits,
+   same total), reach (wider with less knockback / tighter with more knockback), shots (fast and small / slow and big / split into two half-damage shots),
+   and for ultimates how the damage is split between the flurry and the finisher (same total). Normal attacks are unchanged. */
+{const hs=n=>{let x=5381;for(let i=0;i<n.length;i++)x=((x*33)^n.charCodeAt(i))>>>0;return x};
+ function fixP(p,ds,pj){if(!p||p._u)return;p._u=1;p.h=Object.assign({},p.h);if(p.h.d)p.h.d*=ds;
+  if(p.vx||p.vy){if(pj===1){p.vx*=1.3;p.vy*=1.3;p.r=(p.r||22)*.82;p.life/=1.3}else if(pj===2){p.vx*=.76;p.vy*=.76;p.r=(p.r||22)*1.3;p.life/=.76}
+   else if(pj===3&&p.h.d){p.h.d*=.5;const q=Object.assign({},p,{h:Object.assign({},p.h),x:p.x-(p.dir||1)*80,t:0});G.proj.push(q)}}
+  else if(p.delay){if(pj===1){p.delay*=.72;p.r=(p.r||40)*.86}else if(pj===2){p.delay*=1.2;p.r=(p.r||40)*1.25}}}
+ function tw(m0,h,i){const m=Object.assign({},m0);m.hits=(m0.hits||[]).map(x=>Object.assign({},x));const tempo=(h>>>(i*5))&3,pat=(h>>>(i*5+2))&3,reach=(h>>>(i*5+13))%3,pj=(h>>>(i*5+17))&3;let ds=1;
+  if(!m.ult&&m.cd){if(tempo===1){m.cd*=.8;ds=.85}else if(tempo===2){m.cd*=1.25;ds=1.2}}
+  m.hits.forEach(x=>{if(x.d)x.d*=ds;if(x.n>1&&x.d&&x.iv){const n=pat===1?Math.max(2,Math.round(x.n*.6)):pat===2?Math.round(x.n*1.5):x.n;if(n!==x.n){x.d=x.d*x.n/n;x.iv=x.iv*x.n/n;x.n=n}}
+   if(x.w>0&&x.w<900&&x.d){if(reach===1){x.w*=1.18;x.kx=(x.kx||0)*.8;x.ky=(x.ky||0)*.8}else if(reach===2){x.w*=.86;x.kx=(x.kx||0)*1.2;x.ky=(x.ky||0)*1.2}}});
+  if(m.ult){const pins=m.hits.filter(x=>x.pin&&x.n>1&&x.d),fin=m.hits.find(x=>x.fin&&x.d);if(pins.length&&fin){const P=pins.reduce((s,x)=>s+x.d*x.n,0),sh=[0,.3,-.25,.15][tempo]*Math.min(P,fin.d*1.5);pins.forEach(x=>{x.d*=(P-sh)/P});fin.d+=sh}}
+  const wr=fn=>function(){const n0=G.proj.length,r=fn.apply(this,arguments);for(let k=G.proj.length-1;k>=n0;k--)fixP(G.proj[k],ds,pj);return r};
+  if(m.ev)m.ev=m.ev.map(e=>Object.assign({},e,{f:wr(e.f)}));if(m.on)m.on=wr(m.on);m._u=1;return m}
+ function vary(c,m0){const h=hs(c.name),o=Object.assign({},m0);try{o.S=(m0.S||[]).map((m,i)=>tw(m,h,i));if(m0.U)o.U=tw(m0.U,h,2)}catch(e){return m0}return o}
+ let UN=-1,UT=0;function hook(){CH.forEach(c=>{if(!c||!c.name)return;const d=Object.getOwnPropertyDescriptor(c,'mv');if(d&&d.get&&d.get._u)return;const m=c.mv;if(!m)return;c._m0=m;c._mu=null;const gt=function(){return F().umoves&&this._m0?(this._mu||(this._mu=vary(this,this._m0))):this._m0};gt._u=1;try{Object.defineProperty(c,'mv',{configurable:true,get:gt,set(v){this._m0=v;this._mu=null}})}catch(e){}})}
+ const _uu=update;update=function(rdt){if(F().umoves&&(CH.length!==UN||G.t-UT>2)){UN=CH.length;UT=G.t;try{hook()}catch(e){}}_uu(rdt)}}
 })();
