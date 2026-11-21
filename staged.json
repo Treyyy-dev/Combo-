@@ -2058,5 +2058,20 @@
   "game": {
    "flag": "nobub"
   }
+ },
+ {
+  "id": "update-combo-shout",
+  "type": "update",
+  "name": "Combo Shout",
+  "subtitle": "The start screen fighters shout COMBO together",
+  "desc": "When the start screen shows, the two fighters on it shout COMBO at the same time, matched to the same length. In English, or in Japanese when VOICES is set to Japanese.",
+  "status": "staged",
+  "created": 1795244720927,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "combosay"
+  }
  }
 ]

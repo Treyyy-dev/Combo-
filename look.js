@@ -334,8 +334,10 @@ let SCX=null,HCX=null;
  const u0=update;update=function(rdt){u0(rdt);const ic=pick(),on=ic?ic.flag:'';if(on===IS)return;IS=on;try{const u=mkIcon(128),q=r=>document.querySelector('link[rel="'+r+'"]'),a=q('icon'),b=q('apple-touch-icon'),m=q('manifest');if(a&&u)a.href=u;if(location.protocol!=='blob:'){if(b)b.href=ic&&ic.png?ic.png:'icon.png';if(m)m.href=ic&&ic.man?ic.man:'manifest.json'}}catch(e){}}}
 /* ================= flag "title2": new start screen =================
    COMBO at the top with no line under it, and Kenko and Neto clashing under the name. The picture is still (nothing moves except the blinking start line). */
-{let KC=null,NC=null;const T2=()=>F().title2&&(KC=KC||CH.find(c=>c&&c.name==='KENKO'))&&(NC=NC||CH.find(c=>c&&c.name==='NETO'));
- const tt0=SCR.title;SCR.title=function(){if(!T2())return tt0();g.setTransform(S*dpr,0,0,S*dpr,0,0);G.ui=[];const bg=g.createLinearGradient(0,0,0,H);bg.addColorStop(0,'#0d0630');bg.addColorStop(.5,'#5b1f7a');bg.addColorStop(.85,'#ff5a4d');bg.addColorStop(1,'#ffc46b');g.fillStyle=bg;g.fillRect(0,0,W,H);
+/* The two fighters on the start screen. Change the two names here to switch them: the picture and the COMBO shout (flag "combosay") both follow. */
+try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
+{let KC=null,NC=null,KN='';const T2=()=>{const n=window.COMBO_TITLE_CH||['KENKO','NETO'];if(KN!==n.join()){KN=n.join();KC=NC=null}return F().title2&&(KC=KC||CH.find(c=>c&&c.name===n[0]))&&(NC=NC||CH.find(c=>c&&c.name===n[1]))};
+ const tt0=SCR.title;SCR.title=function(){if(!T2())return tt0();try{if(window.COMBO_TITLE)window.COMBO_TITLE()}catch(e){}g.setTransform(S*dpr,0,0,S*dpr,0,0);G.ui=[];const bg=g.createLinearGradient(0,0,0,H);bg.addColorStop(0,'#0d0630');bg.addColorStop(.5,'#5b1f7a');bg.addColorStop(.85,'#ff5a4d');bg.addColorStop(1,'#ffc46b');g.fillStyle=bg;g.fillRect(0,0,W,H);
   const sx=W*.5,sy=H*.66;g.save();g.translate(sx,sy);g.fillStyle='rgba(255,220,150,.14)';for(let i=0;i<18;i++){g.rotate(TAU/18);g.beginPath();g.moveTo(0,0);g.lineTo(-30,-W);g.lineTo(30,-W);g.fill()}g.restore();circ(sx,sy,H*.42,'#fff1c9');circ(sx,sy,H*.35,'#ffd98a');
   g.fillStyle='#2a1050';for(let i=0;i<30;i++){const bw=W/30,bh=H*(.1+(((Math.sin(i*12.9898)*43758.5453)%1)+1)%1*.22);g.fillRect(i*bw,H*.8-bh,bw+1,bh+H);g.fillStyle='rgba(255,214,130,.7)';g.fillRect(i*bw+bw*.3,H*.8-bh+8,3,5);g.fillRect(i*bw+bw*.6,H*.8-bh+20,3,5);g.fillStyle='#2a1050'}
   const fg=g.createLinearGradient(0,H*.8,0,H);fg.addColorStop(0,'#3d1d5e');fg.addColorStop(1,'#0d0630');g.fillStyle=fg;g.fillRect(0,H*.8,W,H*.2);

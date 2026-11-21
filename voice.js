@@ -67,4 +67,21 @@ const _du=drawSummonUI;drawSummonUI=function(){_du();const M=G.sm;if(!M||!M.say|
    f._ghp=hp;f._gc=f.c;f._gst=st})};
  /* list of fighter voice and fight sound clip addresses for the FULL download (flag "dlset") */
  try{window.COMBO_AUD_VOICE=()=>{const o=[],add=X=>X.V.forEach(v=>{for(const k in v){const e=v[k];if(e&&X.CH[e[0]])o.push(BASE+X.CH[e[0]]+'/'+e[1]+'.wav')}});if(on())add(D);if(on()&&FLAGS.jpvoice)add(J);if(gon())GS.T.forEach((T,v)=>T.forEach(t=>o.push(BASE+GS.P+'/'+GS.C[v]+'/'+t+'.wav')));return o};window.COMBO_SAY=(name,text)=>{try{if(!on())return false;return play(lineUrl(name,text))}catch(e){return false}};window.COMBO_AUD_GRUNT=()=>{const o=[];if(gon())GS.T.forEach((T,v)=>T.forEach(t=>o.push(BASE+GS.P+'/'+GS.C[v]+'/'+t+'.wav')));return o}}catch(e){}}
+/* flag "combosay": the two fighters on the start screen (window.COMBO_TITLE_CH, set in look.js) shout COMBO together when the start screen shows.
+   English, or Japanese when VOICES is set to Japanese (flag "jpvoice"). Each fighter uses their own game voice; CS has one COMBO clip per voice
+   ([clip id, seconds]), a voice without a clip falls back to voice 7. The two clips are played at speeds that make them the same length.
+   Two fighters with the same voice use that voice's second take, or the same clip a little lower. A browser plays no sound before the first
+   tap or key, so on a fresh open the shout plays on that first tap. */
+{const CS={en:{7:['a5de214f3a1f4b60bc9a4b5193307950/a4ad497d58834d15aac99966a52a83cd',['a95d8b919d6e482b8348c0f0c1f8c3ce',1.39],['f7620be45a9a445db68dee0bcebd89b3',2]]},
+  jp:{7:['ec8e21ddbe2240d2bf977568eb5a6f96/4f7ab7a357e849d8b99ba75e51b7df89',['b022b5c31fb04c918d76f246881eae14',.98],['eb39fca53ed54ab398e2217d102611f1',1.21]]}},A=[],W0={};
+ const cson=()=>typeof FLAGS!=='undefined'&&FLAGS&&FLAGS.combosay;
+ const clips=()=>{const T=jp()?CS.jp:CS.en,n=(window.COMBO_TITLE_CH||['KENKO','NETO']).slice(0,2),vs=n.map(q=>{let x=7;try{x=voiceOf(q)}catch(e){}return T[x]?x:7}),same=vs[0]===vs[1];
+  return vs.map((x,i)=>{const e=T[x],c=i&&same&&e[2]?e[2]:e[1];return{u:BASE+e[0]+'/'+c[0]+'.wav',d:c[1],low:!!(i&&same&&!e[2])}})};
+ let want=false,last=-9;
+ const fire=()=>{try{const vol=[0,.6,1][SV.set.vol];if(!vol)return;if(!A.length){want=true;return}want=false;const C=clips();C.forEach(c=>{const w=W0[c.u];if(w&&w.duration>0&&isFinite(w.duration))c.d=w.duration});const T=(C[0].d+C[1].d)/2;
+   C.forEach((c,i)=>{const a=A[i];a.pause();a.src=c.u;a.volume=vol;const keep=!c.low;a.preservesPitch=keep;a.mozPreservesPitch=keep;a.webkitPreservesPitch=keep;a.playbackRate=c.low?.94:Math.min(1.3,Math.max(.77,c.d/T));const p=a.play();if(p&&p.catch)p.catch(()=>{want=true})})}catch(e){}};
+ const unl=()=>{if(!cson())return;try{if(!A.length){const s=silent();for(let k=0;k<2;k++){const a=new Audio();a.preload='auto';a.src=s;a.volume=0;A.push(a);const p=a.play();if(p&&p.catch)p.catch(()=>{})}}if(want){want=false;setTimeout(fire,80)}}catch(e){}};
+ ['pointerup','touchend','click','keyup'].forEach(e=>window.addEventListener(e,unl,{passive:true}));
+ const tick=()=>{if(!cson()||!window.BOOTED||G.mode!=='title')return;try{clips().forEach(c=>{if(!W0[c.u]){const a=new Audio();a.preload='auto';a.src=c.u;W0[c.u]=a}})}catch(e){}const now=performance.now()/1000;if(now-last>1)fire();last=now};
+ try{window.COMBO_TITLE=tick}catch(e){}const t0=SCR.title;SCR.title=function(){t0();tick()}}
 })();
