@@ -1967,5 +1967,20 @@
   "game": {
    "flag": "sqbtn"
   }
+ },
+ {
+  "id": "update-square-tab2",
+  "type": "update",
+  "name": "Lobby Tab 2",
+  "subtitle": "Challenges, Leaderboard and Dev Studio as squares",
+  "desc": "The lobby buttons now have two tabs. Tab 1 has Story, Match, Gacha, Teams, Friends and Configure. Tab 2 has Challenges and Leaderboard as square tiles. Needs the Square Menu Buttons update.",
+  "status": "staged",
+  "created": 1795240995353,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "sqtab"
+  }
  }
 ]
