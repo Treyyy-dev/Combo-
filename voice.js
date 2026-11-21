@@ -66,5 +66,5 @@ const _du=drawSummonUI;drawSummonUI=function(){_du();const M=G.sm;if(!M||!M.say|
    if(st==='down'&&f._gst!=='down'&&hp>0)setTimeout(()=>gplay(f,'m',900),350);
    f._ghp=hp;f._gc=f.c;f._gst=st})};
  /* list of fighter voice and fight sound clip addresses for the FULL download (flag "dlset") */
- try{window.COMBO_AUD_VOICE=()=>{const o=[],add=X=>X.V.forEach(v=>{for(const k in v){const e=v[k];if(e&&X.CH[e[0]])o.push(BASE+X.CH[e[0]]+'/'+e[1]+'.wav')}});if(on())add(D);if(on()&&FLAGS.jpvoice)add(J);if(gon())GS.T.forEach((T,v)=>T.forEach(t=>o.push(BASE+GS.P+'/'+GS.C[v]+'/'+t+'.wav')));return o}}catch(e){}}
+ try{window.COMBO_AUD_VOICE=()=>{const o=[],add=X=>X.V.forEach(v=>{for(const k in v){const e=v[k];if(e&&X.CH[e[0]])o.push(BASE+X.CH[e[0]]+'/'+e[1]+'.wav')}});if(on())add(D);if(on()&&FLAGS.jpvoice)add(J);if(gon())GS.T.forEach((T,v)=>T.forEach(t=>o.push(BASE+GS.P+'/'+GS.C[v]+'/'+t+'.wav')));return o};window.COMBO_AUD_GRUNT=()=>{const o=[];if(gon())GS.T.forEach((T,v)=>T.forEach(t=>o.push(BASE+GS.P+'/'+GS.C[v]+'/'+t+'.wav')));return o}}catch(e){}}
 })();

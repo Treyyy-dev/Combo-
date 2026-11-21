@@ -631,12 +631,14 @@ let SCX=null,HCX=null;
 {const CN='combo-audio-v1',MK='combo-dl-mode',DK2='combo-dl-done',DL={mode:null,list:[],have:null,done:0,fail:0,bytes:0,tot:0,run:false,stop:false,cors:null,full:false,ok:false,fin:false,started:false};
  try{DL.mode=localStorage.getItem(MK)}catch(e){}if(DL.mode!=='min'&&DL.mode!=='full')DL.mode=null;
  const web=()=>/^https?:$/.test(location.protocol),note=t=>{G.note={t,T:2.8}};
- const manifest=()=>{let o=[];try{if(window.COMBO_AUD_STORY)o=o.concat(COMBO_AUD_STORY())}catch(e){}try{if(window.COMBO_AUD_VOICE)o=o.concat(COMBO_AUD_VOICE())}catch(e){}return Array.from(new Set(o))};
+ /* mindl: MIN also has a download step, but a small one: only the fight shout and pain clips (window.COMBO_AUD_GRUNT). Everything else still loads while playing. */
+ const MD=()=>DL.mode==='min'&&!!F().mindl;
+ const manifest=()=>{let o=[];if(MD()){try{if(window.COMBO_AUD_GRUNT)o=COMBO_AUD_GRUNT()}catch(e){}return Array.from(new Set(o))}try{if(window.COMBO_AUD_STORY)o=o.concat(COMBO_AUD_STORY())}catch(e){}try{if(window.COMBO_AUD_VOICE)o=o.concat(COMBO_AUD_VOICE())}catch(e){}return Array.from(new Set(o))};
  const hsh=a=>{let x=5381;for(const u of a)for(let k=Math.max(0,u.length-12);k<u.length-4;k++)x=((x*33)^u.charCodeAt(k))>>>0;return a.length+':'+x};
  const sw=()=>{try{if(web()&&'serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}};
  /* MIN plays in LOW quality; FULL can go up to HIGH (the player's last choice comes back) */
  function qfix(){try{const st=SV.set;if(DL.mode==='min'){if(st.q!==0){if(st.q0==null)st.q0=st.q;st.q=0;save();resize()}}else if(DL.mode==='full'&&st.q0!=null){st.q=st.q0;delete st.q0;save();resize()}}catch(e){}}
- function setMode(m){DL.mode=m;try{localStorage.setItem(MK,m)}catch(e){}if(m==='full')sw();if(F().dlset)qfix()}
+ function setMode(m){DL.mode=m;try{localStorage.setItem(MK,m)}catch(e){}if(m==='full'||MD())sw();if(F().dlset)qfix()}
  async function scan(){if(DL.have)return;const h=new Set();try{if(window.caches){const c=await caches.open(CN);(await c.keys()).forEach(r=>h.add(r.url))}}catch(e){}DL.have=h}
  function missing(){const L=manifest();DL.list=L;let d=null;try{d=localStorage.getItem(DK2)}catch(e){}if(d===hsh(L))return[];return L.filter(u=>!(DL.have&&DL.have.has(u)))}
  async function one(u){
@@ -648,11 +650,11 @@ let SCX=null,HCX=null;
  /* dl6: FULL players are only sent through the download screen when 6 or more things were released at once from Dev Studio (window.COMBO_BIG = time of the newest such release) since their last finished download.
     Smaller releases load their files while playing. Choosing FULL the first time, or tapping FULL in Settings, always downloads. */
  const BK='combo-dl-big',need=()=>{if(DL.ok)return false;if(!F().dl6)return true;let v=null;try{v=localStorage.getItem(BK)}catch(e){}if(v==null)return true;if((window.COMBO_BIG||0)>+v)return true;DL.ok=true;return false};
- function pick(m){setMode(m);DL.stop=true;DL.started=false;DL.fin=false;if(m==='full'){DL.ok=false;goto('dl')}else{DL.ok=true;goto('menu')}}
- if(DL.mode==='full')setTimeout(()=>{if(F().dlset)sw()},3000);
- const g0=goto;goto=function(m){if(m!=='menu')G.set2=false;if(F().dlset&&m==='menu'&&G.mode==='title'&&web()){if(!DL.mode)return g0('dlpick');if(DL.mode==='full'&&need())return g0('dl')}return g0(m)};
+ function pick(m){setMode(m);DL.stop=true;DL.started=false;DL.fin=false;if(m==='full'||MD()){DL.ok=false;goto('dl')}else{DL.ok=true;goto('menu')}}
+ setTimeout(()=>{if(F().dlset&&(DL.mode==='full'||MD()))sw()},3000);
+ const g0=goto;goto=function(m){if(m!=='menu')G.set2=false;if(F().dlset&&m==='menu'&&G.mode==='title'&&web()){if(!DL.mode)return g0('dlpick');if((DL.mode==='full'||MD())&&need())return g0('dl')}return g0(m)};
  SCR.dlpick=function(){scr();const n=manifest().length,bw=Math.min(330,(W-60)/2),y=96,h=160,x0=W/2-bw-10;
-  [['min','MIN DOWNLOAD','Small and quick.','Voices load while you play,','so a line can start a little late.','#2f4f8f','Plays in LOW quality.'],['full','FULL DOWNLOAD',n+' voice files.','Bigger and slower to get,','then voices play right away.','#2f7a5f','Quality can go up to HIGH.']].forEach((q,k)=>{const x=x0+k*(bw+20);button(x,y,bw,h,'',q[5],()=>pick(q[0]),20);txt(q[1],x+bw/2,y+36,Math.min(26,bw*.085),'#fff',INK,'center',FB,5);[q[2],q[3],q[4],q[6]].forEach((t,j)=>txt(t,x+bw/2,y+72+j*20,14,j===3?'#ffe14d':'#fff',null,'center',FU))});
+  [['min','MIN DOWNLOAD',F().mindl?'Small: fight sounds only.':'Small and quick.','Voices load while you play,','so a line can start a little late.','#2f4f8f','Plays in LOW quality.'],['full','FULL DOWNLOAD',n+' voice files.','Bigger and slower to get,','then voices play right away.','#2f7a5f','Quality can go up to HIGH.']].forEach((q,k)=>{const x=x0+k*(bw+20);button(x,y,bw,h,'',q[5],()=>pick(q[0]),20);txt(q[1],x+bw/2,y+36,Math.min(26,bw*.085),'#fff',INK,'center',FB,5);[q[2],q[3],q[4],q[6]].forEach((t,j)=>txt(t,x+bw/2,y+72+j*20,14,j===3?'#ffe14d':'#fff',null,'center',FU))});
   txt(F().setstart?'You can switch any time in Settings, at the top right of the start screen.':'You can switch any time in Settings, at the top right of the lobby.',W/2,y+h+28,13.5,'#e6dcff',null,'center',FU);txt('Every update adds its new files. The game still needs the internet to play.',W/2,y+h+48,13.5,'#e6dcff',null,'center',FU);hdr('CHOOSE YOUR DOWNLOAD','title',true)};
  SCR.dl=function(){scr();if(!DL.run&&!DL.fin&&!DL.started){DL.started=true;DL.stop=false;runDL()}
   if(DL.fin){DL.ok=true;DL.fin=false;DL.started=false;try{localStorage.setItem(BK,String(window.COMBO_BIG||0))}catch(e){}if(DL.full)note('Your device is out of room. The rest loads as you play.');else if(DL.fail)note(DL.fail+' files did not download. They load as you play.');goto('menu');return}
@@ -660,8 +662,8 @@ let SCX=null,HCX=null;
   rr(bx,by,bw,26,13);g.fillStyle='#120a22';g.fill();g.strokeStyle='#fff';g.lineWidth=2;g.stroke();if(k>0){rr(bx+3,by+3,Math.max(20,(bw-6)*k),20,10);g.fillStyle='#7fdcff';g.fill()}
   txt(tot?DL.done+' / '+tot+' files'+(DL.bytes?'   ·   '+Math.round(DL.bytes/1048576)+' MB':''):'Checking what you already have...',W/2,by+50,17,'#fff',null,'center',FU);
   txt(DL.cors===false?'Your browser is pre-loading the files.':'Files are kept on this device so voices play right away.',W/2,by+74,13,'#e6dcff',null,'center',FU);
-  txt('Keep the game open. You can also switch to MIN and play now.',W/2,by+94,13,'#e6dcff',null,'center',FU);
-  button((W-320)/2,by+120,320,44,'SWITCH TO MIN DOWNLOAD','#3a2a5e',()=>pick('min'),18);hdr('UPDATE',null,true)};
+  txt(MD()?'MIN download: fight sounds only. The rest loads while you play.':'Keep the game open. You can also switch to MIN and play now.',W/2,by+94,13,'#e6dcff',null,'center',FU);
+  if(MD())button((W-320)/2,by+120,320,44,'PLAY NOW','#3a2a5e',()=>{DL.stop=true;DL.started=false;DL.fin=false;DL.ok=true;goto('menu')},18);else button((W-320)/2,by+120,320,44,'SWITCH TO MIN DOWNLOAD','#3a2a5e',()=>pick('min'),18);hdr('UPDATE',null,true)};
  BACK.dlpick='title';BACK.dl='title';
  /* settings panel */
  let LX=0;{const ge0=gems;gems=function(){return LX=ge0()}}
@@ -669,7 +671,7 @@ let SCX=null,HCX=null;
   const GG=window.COMBO_G,ga=GG&&GG.get?GG.get():null,full=DL.mode==='full',bw=(w-48-12)/2;
   button(x+24,y+60,w-48,44,ga?'SIGN OUT':'SIGN IN WITH GOOGLE',ga?'#3a2a5e':'#2f4f8f',()=>{if(!F().gsign||!GG){note('Google sign-in is not switched on yet');return}if(ga)GG.out();else GG.open()},20,ga?String(ga.name||'Google').slice(0,16)+' · saved':'Save progress');
   txt('DOWNLOAD',W/2,y+126,14,'#e6dcff',null,'center',FU);
-  button(x+24,y+140,bw,44,'MIN DOWNLOAD',!full?'#2f7a5f':'#3a2a5e',()=>{if(DL.mode!=='min'){setMode('min');DL.ok=true;note('MIN download: LOW quality, voices load while you play')}},18,!full?'ON':'');
+  button(x+24,y+140,bw,44,'MIN DOWNLOAD',!full?'#2f7a5f':'#3a2a5e',()=>{if(DL.mode!=='min'){setMode('min');if(MD()&&web()){DL.ok=false;DL.started=false;DL.fin=false;DL.stop=true;G.set2=false;g0('dl');return}DL.ok=true;note('MIN download: LOW quality, voices load while you play')}},18,!full?'ON':'');
   button(x+36+bw,y+140,bw,44,'FULL DOWNLOAD',full?'#2f7a5f':'#3a2a5e',()=>{if(!web()){note('Downloads work on the game website');return}setMode('full');DL.ok=false;DL.started=false;DL.fin=false;G.set2=false;g0('dl')},18,full?'ON':'');
   txt(full?'FULL: every voice file is kept on this device. Quality up to HIGH.':'MIN: voices load as they play. Quality stays LOW.',W/2,y+206,13.5,'#fff',null,'center',FU);txt('Each update adds its new files. The game still needs the internet.',W/2,y+225,12.5,'#e6dcff',null,'center',FU);
   button(W/2-70,y+h-52,140,38,'CLOSE','#3a2a5e',()=>{G.set2=false},18);

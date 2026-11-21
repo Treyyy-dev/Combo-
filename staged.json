@@ -1892,5 +1892,20 @@
   "game": {
    "flag": "dl6"
   }
+ },
+ {
+  "id": "update-min-download",
+  "type": "update",
+  "name": "Small MIN Download",
+  "subtitle": "MIN downloads the fight sounds only",
+  "desc": "MIN download now has a small download of its own: only the fight shouts and pain sounds. Everything else still loads while you play. FULL is unchanged.",
+  "status": "staged",
+  "created": 1795239908975,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "mindl"
+  }
  }
 ]
