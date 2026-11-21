@@ -1406,8 +1406,8 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
    const T2=q=>{let x=q.x,y=q.y;if(p[10]||p[11]){const y2=y+75;const rx=x*ca-y2*sa,ry=x*sa+y2*ca;x=rx;y=ry+(p[11]||0)-75}return[x,y]};
    if(o.ground)gy=-Math.max(T2(J.lf[1])[1],T2(J.lb[1])[1]);
    const P3=(q,z)=>{const a=T2(q);return[a[0],-(a[1]+gy),z]},t=o.t||0,sw=(o.sway==null?.15:o.sway)+.12,bk=(c.sc>1.07||c.dm>1)?1.14:1,bare=!!c.bare;
-   const hip=P3(J.hip,0),neck=P3(J.neck,0),shC=P3(J.sh,0),sp=nm(sb(neck,hip)),fw=nm(cr(sp,[0,0,-1]));
-   const SW=13*bk,HW=7*bk,shF=ad(shC,[0,0,SW]),shB=ad(shC,[0,0,-SW]),elF=P3(J.af[0],SW+2),haF=P3(J.af[1],SW),elB=P3(J.ab[0],-SW-2),haB=P3(J.ab[1],-SW),hpF=ad(hip,[0,0,HW]),hpB=ad(hip,[0,0,-HW]),knF=P3(J.lf[0],HW+1.5),ftF=P3(J.lf[1],HW+1.5),knB=P3(J.lb[0],-HW-1.5),ftB=P3(J.lb[1],-HW-1.5);
+   const hip=P3(J.hip,0),neck=P3(J.neck,0),shC=P3(J.sh,0),sp=nm(sb(neck,hip)),fw=nm(cr(sp,[0,0,1]));
+   const SW=15.6*bk,HW=7.6*bk,shF=ad(shC,[0,0,SW]),shB=ad(shC,[0,0,-SW]),elF=P3(J.af[0],SW+2),haF=P3(J.af[1],SW),elB=P3(J.ab[0],-SW-2),haB=P3(J.ab[1],-SW),hpF=ad(hip,[0,0,HW]),hpB=ad(hip,[0,0,-HW]),knF=P3(J.lf[0],HW+1.5),ftF=P3(J.lf[1],HW+1.5),knB=P3(J.lb[0],-HW-1.5),ftB=P3(J.lb[1],-HW-1.5);
    const top=c.top,topS=c.topSh||c.top,skin=c.skin,pants=c.pants,slv=bare?skin:top,st=c.style|0;
    /* cloth behind the body first (order does not matter for depth, only kept readable) */
    const K=c.name+'|'+view+'|';
@@ -1419,17 +1419,18 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
    if(st===5){cloth(K+'scarf',ad(neck,[-4,-3,0]),[-.92,-.4,0],34,3.6,c.col,t,sw);cloth(K+'apron',ad(hip,ml(fw,8)),[.05,-1,0],24,10,c.col,t,sw*.3)}
    if(st===3){cloth(K+'s1',ad(neck,[-4,-3,3]),[-1,-.12,0],60,4,c.col2,t,sw);cloth(K+'s2',ad(neck,[-3,-5,-3]),[-1,-.3,0],44,3.4,c.col2,t+1,sw)}
    /* legs */
-   const leg=(h,k,f,ang)=>{cap(h,k,6.6*bk,5.3*bk,pants);cap(k,f,5.2*bk,4.1*bk,pants);const d=nm([Math.cos(ang*.35*R0)||1,Math.sin(-ang*.35*R0),0]);ell3(ad(f,[4.5,-1.2,0]),[9.5,0,0],[0,4.6,0],[0,0,5],'#2b2438');cyl(ad(f,[-2,1.6,0]),ad(f,[11,1.6,0]),.9,.9,c.col,1,1)};
+   const leg=(h,k,f,ang)=>{cap(h,k,8.2*bk,6*bk,pants);cap(k,f,5.6*bk,4.2*bk,pants);ell(ad(ml(ad(k,f),.5),ad(ml(sb(k,f),.12),[-1.6,0,0])),sb(f,k),ln(sb(f,k))*.3,6.4*bk,6*bk,pants);const d=nm([Math.cos(ang*.35*R0)||1,Math.sin(-ang*.35*R0),0]);ell3(ad(f,[4.5,-1.2,0]),[9.5,0,0],[0,4.6,0],[0,0,5],'#2b2438');cyl(ad(f,[-2,1.6,0]),ad(f,[11,1.6,0]),.9,.9,c.col,1,1)};
    leg(hpB,knB,ftB,p[8]+p[9]);leg(hpF,knF,ftF,p[6]+p[7]);
    /* torso, belt, pelvis, neck */
-   const mid=ml(ad(hip,shC),.5),tl=ln(sb(shC,hip));ell(ad(mid,ml(sp,3)),sp,tl/2+9,9.6*bk,14*bk,top);ell(ad(hip,ml(sp,1)),sp,8.5,9.4*bk,12.6*bk,pants);ell(ad(hip,ml(sp,8)),sp,2.6,10.3*bk,14.2*bk,c.col2);
+   const mid=ml(ad(hip,shC),.5),tl=ln(sb(shC,hip));/* stronger build (Trey: make the body look stronger): wide chest over a narrower waist, chest muscles, shoulders, thicker arms and legs */
+   ell(ad(mid,ml(sp,-4)),sp,tl/2+5,8.4*bk,10.6*bk,top);/* fit waist with abs: three rows of two */for(let r=0;r<3;r++)[3.1,-3.1].forEach(z=>ell3(ad(hip,ad(ml(sp,12.5+r*6.2),ad(ml(fw,(7.9-r*.15)*bk),[0,0,z*bk]))),ml(fw,2.5),ml(sp,2.8),[0,0,2.9*bk],top));{const ab=(u,d,z)=>ad(hip,ad(ml(sp,u),ad(ml(fw,d*bk),[0,0,z*bk]))),lc=topS===top?'#00000055':topS,li=(A,B)=>cyl(A,B,.75,.75,topS,1,1);li(ab(10.5,10.5,0),ab(28.5,10.4,0));[15.6,21.8].forEach(u=>{li(ab(u,10.4,0),ab(u,9.4,5.6));li(ab(u,10.4,0),ab(u,9.4,-5.6))});[1,-1].forEach(k=>{const pc=(d,z)=>ad(shC,ad(ml(sp,-13.4),ad(ml(fw,d*bk),[0,0,z*k*bk])));li(pc(11.6,.8),pc(11.9,6));li(pc(11.9,6),pc(9.6,11.5))});li(ad(shC,ad(ml(sp,-13),ml(fw,11.3*bk))),ad(shC,ad(ml(sp,-3),ml(fw,10.6*bk))))}ell(ad(shC,ml(sp,-7)),sp,13,11.4*bk,17*bk,top);[6.6,-6.6].forEach(z=>ell3(ad(shC,ad(ml(sp,-7.5),ad(ml(fw,7.4*bk),[0,0,z*bk]))),ml(fw,4.6),ml(sp,6),[0,0,6.6*bk],top));ell(ad(neck,ml(sp,-3)),sp,5,7.5*bk,11*bk,top);ell(ad(hip,ml(sp,1)),sp,8.5,9.4*bk,12.6*bk,pants);ell(ad(hip,ml(sp,8)),sp,2.6,10.3*bk,14.2*bk,c.col2);
    ell(ad(mid,ad(ml(sp,6),ml(fw,7.6*bk))),sp,tl/2-3,2.2,2.2,c.col);
    /* arms */
-   const arm=(s,e,h,back)=>{sph(s,5.6*bk,slv);cap(s,e,4.8*bk,4.1*bk,slv);cap(e,h,4*bk,3.4*bk,bare?skin:topS);sph(h,c.weapon==='fist'?5.6:4.5,c.weapon==='fist'?c.col2:skin)};
+   const arm=(s,e,h,back)=>{sph(s,7.6*bk,slv);cap(s,e,6.2*bk,5*bk,slv);ell(ml(ad(s,e),.5),sb(e,s),ln(sb(e,s))*.36,6.9*bk,6.5*bk,slv);cap(e,h,5.3*bk,3.9*bk,bare?skin:topS);sph(h,c.weapon==='fist'?6.2:5.1,c.weapon==='fist'?c.col2:skin)};
    arm(shB,elB,haB,1);arm(shF,elF,haF,0);
    /* head */
    const ha=((p[0]||0)*.5+(p[1]||0))*R0+ra,HS=1.36,hu=[Math.sin(ha)*HS,Math.cos(ha)*HS,0],hf=[Math.cos(ha)*HS,-Math.sin(ha)*HS,0],hs=[0,0,HS],nk=ad(neck,ml(sp,-2)),hc=ad(neck,ml(hu,13.2)),hp=(a,b,s)=>ad(hc,ad(ml(hf,a),ad(ml(hu,b),ml(hs,s))));
-   cyl(nk,hc,3.9,3.9,skin);sph(hc,13.6*HS,skin);
+   cyl(nk,hc,5.2,4.6,skin);sph(hc,13.6*HS,skin);
    const hair=c.hair,long=[1,2,5,6,7].includes(st);ell3(hp(-2.6,2.8,0),ml(hf,14.6),ml(hu,14.4),ml(hs,14.9),hair);
    [-6.5,0,6.5].forEach((s,i)=>cyl(hp(8,11.5,s),hp(14.4,4.5-(i===1?1.5:0),s*1.12),5.8,.3,hair));
    [[-1,3,13.2],[-1,3,-13.2]].forEach(q=>cyl(hp(q[0],q[1]+4,q[2]),hp(q[0]+1,q[1]-9,q[2]*1.02),4.8,.4,hair));
