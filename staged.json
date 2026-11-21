@@ -1232,5 +1232,65 @@
   "game": {
    "flag": "jpvoice"
   }
+ },
+ {
+  "id": "update-jp-subtitles",
+  "type": "update",
+  "name": "Japanese Subtitles",
+  "subtitle": "Switch fighter subtitles to Japanese",
+  "desc": "Configure gets a new SUBTITLES button that switches between English and Japanese. On Japanese, the words fighters say at the start of a match, when they win, when they are knocked out and in the summon scene are shown in Japanese.",
+  "status": "staged",
+  "created": 1795225966846,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "jpsub"
+  }
+ },
+ {
+  "id": "update-lb-cards",
+  "type": "update",
+  "name": "Leaderboard: Icons and Banners",
+  "subtitle": "Profile icon and banner with every name",
+  "desc": "Every row on the leaderboard now shows the player's profile icon and their banner behind their name.",
+  "status": "staged",
+  "created": 1795225966847,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "lbicon"
+  }
+ },
+ {
+  "id": "update-lb-arrows",
+  "type": "update",
+  "name": "Leaderboard: Side Arrows",
+  "subtitle": "Page arrows at the middle left and right",
+  "desc": "The leaderboard page arrows are now big arrows at the middle left and middle right of the screen.",
+  "status": "staged",
+  "created": 1795225966848,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "lbarrow"
+  }
+ },
+ {
+  "id": "update-voice-sync",
+  "type": "update",
+  "name": "Voices Finish Their Lines",
+  "subtitle": "Lines wait for the voice",
+  "desc": "A fighter's line now stays on screen until the voice has finished saying it, in English and in Japanese, and the words type out in time with the voice.",
+  "status": "staged",
+  "created": 1795225966849,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "vsync"
+  }
  }
 ]
