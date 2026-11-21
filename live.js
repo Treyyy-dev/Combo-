@@ -191,6 +191,11 @@ SCR.dev=drawDev;
   txt(st?'★ '+st+' / 14   ·   LEVEL '+lvOf(c.name)+' / 200':'NOT OWNED   ·   Summon in GACHA',tx,y+rh*.83,fs,st?'#ffe14d':'#aaa',null,'left',FU)});
  button(W-110,12,96,34,'CLOSE','#3a2a5e',()=>{G.mx=null},18);if(G.focus>=G.ui.length)G.focus=0}}
 
+/* flag "mailarrow": mailbox page arrows sit at the middle left and right of the screen; the page number stays at the bottom */
+{const m2=SCR.mail;SCR.mail=function(){if(!FLAGS.mailarrow)return m2();const p0=pager;pager=function(){};try{m2()}finally{pager=p0}
+ const np=Math.max(1,Math.ceil(MAILS.length/3));if(np<2||G.mx)return;const bw=Math.min(640,W-36),bx=(W-bw)/2,ah=64,ay=62+(3*104-8)/2-ah/2,lx=Math.max(6,bx-56),rx=Math.min(W-52,bx+bw+10);
+ button(lx,ay,46,ah,'‹','#3a2a5e',()=>{G.mpg=((G.mpg|0)+np-1)%np},34);button(rx,ay,46,ah,'›','#3a2a5e',()=>{G.mpg=((G.mpg|0)+1)%np},34);txt(((G.mpg|0)+1)+' / '+np,W/2,H-24,15,'#fff',INK,'center')}}
+
 /* ---------- outside claude.ai (the GitHub / Render copy) ----------
    Released content comes from live.json. The game server can also run the studio: it is opened with the dev key
    (add #dev to the address), and the server keeps staged and released items in its own database. */

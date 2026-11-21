@@ -1607,5 +1607,20 @@
   "game": {
    "flag": "uniq"
   }
+ },
+ {
+  "id": "update-mail-arrows",
+  "type": "update",
+  "name": "Mailbox Arrows",
+  "subtitle": "Page arrows at the middle left and right",
+  "desc": "The mailbox page arrows now sit at the middle left and right of the screen, with the page number at the bottom.",
+  "status": "staged",
+  "created": 1795233986691,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "mailarrow"
+  }
  }
 ]
