@@ -2541,5 +2541,35 @@
   "game": {
    "flag": "sndback"
   }
+ },
+ {
+  "id": "update-no-lobby-user-id",
+  "type": "update",
+  "name": "No Lobby User ID",
+  "subtitle": "USER ID is only on the start screen",
+  "desc": "The USER ID line is removed from the lobby. It is still at the top left of the start screen.",
+  "status": "staged",
+  "created": 1795266377849,
+  "colors": [
+   "#7fdcff"
+  ],
+  "game": {
+   "flag": "nouid"
+  }
+ },
+ {
+  "id": "update-duel-rarity",
+  "type": "update",
+  "name": "Duel Decides Rarity",
+  "subtitle": "The summon duel sets what you can pull",
+  "desc": "The summon duel now decides the rarity. If you lose, every pull is R. If it is a draw, you get SR and lower. If you win, you get SSR and lower, with a chance of UR on ticket banners. A summon of 10 can give several of the top rarity and anything lower.",
+  "status": "staged",
+  "created": 1795266377850,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "duelcap"
+  }
  }
 ]

@@ -749,7 +749,8 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
   if(GG&&GG.pend&&GG.pend())drawConfirm()}
  {const cf0=SCR.config;SCR.config=function(){if(F().dlset&&DL.mode==='min'){const st=SV.set;if(st.q!==0){const tap=st.q0!=null;if(!tap)st.q0=st.q;st.q=0;save();resize();if(tap)note('MIN download plays in LOW. Pick FULL in Settings for higher.')}}return cf0()}}
  const me0=SCR.menu;SCR.menu=function(){me0();const f=F();if(f.dlset)qfix();
-  if(f.uid){const t='USER ID: '+(G.uidOn?String(SV.pid||'none'):'TAP TO SHOW');txt(t,W-14,50,11,G.uidOn?'#fff':'#cbbfe6',INK,'right',FU,3);hit(W-210,43,200,15,()=>{G.uidOn=!G.uidOn;sfx('ui')})}
+  /* nouid: the lobby USER ID line is removed (the one on the start screen stays) */
+  if(f.uid&&!f.nouid){const t='USER ID: '+(G.uidOn?String(SV.pid||'none'):'TAP TO SHOW');txt(t,W-14,50,11,G.uidOn?'#fff':'#cbbfe6',INK,'right',FU,3);hit(W-210,43,200,15,()=>{G.uidOn=!G.uidOn;sfx('ui')})}
   if(f.dlset&&!f.setstart){const x=(LX||W-330)-46,y=12,foc=hit(x,y,38,34,()=>{G.set2=true;sfx('ui')});gear(x,y,foc);
    if(G.set2)panel()}};
  function gear(x,y,foc){rr(x,y,38,34,10);g.fillStyle='rgba(10,4,24,.6)';g.fill();if(foc){g.strokeStyle='#ffe14d';g.lineWidth=3;g.stroke()}
@@ -910,7 +911,12 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
  /* duel2 (sumduel was already released): the face-off is one over-the-shoulder shot like the cutscenes, 3 s so the two lines do not overlap: Kenko large in front with her back to us, Neto beyond her facing the camera (Trey's wording; two earlier versions were replaced);
     the ending uses the raised-hand pose of the old summon animation instead of the win animation; and the voice lines play (window.COMBO_DUELV in voice.js). */
  const sm0=summon;summon=function(k){if(!ON())return sm0(k);const n=window.COMBO_TITLE_CH||['KENKO','NETO'],ki=CH.findIndex(c=>c&&c.name===n[0]),ni=CH.findIndex(c=>c&&c.name===n[1]);if(ki<0||ni<0)return sm0(k);
-   const o=['win','lose','draw'][Math.floor(Math.random()*3)],m=o==='win'?1.5:o==='lose'?.67:1,keep=TW.map(r=>r.slice());PEND={o,ki,ni};try{TW.forEach(r=>{for(let j=1;j<r.length;j++)r[j]=r[j]*m});return sm0(k)}finally{TW.forEach((r,a)=>{for(let j=0;j<r.length;j++)r[j]=keep[a][j]});PEND=null}};
+   const o=window.__DUELO||['win','lose','draw'][Math.floor(Math.random()*3)],dc=!!F().duelcap,m=o==='win'?1.5:dc?1:o==='lose'?.67:1,keep=TW.map(r=>r.slice());PEND={o,ki,ni};
+   /* duelcap (own flag, sumduel was already released): the duel result sets the highest rarity of that summon. Lose: R only. Draw: SR and lower. Win: SSR and lower, with the usual chance of UR on ticket banners (the 1.5 boost stays). Every pull of the summon follows it, so a x10 can hold several of the top rarity and anything lower. */
+   const cap=dc?(o==='lose'?0:o==='draw'?1:3):3;window.COMBO_DCAP=cap;try{TW.forEach(r=>{for(let j=1;j<r.length;j++)r[j]=j>cap?0:r[j]*m});return sm0(k)}finally{TW.forEach((r,a)=>{for(let j=0;j<r.length;j++)r[j]=keep[a][j]});PEND=null;window.COMBO_DCAP=3}};
+ /* while a cap is set: rate-up picks only use fighters at or under the cap (the whole pool when a banner has none), and the guaranteed-new pull is skipped */
+ {const pf0=pickFrom;pickFrom=function(list,tk){const cap=window.COMBO_DCAP;if(cap==null||cap>=3)return pf0(list,tk);let l=list.filter(i=>CH[i].rar<=cap);if(!l.length)l=pools()[tk?1:0].filter(i=>CH[i].rar<=cap);return pf0(l.length?l:list,tk)};
+  const pc0=pull;pull=function(){const cap=window.COMBO_DCAP;if(cap==null||cap>=3)return pc0();const p=SV.pity|0;SV.pity=-1e6;try{return pc0()}finally{SV.pity=p+1}}}
  const say=(M,f,key)=>{try{if(D2()&&window.COMBO_DUELV)COMBO_DUELV(f.c.name,key)}catch(e){}};
  const up=f=>{if(D2()){f.state='pose';f.pz=RAISE;f.st=0;f.y=0;f.vx=f.vy=0;f.mv=null}else{f.state='win';f.st=0;f.y=0;f.pz=null}f.inv=9};
  const tier=M=>Math.floor(Math.random()*(M.rar+1));
