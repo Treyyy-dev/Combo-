@@ -2239,5 +2239,20 @@
   "game": {
    "flag": "combotap"
   }
+ },
+ {
+  "id": "update-no-guarantee",
+  "type": "update",
+  "name": "No Guaranteed Fighter",
+  "subtitle": "Every pull uses the normal odds",
+  "desc": "The guaranteed new fighter on every 5th summon is removed. Every pull now uses the banner's odds, and the summon duel can raise or lower them.",
+  "status": "staged",
+  "created": 1795249669093,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "nopity"
+  }
  }
 ]

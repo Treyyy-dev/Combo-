@@ -951,4 +951,9 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
 /* combotap (needs combosay): the two start screen fighters shout COMBO when the player taps start, once per visit to the start screen. This wrapper is the outermost goto so it runs on the tap itself, before CONNECTING or a download. */
 {let shot=false;const gs0=goto;goto=function(m){try{if(F().combotap&&m==='menu'&&G.mode==='title'&&!shot){shot=true;if(window.COMBO_SHOUT)COMBO_SHOUT()}}catch(e){}return gs0(m)};
  const us0=update;update=function(rdt){us0(rdt);if(shot&&G.mode!=='title')shot=false}}
+/* nopity: removes the guaranteed new fighter (before: every 5th summon without a new fighter gave one the player did not own, ignoring rarity odds). Every pull now uses the normal odds.
+   The counter SV.pity is left as it was, so pulling this update back restores the old rule. The gacha info line about the guarantee is replaced. */
+{const OLD='Every 5th summon without a new fighter guarantees a new one.',NEW='There is no guaranteed new fighter. Every pull uses the odds above.';
+ const pl0=pull;pull=function(){if(!F().nopity)return pl0();const p=SV.pity;SV.pity=-1e9;try{return pl0()}finally{SV.pity=p}};
+ const ga0=SCR.gacha;if(ga0)SCR.gacha=function(){if(!F().nopity)return ga0();const t0=txt,w0=wrap;txt=function(s){if(s===OLD)arguments[0]=NEW;return t0.apply(this,arguments)};wrap=function(t,mw){return w0(t===OLD?NEW:t,mw)};try{return ga0()}finally{txt=t0;wrap=w0}}}
 })();
