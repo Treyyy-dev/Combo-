@@ -1,4 +1,4 @@
-/* Challenges (flag "chal") and Leaderboard (flag "lboard"), plus lbicon, lbarrow, lblvl, bots300, prof2, endcard. All off unless released from the Dev Studio. */
+/* Challenges (flag "chal") and Leaderboard (flag "lboard"), plus lbicon, lbarrow, lblvl, bots300, prof2, endcard, padd. All off unless released from the Dev Studio. */
 (function(){'use strict';
 const F=()=>(typeof FLAGS!=='undefined'&&FLAGS)||{};
 /* ---------- CHALLENGES ---------- */
@@ -81,20 +81,26 @@ function mostTeam(){const T=PF().tm;let best=null,bn=0;for(const k in T)if(T[k]>
  const cp0=cleanProf;cleanProf=function(p){const o=cp0(p);if(p&&typeof p==='object'){if(p.rw!=null)o.rw=clamp(p.rw|0,0,1e6);if(Array.isArray(p.mt))o.mt=p.mt.slice(0,3).filter(q=>Array.isArray(q)).map(q=>[clamp(q[0]|0,0,CH.length-1),clamp(q[1]|0,1,200),clamp(q[2]|0,1,14)])}return o};
  const g0=goto;goto=function(m){G.pv=null;return g0(m)}}
 function pvOpen(p,on){if(p)G.pv={p,on:!!on}}
+/* flag padd: add a friend from the profile panel, and a check mark wherever the player is already added */
+const CK='\u2713 ';
+function addP(p){const n=p.name;if(!n||n===SV.name||SV.friends.includes(n))return;const rq=FR.req.find(q=>q.name===n),bot=!!(p.bot||BF.known[n]);if(rq){if(bot)BF.known[n]=BF.known[n]||p;frAdd(n);FR.req=FR.req.filter(q=>q!==rq);if(!bot){FR.on[n]=rq;netRaw({t:'fa',to:n})}return}
+ if(BF.sent[n])return;BF.sent[n]=1;if(bot){BF.known[n]=BF.known[n]||p;BF.q.push({p:BF.known[n],at:G.t+rnd(2.5,7),kind:'acc',ok:Math.random()<.6})}else{if(NET.st!=='on'){BF.sent[n]=0;G.note={t:'Not connected to the online server',T:2.5};return}netRaw({t:'fr',to:n})}G.note={t:'Friend request sent to '+n,T:2.5}}
 function teamRow(mt,cx,y,ts){const n=mt.length,gap=14,x0=cx-(n*ts+(n-1)*gap)/2;mt.forEach((q,i)=>{const c=CH[q[0]]||CH[0],x=x0+i*(ts+gap);drawIcon(c,x,y,ts,null,1);rr(x,y,ts,ts,ts*.16);g.strokeStyle='#fff';g.lineWidth=2;g.stroke();txt(c.name,x+ts/2,y+ts+11,11,'#fff',INK,'center',FU,3);txt('LV '+q[1],x+ts/2,y+ts+25,12,'#7fdcff',INK,'center',FU,3);stars(q[2],x+ts/2,y+ts+40,11)})}
 function drawPV(){const V=G.pv;if(!V)return;G.ui=[];const p=V.p,pw=Math.min(500,W-40),px=(W-pw)/2,py=34,ph=H-64;g.fillStyle='rgba(6,2,18,.88)';g.fillRect(0,0,W,H);rr(px,py,pw,ph,14);g.fillStyle='#1a1030';g.fill();g.strokeStyle='#fff';g.lineWidth=2.5;g.stroke();
  profCard(p,px+14,py+14,pw-28,78,false);const y1=py+108;circ(px+24,y1,5,V.on?'#5fe07a':'#555',INK,1.5);txt(V.on?'ONLINE':'OFFLINE',px+36,y1,13,V.on?'#7fe07a':'#cbbfe6',INK,'left',FU,3);
  txt('LEVEL '+(p.lvl|0)+'   ·   '+tier(p.rank|0)+' '+fmtG(p.rank|0)+'   ·   RANKED WINS '+(p.rw==null?'-':fmtG(p.rw|0)),px+pw-18,y1,13,'#fff',INK,'right',FU,3);
  txt('MOST USED TEAM',W/2,y1+26,16,'#ffe14d',INK,'center',FB,4);const ts=Math.min(72,ph-270);if(Array.isArray(p.mt)&&p.mt.length)teamRow(p.mt,W/2,y1+42,ts);else txt('No team to show yet.',W/2,y1+80,13,'#cbbfe6',null,'center',FU);
- button(W/2-70,py+ph-44,140,34,'CLOSE','#5b2a7c',()=>{G.pv=null},18)}
+ if(F().padd&&p.name&&p.name!==SV.name){const fr=SV.friends.includes(p.name),rq=!fr&&FR.req.some(q=>q.name===p.name),sent=!fr&&!rq&&(BF.sent[p.name]||(G.res&&G.res.frs&&G.rules&&G.rules.opp&&G.rules.opp.name===p.name)),lab=fr?CK+'ADDED':rq?'ACCEPT REQUEST':sent?'REQUEST SENT':'ADD FRIEND';
+  button(W/2-164,py+ph-44,170,34,lab,fr||sent?'#3a2a5e':'#2f7a5f',()=>{addP(p)},15);button(W/2+24,py+ph-44,140,34,'CLOSE','#5b2a7c',()=>{G.pv=null},18)}
+ else button(W/2-70,py+ph-44,140,34,'CLOSE','#5b2a7c',()=>{G.pv=null},18)}
 {const p0=SCR.profile;SCR.profile=function(){if(!F().prof2)return p0();const t0=txt,cw2=Math.min(300,W*.36),cx=14;txt=function(s,x,y){if(typeof s==='string'&&y>=300&&y<=354&&x===cx+cw2/2&&(s.indexOf('Win matches')===0||s.indexOf('Ranked Combo')===0||s.indexOf('Icons: ')===0||s.indexOf('Banners: ')===0))return;return t0.apply(this,arguments)};try{p0()}finally{txt=t0}
  const y=294;txt('RANKED WINS  '+fmtG(PF().rw|0),cx+cw2/2,y,15,'#fff',INK,'center',FU,3);txt('MOST USED TEAM',cx+cw2/2,y+20,13,'#ffe14d',INK,'center',FU,3);teamRow(mostTeam(),cx+cw2/2,y+32,Math.min(54,H-y-32-52))}}
 /* ---------- flag endcard: online match end screen with both profiles, add friend (bots too), bot friends ---------- */
-const BF={q:[],known:{}},isBotFr=n=>!!(SV.bfr&&SV.bfr[n]);
+const BF={q:[],known:{},sent:{}},isBotFr=n=>!!(SV.bfr&&SV.bfr[n]);
 function botOn(n){const slot=Math.floor(Date.now()/9e5);return((hs(n)^Math.imul(slot,2654435761))>>>0)%100<45}
 function botPresence(){const B=SV.bfr;if(!B)return;for(const n in B){if(!SV.friends.includes(n)){delete B[n];delete FR.on[n];continue}if(NET.st==='on'&&botOn(n))FR.on[n]=B[n];else delete FR.on[n]}}
 {const fa0=frAdd;frAdd=function(n){fa0(n);if(F().endcard&&BF.known[n]&&SV.friends.includes(n)){(SV.bfr=SV.bfr||{})[n]=BF.known[n];save()}}}
-function addOpp(r,op,R){if(R.frs||SV.friends.includes(op.name))return;const rq=FR.req.find(q=>q.name===op.name);if(rq){frAdd(op.name);FR.req=FR.req.filter(q=>q!==rq);if(!r.bot){FR.on[op.name]=rq;netRaw({t:'fa',to:op.name})}R.frs=2;return}
+function addOpp(r,op,R){if(R.frs||SV.friends.includes(op.name))return;BF.sent[op.name]=1;const rq=FR.req.find(q=>q.name===op.name);if(rq){frAdd(op.name);FR.req=FR.req.filter(q=>q!==rq);if(!r.bot){FR.on[op.name]=rq;netRaw({t:'fa',to:op.name})}R.frs=2;return}
  R.frs=1;if(r.bot)BF.q.push({p:op,at:G.t+rnd(2.5,7),kind:'acc',ok:Math.random()<.6});else netRaw({t:'fr',to:op.name});G.note={t:'Friend request sent to '+op.name,T:2.5}}
 {const u0=update;update=function(rdt){u0(rdt);if(!BF.q.length)return;for(let i=BF.q.length-1;i>=0;i--){const e=BF.q[i];if(G.t<e.at)continue;BF.q.splice(i,1);if(!F().endcard||SV.friends.includes(e.p.name))continue;
   if(e.kind==='acc'){if(e.ok){frAdd(e.p.name);G.note={t:e.p.name+' accepted your friend request',T:3.5}}}else frReq(e.p)}}}
@@ -108,10 +114,10 @@ function addOpp(r,op,R){if(R.frs||SV.friends.includes(op.name))return;const rq=F
  const cw=Math.min(300,(W-120)/2),chh=84,cy=H*.36,lx=W/2-46-cw,rx=W/2+46;profCard(me,lx,cy,cw,chh,false);profCard(op,rx,cy,cw,chh,true);g.save();g.translate(W/2,cy+chh/2);g.rotate(-.08);txt('VS',0,0,44,'#ff3d5a',INK,'center',FB,8);g.restore();
  if(F().prof2){hit(lx,cy,cw,chh,()=>{if(G.mt>.6)pvOpen(me,true)});hit(rx,cy,cw,chh,()=>{if(G.mt>.6)pvOpen(op,on)})}
  const sy=cy+chh+20;txt('YOU',lx+cw/2,sy,13,'#ffe14d',INK,'center',FU,3);circ(rx+12,sy,5,on?'#5fe07a':'#555',INK,1.5);txt(on?'ONLINE':'OFFLINE',rx+24,sy,13,on?'#7fe07a':'#cbbfe6',INK,'left',FU,3);
- const fr=SV.friends.includes(op.name),rq=!fr&&FR.req.some(q=>q.name===op.name),lab=fr?'FRIENDS':rq?'ACCEPT REQUEST':R.frs?'REQUEST SENT':'ADD FRIEND',bw2=Math.min(170,cw-96);button(rx+cw-bw2,sy-15,bw2,30,lab,fr||(R.frs&&!rq)?'#3a2a5e':'#2f7a5f',()=>{if(G.mt>.6)addOpp(r,op,R)},bw2<160?12:14);
+ const fr=SV.friends.includes(op.name),rq=!fr&&FR.req.some(q=>q.name===op.name),lab=fr?(F().padd?CK+'ADDED':'FRIENDS'):rq?'ACCEPT REQUEST':R.frs||(F().padd&&BF.sent[op.name])?'REQUEST SENT':'ADD FRIEND',bw2=Math.min(170,cw-96);button(rx+cw-bw2,sy-15,bw2,30,lab,fr||(R.frs&&!rq)?'#3a2a5e':'#2f7a5f',()=>{if(G.mt>.6)addOpp(r,op,R)},bw2<160?12:14);
  txt('+'+fmtG(R.gm)+' GEMS   ·   +'+(R.xp||0)+' XP'+(R.rt?'   ·   +'+R.rt+' RED':'')+(R.yt?'   ·   +'+R.yt+' YELLOW':'')+'   ·   LEVEL '+lvl(),W/2,sy+38,20,'#7fdcff',INK,'center',FB,6);
  const bw=Math.min(190,(W-50)/2),by=Math.min(H-66,sy+64);button(W/2-bw-10,by,bw,50,'PLAY AGAIN',G.f[G.me].c.col,()=>{if(G.mt>.6)again()},24);button(W/2+10,by,bw,50,'LEAVE','#5b2a7c',()=>{if(G.mt>.6)menuAct('back')},24);drawPV()}}
-{const f0=SCR.friends;SCR.friends=function(){const fl=F();if(fl.endcard)botPresence();f0();if(!fl.prof2&&!fl.endcard)return;const lx=14,lw=Math.min(290,W*.35),rx=lx+lw+16,rw=W-rx-14,sel=!FR.found&&FR.sel;
+{const f0=SCR.friends;SCR.friends=function(){const fl=F();if(fl.endcard)botPresence();if(fl.padd){const b0=button;button=function(x,y,w,h,l){if(l==='ADDED'){const a=Array.prototype.slice.call(arguments);a[4]=CK+'ADDED';return b0.apply(this,a)}return b0.apply(this,arguments)};try{f0()}finally{button=b0}}else f0();if(!fl.prof2&&!fl.endcard)return;const lx=14,lw=Math.min(290,W*.35),rx=lx+lw+16,rw=W-rx-14,sel=!FR.found&&FR.sel;
  if(fl.endcard&&sel&&isBotFr(sel)){G.ui=G.ui.filter(u=>!(u.x>=rx&&u.y>=H-64));rr(rx+6,124,rw-12,H-14-130,10);g.fillStyle='#150b2a';g.fill();txt('Chat is turned off for this player.',rx+rw/2,124+(H-144)/2,14,'#cbbfe6',null,'center',FU)}
  if(fl.prof2){const vw=(x,y,w,p,on)=>{if(!p)return;hit(x,y,w,46,()=>pvOpen(p,on));txt('VIEW ›',x+w-8,y+38,10,'#ffe14d',INK,'right',FU,3)};if(FR.found)FR.found.forEach((p,i)=>vw(rx+12,94+i*52,rw-120,p,true));else if(sel){const o=FR.on[sel];if(o)vw(rx+12,70,rw-130,o,true);else if(isBotFr(sel))vw(rx+12,70,rw-130,SV.bfr[sel],false)}}
  drawPV()}}

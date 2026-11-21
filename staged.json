@@ -1367,5 +1367,20 @@
   "game": {
    "flag": "bots300"
   }
+ },
+ {
+  "id": "update-profile-add",
+  "type": "update",
+  "name": "Add Friends From a Profile",
+  "subtitle": "And a check mark when already added",
+  "desc": "When you open another player's profile there is an ADD FRIEND button. If you already added them, it shows a check mark and ADDED instead, on the profile, the end of match screen and the player search.",
+  "status": "staged",
+  "created": 1795227426130,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "padd"
+  }
  }
 ]
