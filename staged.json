@@ -1712,5 +1712,20 @@
   "game": {
    "flag": "lobbybg"
   }
+ },
+ {
+  "id": "update-google-signin",
+  "type": "update",
+  "name": "Sign In With Google",
+  "subtitle": "Save your progress to your Google account",
+  "desc": "Configure now has SIGN IN WITH GOOGLE. Sign in to save your progress to your Google account and load it on any phone or computer.",
+  "status": "staged",
+  "created": 1795236143716,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "gsign"
+  }
  }
 ]

@@ -42,6 +42,9 @@ async function dbInit() {
     await pool.query('alter table combo_lb add column if not exists icon int not null default 0');
     await pool.query('alter table combo_lb add column if not exists banner int not null default 0');
     await pool.query('alter table combo_lb add column if not exists border int not null default 0');
+    // Google sign-in: one row per Google account (the account id Google gives, the display name, and the saved game), plus sign-in sessions.
+    await pool.query('create table if not exists combo_users (id text primary key, name text not null default \'\', save jsonb, save_at timestamptz, created_at timestamptz not null default now(), last_login timestamptz not null default now())');
+    await pool.query('create table if not exists combo_sessions (token_hash text primary key, user_id text not null, created_at timestamptz not null default now())');
     // staged.json in the repo is how new items arrive: each id (and each new "rev" of it) is added to the staged list once.
     let seed = [];
     try { seed = JSON.parse(fs.readFileSync(path.join(ROOT, 'staged.json'), 'utf8')); } catch (e) {}
@@ -128,11 +131,74 @@ function lbApi(req, res) {
   });
 }
 
+// ---- Google sign-in and cloud saves ------------------------------------------
+// The game sends the sign-in token Google gives the player; it is checked against Google's public keys, and the player gets a session token.
+// Stored per account: Google's account id, the display name and the saved game. No email address and no password is stored.
+// GOOGLE_CLIENT_ID (environment variable) is the OAuth client id from Google Cloud; sign-in stays off until it is set.
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '';
+const MAX_SAVE = 400 * 1024;
+let gKeys = null, gKeysAt = 0;
+const b64u = s => Buffer.from(String(s).replace(/-/g, '+').replace(/_/g, '/'), 'base64');
+const sha = s => crypto.createHash('sha256').update(s).digest('hex');
+async function googleKeys() {
+  if (gKeys && Date.now() - gKeysAt < 3600000) return gKeys;
+  const r = await fetch('https://www.googleapis.com/oauth2/v3/certs'); const j = await r.json();
+  gKeys = {}; (j.keys || []).forEach(k => { gKeys[k.kid] = k; }); gKeysAt = Date.now(); return gKeys;
+}
+async function verifyGoogle(tok) {
+  const p = String(tok || '').split('.'); if (p.length !== 3) return null;
+  let head, body; try { head = JSON.parse(b64u(p[0]).toString('utf8')); body = JSON.parse(b64u(p[1]).toString('utf8')); } catch (e) { return null; }
+  if (head.alg !== 'RS256') return null;
+  let keys = await googleKeys(); if (!keys[head.kid]) { gKeys = null; keys = await googleKeys(); }
+  const jwk = keys[head.kid]; if (!jwk) return null;
+  const ok = crypto.createVerify('RSA-SHA256').update(p[0] + '.' + p[1]).verify(crypto.createPublicKey({ key: jwk, format: 'jwk' }), b64u(p[2]));
+  if (!ok) return null;
+  if (body.aud !== GOOGLE_CLIENT_ID || (body.iss !== 'accounts.google.com' && body.iss !== 'https://accounts.google.com')) return null;
+  if (!body.sub || !(body.exp * 1000 > Date.now())) return null;
+  return { id: String(body.sub).slice(0, 64), name: String(body.given_name || body.name || 'Player').slice(0, 40) };
+}
+function readBody(req, max) {
+  return new Promise((ok, no) => { let n = 0; const ch = []; req.on('data', d => { n += d.length; if (n > max) { no(new Error('big')); req.destroy(); } else ch.push(d); }); req.on('end', () => { try { ok(JSON.parse(Buffer.concat(ch).toString('utf8') || '{}')); } catch (e) { no(e); } }); req.on('error', no); });
+}
+async function sessionUser(req) {
+  const m = /^Bearer ([a-f0-9]{64})$/.exec(String(req.headers.authorization || '')); if (!m) return null;
+  const r = await pool.query('select user_id from combo_sessions where token_hash = $1', [sha(m[1])]); return r.rows[0] ? r.rows[0].user_id : null;
+}
+const authHits = new Map();
+async function authApi(req, res, url) {
+  if (url === '/api/auth/config') return json(res, 200, { clientId: pool && dbReady ? GOOGLE_CLIENT_ID : '' });
+  if (!pool || !dbReady || !GOOGLE_CLIENT_ID) return json(res, 503, { error: 'off' });
+  try {
+    if (url === '/api/auth/google' && req.method === 'POST') {
+      const ip = String(req.headers['x-forwarded-for'] || req.socket.remoteAddress || '').split(',')[0].trim(), now = Date.now();
+      if (now - (authHits.get(ip) || 0) < 1500) return json(res, 429, { error: 'slow' }); authHits.set(ip, now); if (authHits.size > 5000) authHits.clear();
+      const b = await readBody(req, 8192), u = await verifyGoogle(b.credential);
+      if (!u) return json(res, 401, { error: 'token' });
+      await pool.query('insert into combo_users (id, name) values ($1, $2) on conflict (id) do update set name = excluded.name, last_login = now()', [u.id, u.name]);
+      const token = crypto.randomBytes(32).toString('hex');
+      await pool.query('insert into combo_sessions (token_hash, user_id) values ($1, $2)', [sha(token), u.id]);
+      await pool.query('delete from combo_sessions where user_id = $1 and token_hash not in (select token_hash from combo_sessions where user_id = $1 order by created_at desc limit 10)', [u.id]);
+      const r = await pool.query('select save, save_at from combo_users where id = $1', [u.id]);
+      return json(res, 200, { token, name: u.name, save: r.rows[0].save || null, saveAt: r.rows[0].save_at ? +new Date(r.rows[0].save_at) : 0 });
+    }
+    const uid = await sessionUser(req); if (!uid) return json(res, 401, { error: 'session' });
+    if (url === '/api/auth/out' && req.method === 'POST') { const m = /^Bearer ([a-f0-9]{64})$/.exec(String(req.headers.authorization || '')); await pool.query('delete from combo_sessions where token_hash = $1', [sha(m[1])]); return json(res, 200, { ok: true }); }
+    if (url === '/api/save' && req.method === 'GET') { const r = await pool.query('select name, save, save_at from combo_users where id = $1', [uid]); const x = r.rows[0] || {}; return json(res, 200, { name: x.name || '', save: x.save || null, saveAt: x.save_at ? +new Date(x.save_at) : 0 }); }
+    if (url === '/api/save' && req.method === 'POST') {
+      const b = await readBody(req, MAX_SAVE); if (!b || typeof b.save !== 'object' || !b.save || !b.save.owned || !b.save.team) return json(res, 400, { error: 'save' });
+      const r = await pool.query('update combo_users set save = $2, save_at = now() where id = $1 returning save_at', [uid, JSON.stringify(b.save)]);
+      return json(res, 200, { ok: true, saveAt: r.rows[0] ? +new Date(r.rows[0].save_at) : 0 });
+    }
+    return json(res, 404, { error: 'route' });
+  } catch (e) { return json(res, e && e.message === 'big' ? 413 : 500, { error: 'server' }); }
+}
+
 const server = http.createServer((req, res) => {
   const url = (req.url || '/').split('?')[0];
   if (url === '/health') { res.writeHead(200, { 'content-type': 'application/json' }); return res.end(JSON.stringify({ ok: true, online })); }
   if (url === '/api/dev') return devApi(req, res);
   if (url === '/api/lb') return lbApi(req, res);
+  if (url === '/api/save' || url.indexOf('/api/auth/') === 0) return authApi(req, res, url);
   if (url === '/live.json' && dbReady && liveCache) { res.writeHead(200, { 'content-type': 'application/json', 'cache-control': 'no-cache' }); return res.end(JSON.stringify(liveCache)); }
   const rel = url === '/' ? 'index.html' : path.normalize(url).replace(/^([/\\]|\.\.)+/, '');
   const file = path.join(ROOT, rel);

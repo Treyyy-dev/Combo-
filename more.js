@@ -133,4 +133,29 @@ function addOpp(r,op,R){if(R.frs||SV.friends.includes(op.name))return;BF.sent[op
 {const m0=SCR.menu;SCR.menu=function(){m0();const fl=F();if(!fl.chal&&!fl.lboard)return;const ww=W*.42,wx=W-ww-22,wy=58,bw=Math.min(150,(ww-30)/2);let x=wx+10;
  if(fl.chal){const n=ready();button(x,wy+34,bw,30,'CHALLENGES'+(n?' · '+n:''),n?'#2f7a5f':'#3a2a5e',()=>{G.cpg=0;goto('chal')},bw<140?13:15);x+=bw+10}
  if(fl.lboard)button(x,wy+34,bw,30,'LEADERBOARD','#2f4f8f',()=>{G.lpg=0;lbSync(true);goto('lb')},bw<140?13:15)}}
+/* flag "gsign": SIGN IN WITH GOOGLE in Configure. Signing in saves the player's progress to their Google account on the game server (table combo_users)
+   and loads it on any device they sign in on. Works on the game's own website only (the server checks the Google token; see server.js). */
+{const GK='combo-gauth';let GA=null,CFG=null,DIRTY=false,UPT=0,BUSY=false,PEND=null,CHK=false;try{GA=JSON.parse(localStorage.getItem(GK))||null}catch(e){}
+ const note=t=>{G.note={t,T:2.8}},keep=()=>{try{if(GA)localStorage.setItem(GK,JSON.stringify(GA));else localStorage.removeItem(GK)}catch(e){}};
+ const api=(p,m,body)=>fetch(p,{method:m,cache:'no-store',headers:Object.assign({'content-type':'application/json'},GA?{authorization:'Bearer '+GA.token}:{}),body:body?JSON.stringify(body):undefined}).then(r=>r.ok?r.json():Promise.reject(r.status));
+ async function cfg(){if(CFG)return CFG;try{const r=await fetch('/api/auth/config',{cache:'no-store'});CFG=r.ok?await r.json():{clientId:''}}catch(e){CFG={clientId:''}}if(typeof CFG.clientId!=='string')CFG={clientId:''};return CFG}
+ const s0=save;save=function(){s0();if(GA)DIRTY=true};
+ function upload(){if(!GA||BUSY)return;BUSY=true;DIRTY=false;UPT=performance.now();api('/api/save','POST',{save:SV}).then(r=>{BUSY=false;if(r&&r.saveAt){SV.gsat=r.saveAt;s0()}}).catch(e=>{BUSY=false;if(e===401){GA=null;keep();note('Signed out. Sign in again to keep saving.')}else DIRTY=true})}
+ function loadSave(sv,at){try{sv.gsat=at;localStorage.setItem(SKEY,JSON.stringify(sv));location.reload()}catch(e){note('Could not load the saved game')}}
+ function offer(sv,at){if(!sv||!sv.owned||!sv.team){upload();return}if(at&&at===SV.gsat){return}PEND={sv,at,seen:false};G.cf={text:'LOAD YOUR ACCOUNT SAVE?',sub:'YES loads it on this device. NO keeps this device and saves it to your account.',yes:()=>{const p=PEND;PEND=null;if(p)loadSave(p.sv,p.at)}}}
+ function gClose(){const o=document.getElementById('g-ov');if(o)o.remove()}
+ function onCred(resp){gClose();if(!resp||!resp.credential){note('Sign-in was cancelled');return}note('Signing in...');const was=GA;GA=null;api('/api/auth/google','POST',{credential:resp.credential}).then(r=>{GA={token:r.token,name:r.name};keep();note('Signed in as '+r.name);offer(r.save,r.saveAt)}).catch(()=>{GA=was;note('Sign-in failed. Try again.')})}
+ function gOpen(){cfg().then(c=>{if(!c.clientId){note(location.protocol==='blob:'||!/^https?:$/.test(location.protocol)?'Google sign-in works on the game website':'Google sign-in is not set up yet');return}
+   const start=()=>{try{gClose();google.accounts.id.initialize({client_id:c.clientId,callback:onCred,ux_mode:'popup',auto_select:false});const ov=document.createElement('div');ov.id='g-ov';ov.style.cssText='position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(6,2,18,.88);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;z-index:99';
+     const tl=document.createElement('div');tl.textContent='Sign in to save your Combo progress';tl.style.cssText='font:700 18px Rajdhani,system-ui,sans-serif;color:#fff;text-align:center;padding:0 16px';const bx=document.createElement('div'),cn=document.createElement('button');cn.textContent='Cancel';cn.style.cssText='font:700 16px Rajdhani,system-ui,sans-serif;padding:10px 28px;border-radius:10px;border:2px solid #fff;background:#3a2a5e;color:#fff';cn.onclick=gClose;
+     ov.appendChild(tl);ov.appendChild(bx);ov.appendChild(cn);document.body.appendChild(ov);google.accounts.id.renderButton(bx,{theme:'filled_blue',size:'large',type:'standard',text:'signin_with',shape:'pill'})}catch(e){gClose();note('Could not open Google sign-in')}};
+   if(window.google&&google.accounts&&google.accounts.id)start();else{const sc=document.createElement('script');sc.src='https://accounts.google.com/gsi/client';sc.async=true;sc.onload=start;sc.onerror=()=>note('Could not reach Google');document.head.appendChild(sc)}})}
+ function gOut(){const t=GA;if(!t)return;if(DIRTY)upload();setTimeout(()=>{api('/api/auth/out','POST').catch(()=>{}).then(()=>{GA=null;keep();DIRTY=false;note('Signed out. Progress stays on this device.')})},DIRTY?900:0)}
+ const c0=SCR.config;SCR.config=function(){c0();if(!F().gsign)return;const w=Math.min(340,W-36),x=(W-w)/2,y=H-46;
+  if(GA){button(x,y,w,36,'SIGN OUT','#3a2a5e',gOut,17,String(GA.name||'Google').slice(0,16)+' · saved')}else button(x,y,w,36,'SIGN IN WITH GOOGLE','#2f4f8f',gOpen,17,'Save progress');
+  if(G.note){g.save();g.font='700 16px '+FU;const nw=g.measureText(G.note.t).width+36;g.globalAlpha=clamp(G.note.T*3,0,1);rr((W-nw)/2,H-90,nw,36,10);g.fillStyle='rgba(10,4,24,.96)';g.fill();g.strokeStyle='#ff7ad1';g.lineWidth=2;g.stroke();txt(G.note.t,W/2,H-72,16,'#fff',null,'center',FU);g.restore()}
+  if(G.cf&&PEND){PEND.seen=true;drawConfirm()}};
+ const u0=update;update=function(rdt){u0(rdt);if(!F().gsign)return;if(PEND&&PEND.seen&&!G.cf){PEND=null;upload()}if(!GA)return;
+  if(!CHK){CHK=true;api('/api/save','GET').then(r=>{if(r&&r.save&&r.save.owned&&r.save.team&&r.saveAt&&r.saveAt>(SV.gsat||0))loadSave(r.save,r.saveAt);else if(r&&!r.save)upload()}).catch(e=>{if(e===401){GA=null;keep()}})}
+  if(DIRTY&&!BUSY&&!PEND&&performance.now()-UPT>8000)upload()}}
 })();
