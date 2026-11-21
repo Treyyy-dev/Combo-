@@ -1187,5 +1187,20 @@
   "game": {
    "flag": "voice1"
   }
+ },
+ {
+  "id": "update-cutscene-ui",
+  "type": "update",
+  "name": "Cutscenes: Full Screen and Speed",
+  "subtitle": "No bars, Skip and x1 x2 x3",
+  "desc": "Story cutscenes fill the whole screen. The quest name and timer at the top and the tap to go faster line are gone. At the top right there is a Skip button and a speed button that switches between x1, x2 and x3.",
+  "status": "staged",
+  "created": 1795223840499,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "cine2"
+  }
  }
 ]
