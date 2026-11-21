@@ -2134,5 +2134,20 @@
   "game": {
    "flag": "updshort"
   }
+ },
+ {
+  "id": "update-studio-no-music",
+  "type": "update",
+  "name": "Studio Intro: No Music",
+  "subtitle": "Music starts after the COMBO shout",
+  "desc": "No music plays during the Treyyverse studio intro. The start screen music only starts after the fighters shout COMBO.",
+  "status": "staged",
+  "created": 1795246190224,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "studioq"
+  }
  }
 ]

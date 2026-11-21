@@ -618,6 +618,8 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
   return{DUR,size(w,h){W=w;H=h;u=Math.min(W/420,H/520);cx=W/2;cy=H/2;OS=Math.ceil(Math.min(440*u,W,H))},
    draw(t){MODE=0;QI=0;drawCombo(t);drawLineup(t);MODE=1;QI=0;frame(t);g.setTransform(1,0,0,1,0,0)},free(){SP.length=0}}};
  let IN=null,T0=0,DONE=false,TT=0;
+ /* studioq (story.js asks this): true while the black hold or the studio intro is on screen, so no music plays over it */
+ try{window.COMBO_INTRO=()=>!DONE}catch(e){}
  const t0=SCR.title;SCR.title=function(){const now=performance.now();if(!TT)TT=now;
   if(!DONE&&!IN){if(F().studio){try{if(!document.getElementById('bungee-font')){const l=document.createElement('link');l.id='bungee-font';l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Bungee&display=swap';document.head.appendChild(l);if(document.fonts&&document.fonts.load)document.fonts.load('64px Bungee')}}catch(e){}
     try{IN=mkIntro();T0=now}catch(e){IN=null;DONE=true}}

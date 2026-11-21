@@ -60,6 +60,8 @@ function sched(T,st,t,out){const sp=T.spb;for(const e of T.ev[st]){switch(e[0]){
  case's':nz(t,.12,.13,'bandpass',1800,out);break;case'r':nz(t,.05,.07,'bandpass',2600,out);break;case'h':nz(t,.03,.035,'highpass',7000,out);break}}}
 const MU={id:null,g:null,tr:null,step:0,nt:0};let SC=null;
 function wantTrack(){const m=G.mode,f=F();
+ /* flag "studioq": no music while the studio intro plays; with "combosay" on, the start screen music then waits for the COMBO shout as before */
+ if(m==='title'&&f.studioq){try{if(window.COMBO_INTRO&&window.COMBO_INTRO())return null}catch(e){}}
  if(m==='title'&&f.combosay){try{if(window.COMBO_HOLD&&window.COMBO_HOLD())return null}catch(e){}}
  if(f.dripmx&&(m==='dl'||m==='dlpick'||m==='loading'))return'drip';
  if(m==='scene')return f.story1&&SC?(QS[SC.qi].k==='B'?'tense':'story'):null;
