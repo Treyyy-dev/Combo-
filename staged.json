@@ -2494,5 +2494,20 @@
   "game": {
    "flag": "fresh"
   }
+ },
+ {
+  "id": "update-dev-key-settings",
+  "type": "update",
+  "name": "Dev Key In Settings",
+  "subtitle": "DEV KEY moves to the start screen",
+  "desc": "The DEV KEY button is now in SETTINGS on the start screen, next to CLOSE. It is no longer in Configure inside the game.",
+  "status": "staged",
+  "created": 1795265172749,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "devkeyset"
+  }
  }
 ]

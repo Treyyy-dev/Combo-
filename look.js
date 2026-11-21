@@ -741,6 +741,9 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
   button(x+24,y+140,bw,44,'MIN DOWNLOAD',!full?'#2f7a5f':'#3a2a5e',()=>{if(DL.mode!=='min'){setMode('min');if(MD()&&web()){DL.ok=false;DL.started=false;DL.fin=false;DL.stop=true;if(F().dlafter&&G.mode==='title'){DL.force=true;note('MIN picked. Tap start to download.');return}G.set2=false;g0('dl');return}DL.ok=true;note('MIN download: LOW quality, voices load while you play')}},18,!full?'ON':'');
   button(x+36+bw,y+140,bw,44,'FULL DOWNLOAD',full?'#2f7a5f':'#3a2a5e',()=>{if(!web()){note('Downloads work on the game website');return}setMode('full');DL.ok=false;DL.started=false;DL.fin=false;if(F().dlafter&&G.mode==='title'){DL.force=true;note('FULL picked. Tap start to download.');return}G.set2=false;g0('dl')},18,full?'ON':'');
   txt(full?'FULL: every voice file is kept on this device. Quality up to HIGH.':'MIN: voices load as they play. Quality stays LOW.',W/2,y+206,13.5,'#fff',null,'center',FU);txt('Each update adds its new files. The game still needs the internet.',W/2,y+225,12.5,'#e6dcff',null,'center',FU)}
+  /* devkeyset: DEV KEY sits next to CLOSE here (only on the game website) and is gone from Configure */
+  const DKY=F().devkeyset&&window.COMBO_DEVKEY&&window.COMBO_DEVKEY.can()?window.COMBO_DEVKEY:null;
+  if(DKY){button(W/2-146,y+h-52,140,38,'CLOSE','#3a2a5e',()=>{G.set2=false},18);const ow=DKY.owner();button(W/2+6,y+h-52,140,38,ow?'DEV: ON':'DEV KEY',ow?'#2f7a5f':'#7a5a1f',()=>{if(ow){note('Dev access is on for this device');return}G.set2=false;DKY.ask()},18)}else
   button(W/2-70,y+h-52,140,38,'CLOSE','#3a2a5e',()=>{G.set2=false},18);
   if(G.note){g.save();g.font='700 16px '+FU;const nw=g.measureText(G.note.t).width+36;g.globalAlpha=clamp(G.note.T*3,0,1);rr((W-nw)/2,y-44,nw,36,10);g.fillStyle='rgba(10,4,24,.96)';g.fill();g.strokeStyle='#ff7ad1';g.lineWidth=2;g.stroke();txt(G.note.t,W/2,y-26,16,'#fff',null,'center',FU);g.restore()}
   if(GG&&GG.pend&&GG.pend())drawConfirm()}
