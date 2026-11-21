@@ -31,6 +31,7 @@ Notes:
 - Gacha with 8 banners that rotate every 30 minutes, a live preview of each rate-up fighter, and a summon cutscene
 - Mailbox next to the gem counter (every player gets a 1,000,000,000 gem gift)
 - NEWS button next to the mailbox: new fighters, maps, modes, banners and updates show there; the mailbox keeps the mails that give rewards
+- NEWS is a list you scroll; tap an item to open it with its full picture and all its info. NEWS shows first when the lobby opens from the start screen
 - Online matches start with a stage vote and a loading screen
 - The game always plays in landscape
 

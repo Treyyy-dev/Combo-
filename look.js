@@ -789,7 +789,7 @@ let SCX=null,HCX=null;
    else{const P=[RAISE,L1B,L4A,HA,HB,WIN][q.sp]||IDLES[c.idle||0];g.scale(q.flip?-k:k,k);drawChar(c,P,{t:G.t,sway:.15,ground:true,expr:ex});done=true}}catch(e){}g.restore();
   if(!done)return mc0(c,x,y,sc,o)};
  const ctx=fn=>function(){ART++;try{return fn.apply(this,arguments)}finally{ART--}};
- SCR.menu=ctx(SCR.menu);if(SCR.fdetail)SCR.fdetail=ctx(SCR.fdetail);teamCard=ctx(teamCard);drawReveal=ctx(drawReveal)}
+ SCR.menu=ctx(SCR.menu);if(SCR.fdetail)SCR.fdetail=ctx(SCR.fdetail);if(SCR.news)SCR.news=ctx(SCR.news);teamCard=ctx(teamCard);drawReveal=ctx(drawReveal)}
 /* lobbychar, part 2: remove the fighter picture panel on the right side of the lobby. The panel is drawn by drawMenu right after scr(): box, world picture, fighter, header strip and two labels.
    While the flag is on those draws are skipped (canvas fill/stroke/fillRect are switched off from the end of scr() until the second label), so only the background fighter shows. */
 {let REQ=false,ARM=0;const N=function(){},disarm=()=>{if(ARM){ARM=0;try{delete g.fill;delete g.stroke;delete g.fillRect}catch(e){}}};

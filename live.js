@@ -77,7 +77,7 @@ function apply(docs){try{const rel=(Array.isArray(docs)?docs:[]).filter(d=>d&&d.
  L.modes=docs.filter(d=>d.type==='mode').map(mkMode).slice(0,12);flagSync();
  resetCaches();remap(old);clampG();
  try{for(let i=MAILS.length-1;i>=0;i--)if(MAILS[i].news)MAILS.splice(i,1);const RNM=['R','SR','SSR','UR'],sub=d=>str(d.subtitle,40),nw=docs.filter(d=>d.releasedAt>0).sort((x,y)=>y.releasedAt-x.releasedAt).slice(0,30).map(d=>{const n=str(d.name,20).toUpperCase(),t=d.type;
-  return{id:'news-'+str(d.id,60)+'-'+d.releasedAt,news:1,pt:t,pn:n,pf:arr(obj(d.game).featured).slice(0,4).map(q=>str(q,20).toUpperCase()),tag:t==='hint'?'COMING SOON':'NEW '+TNAME[t],col:TCOL[t],title:n,text:t==='hint'?str(d.desc,150,'Something new is coming.'):t==='character'?(sub(d)?sub(d)+' ('+RNM[int(obj(d.game).rar,0,3,2)]+'). ':'')+'A new fighter has joined. Summon them in GACHA.':t==='mode'?(sub(d)?sub(d)+'. ':'')+'A new mode is open. Play it in MATCH, OFFLINE, NEW MODES.':t==='map'?(sub(d)?sub(d)+'. ':'')+'A new stage has been added to matches.':t==='update'?str(d.desc,150,'The game has been updated.'):(sub(d)?sub(d)+'. ':'')+'A new banner is up in GACHA.'}});MAILS.unshift.apply(MAILS,nw)}catch(e){}
+  return{id:'news-'+str(d.id,60)+'-'+d.releasedAt,news:1,full:str(d.desc,600),sub:sub(d),at:+d.releasedAt||0,md:t==='mode'?mkMode(d):null,pt:t,pn:n,pf:arr(obj(d.game).featured).slice(0,4).map(q=>str(q,20).toUpperCase()),tag:t==='hint'?'COMING SOON':'NEW '+TNAME[t],col:TCOL[t],title:n,text:t==='hint'?str(d.desc,150,'Something new is coming.'):t==='character'?(sub(d)?sub(d)+' ('+RNM[int(obj(d.game).rar,0,3,2)]+'). ':'')+'A new fighter has joined. Summon them in GACHA.':t==='mode'?(sub(d)?sub(d)+'. ':'')+'A new mode is open. Play it in MATCH, OFFLINE, NEW MODES.':t==='map'?(sub(d)?sub(d)+'. ':'')+'A new stage has been added to matches.':t==='update'?str(d.desc,150,'The game has been updated.'):(sub(d)?sub(d)+'. ':'')+'A new banner is up in GACHA.'}});MAILS.unshift.apply(MAILS,nw)}catch(e){}
  try{localStorage.setItem(CK,sig);localStorage.setItem(CN,JSON.stringify(L.names))}catch(e){}}
 
 /* ---------- hooks into the game (wrapping, so the main script stays untouched) ---------- */
@@ -207,13 +207,67 @@ SCR.dev=drawDev;
   g.beginPath();g.moveTo(cx-9,cy-7);g.lineTo(cx+9,cy-7);g.moveTo(cx-3,cy-7);g.lineTo(cx-3,cy-10);g.lineTo(cx+3,cy-10);g.lineTo(cx+3,cy-7);g.stroke();
   g.beginPath();g.moveTo(cx-7,cy-4);g.lineTo(cx-5.5,cy+10);g.lineTo(cx+5.5,cy+10);g.lineTo(cx+7,cy-4);g.closePath();g.stroke();g.lineWidth=1.5;g.beginPath();[-2.5,2.5].forEach(o=>{g.moveTo(cx+o,cy-1);g.lineTo(cx+o,cy+7)});g.stroke();g.restore()})}}
 
-/* NEWS screen: the NEWS button next to the mailbox opens it. Every news mail (new fighter, map, mode, banner, update, coming soon) shows there;
-   the mailbox keeps only the mails that give rewards. Both screens run the same mail code on a filtered list. */
-{const m4=SCR.mail,view=function(news){const all=MAILS.slice(),h0=hdr,t0=txt;G.mall=all;MAILS.length=0;all.forEach(m=>{if(!!m.news===news)MAILS.push(m)});const none=!MAILS.some(m=>!(SV.mdel||[]).includes(m.id));
- txt=function(s){if(typeof s==='string'){if(s.indexOf('New mail shows')===0)arguments[0]=news?(none?'No news yet. ':'')+'Fresh news shows a red dot on the NEWS button next to your mailbox.':(none?'No rewards right now. ':'')+'New rewards show a red dot on the mailbox next to your gems.';else if(news&&s==='Mail deleted')arguments[0]='News deleted'}return t0.apply(this,arguments)};
- hdr=function(t,b,x){return h0(news&&t==='MAILBOX'?'NEWS':t,b,x)};
- try{m4()}finally{hdr=h0;txt=t0;MAILS.length=0;all.forEach(m=>MAILS.push(m));G.mall=null}};
- SCR.mail=function(){view(false)};SCR.news=function(){view(true)}}
+/* Mailbox and NEWS. The NEWS button next to the mailbox opens the NEWS screen; the mailbox keeps only the mails that give rewards.
+   NEWS is one list you scroll up and down (drag, mouse wheel, or up / down keys). Tap a news item to open it: it shows the full picture
+   (the whole fighter, every fighter of a banner, the whole stage) and everything about it. After the start screen the NEWS shows first. */
+{const m4=SCR.mail;SCR.mail=function(){const all=MAILS.slice(),t0=txt;G.mall=all;MAILS.length=0;all.forEach(m=>{if(!m.news)MAILS.push(m)});const none=!MAILS.some(m=>!(SV.mdel||[]).includes(m.id));
+ txt=function(s){if(typeof s==='string'&&s.indexOf('New mail shows')===0)arguments[0]=(none?'No rewards right now. ':'')+'New rewards show a red dot on the mailbox next to your gems.';return t0.apply(this,arguments)};
+ try{m4()}finally{txt=t0;MAILS.length=0;all.forEach(m=>MAILS.push(m));G.mall=null}}}
+{const NW={sy:0,open:{},drag:null,max:0,vel:0,lt:0,lay:[],btn:[],lf:-1,pt:0,to:null};
+ const list=()=>MAILS.filter(m=>m.news&&!(SV.mdel||[]).includes(m.id));
+ const who=m=>(m.pt==='character'?[m.pn]:m.pt==='banner'?(m.pf||[]):[]).map(q=>findCh(q)).filter(k=>k>=0).slice(0,4);
+ const ago=t=>{if(!(t>1e11))return'';const h=Math.max(0,Date.now()-t)/36e5;return h<1?'JUST NOW':h<24?Math.floor(h)+' H AGO':h<48?'YESTERDAY':Math.floor(h/24)+' DAYS AGO'};
+ const toggle=m=>{NW.open[m.id]=!NW.open[m.id];NW.lt=performance.now();SV.mail=SV.mail||[];if(NW.open[m.id]){NW.to=m.id;if(!SV.mail.includes(m.id)){SV.mail.push(m.id);save()}}};
+ const pic=(m,x,y,w,h)=>{g.save();rr(x,y,w,h,10);g.clip();g.fillStyle='#120a22';g.fillRect(x,y,w,h);const f=who(m),col=m.col||'#ffd36e',si=m.pt==='map'?stageIdx(m.pn):-1;
+  try{if(f.length){worldBG(CH[f[0]],x,y,w,h);const n=f.length,cw2=w/n,sc=Math.min((h-12)/152,cw2/84);f.forEach((ci,k)=>miniChar(CH[ci],x+cw2*(k+.5),y+h-7,sc,{}))}
+   else if(si>=0){const t1=txt;if(w<200)txt=function(){};try{stageCard(si,x,y,w,h)}finally{txt=t1}}
+   else{const gr=g.createLinearGradient(x,y,x+w,y+h);gr.addColorStop(0,col);gr.addColorStop(1,'#120a22');g.fillStyle=gr;g.fillRect(x,y,w,h);g.globalAlpha=.14;g.fillStyle='#fff';for(let i=0;i<7;i++){const q=x+w*(i/6);g.beginPath();g.moveTo(q-h*.3,y+h);g.lineTo(q+h*.1,y+h);g.lineTo(q+h*.6,y);g.lineTo(q+h*.2,y);g.fill()}g.globalAlpha=1;
+    txt(m.pt==='hint'?'COMING SOON':m.pt==='mode'?'NEW MODE':m.pt==='map'?'NEW MAP':m.pt==='update'?'UPDATE':'NEW',x+w/2,y+h/2,Math.min(h*.34,w*.13),'#fff',INK,'center',FB,Math.max(3,h*.04))}}catch(e){}
+  g.restore();rr(x,y,w,h,10);g.strokeStyle='#fff';g.lineWidth=2;g.stroke()};
+ const det=m=>{const o=[],f=who(m),add=(t,c,hd)=>{if(t)o.push({t:String(t),c:c||'#e6dcff',hd:hd?1:0})},tn=c=>(TY[c.ty|0]||TY[0])[0];
+  if(m.sub)add(m.sub,'#ffe14d',1);
+  if(m.pt==='character'&&f.length){const c=CH[f[0]],t5=c.ty|0,st=SV.owned[c.name]||0;add(RN[c.rar]+'  ·  '+tn(c)+' TYPE  ·  beats '+TY[(t5+1)%5][0]+'  ·  weak to '+TY[(t5+4)%5][0],RC[c.rar]);if(m.full)add(m.full);
+   add('Skill 1: '+c.sn[0]+'   ·   Skill 2: '+c.sn[1],'#fff');add('Ultimate: '+c.un,'#fff');if(c.wn)add('World: '+c.wn);let say='';try{say=TALK[c.name].say}catch(e){}if(say)add('"'+say+'"','#7fdcff');
+   add(st?'You own this fighter:  ★ '+st+'  ·  Level '+lvOf(c.name):'Not owned yet. Summon them in GACHA.',st?'#7fe07a':'#ffb020')}
+  else if(m.pt==='banner'){if(m.full)add(m.full);f.forEach(ci=>{const c=CH[ci];add(c.name+'  ·  '+RN[c.rar]+'  ·  '+tn(c)+'  ·  Ultimate: '+c.un,RC[c.rar])});add('Rate up is live now. Find this banner in GACHA.','#ffb020')}
+  else if(m.pt==='map'){if(m.full)add(m.full);add('This stage is now in the stage pool for matches.','#ffb020')}
+  else if(m.pt==='mode'){if(m.full)add(m.full);const d=m.md;if(d){const r=[];if(d.timer)r.push('Timer '+Math.floor(d.timer/60)+':'+('0'+d.timer%60).slice(-2));if(d.ehp!==1)r.push('Enemy health ×'+d.ehp);if(d.edm!==1)r.push('Enemy damage ×'+d.edm);if(d.php!==1)r.push('Your health ×'+d.php);if(d.pdm!==1)r.push('Your damage ×'+d.pdm);if(r.length)add(r.join('   ·   '),'#fff');
+    if(d.meter)add('You start with your ultimate ready.','#fff');if(d.stage)add('Stage: '+d.stage,'#fff');add('Win: +'+d.w+' gems   ·   Lose: +'+d.l+' gems','#7fdcff')}add('Play it in MATCH, OFFLINE, NEW MODES.','#ffb020')}
+  else add(m.full||m.text);
+  if(m.at>1e11){try{add('Released '+new Date(m.at).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'}),'#9a8cc4')}catch(e){}}
+  return o};
+ SCR.news=function(){scr();const T=56,B=H-6,VH=B-T,bw=Math.min(720,W-64),bx=(W-bw)/2,L=list(),kb=lastDev!=='touch',dt=Math.min(.05,Math.max(0,G.t-(NW.pt||G.t)));NW.pt=G.t;SV.mail=SV.mail||[];
+  if(!NW.drag&&Math.abs(NW.vel)>6){NW.sy+=NW.vel*dt;NW.vel*=Math.pow(.03,dt)}else if(!NW.drag)NW.vel=0;
+  const ph=Math.round(clamp(VH*.56,150,250)),items=L.map(m=>{const op=!!NW.open[m.id];if(!op)return{m,op,h:92};const ln=[];det(m).forEach(q=>{g.font='700 '+(q.hd?15:13)+'px '+FU;wrap(q.t,bw-36).forEach(l=>ln.push({t:l,c:q.c,hd:q.hd}))});return{m,op,ln,h:46+ph+14+ln.length*18+42}});
+  let tot=8;items.forEach(q=>{q.y0=tot;tot+=q.h+10});NW.max=Math.max(0,tot-VH);
+  if(NW.to){const q=items.find(z=>z.m.id===NW.to);NW.to=null;if(q){NW.sy=q.y0-8;NW.vel=0}}
+  NW.sy=clamp(NW.sy,0,NW.max);NW.lay=[];NW.btn=[];
+  g.save();g.beginPath();g.rect(0,T,W,VH);g.clip();
+  items.forEach(q=>{const m=q.m,y=T+q.y0-NW.sy,vy=Math.max(y,T),vh=Math.min(y+q.h,B)-vy,got=SV.mail.includes(m.id);let db=null,foc=false,dfoc=false;
+   if(q.op&&FLAGS.maildel){const r={x:bx+bw-126,y:y+q.h-37,w:110,h:27,fn:()=>{SV.mdel=SV.mdel||[];if(!SV.mdel.includes(m.id)){SV.mdel.push(m.id);save();G.note={t:'News deleted',T:1.6}}}};if(r.y>=T&&r.y+r.h<=B){db=r;NW.btn.push(r)}}
+   if(kb){if(db)dfoc=hit(db.x,db.y,db.w,db.h,db.fn);q.ui=G.ui.length;foc=vh>0?hit(bx,vy,bw,vh,()=>toggle(m)):hit(bx,-999,1,1,()=>toggle(m))}
+   if(vh<=0)return;NW.lay.push({x:bx,y:vy,w:bw,h:vh,m});
+   rr(bx,y,bw,q.h,12);g.fillStyle='rgba(10,4,24,.8)';g.fill();g.strokeStyle=foc?'#ffe14d':got?'rgba(255,255,255,.3)':(m.col||'#ffe14d');g.lineWidth=foc?4:2.5;g.stroke();
+   g.font='700 12px '+FU;const tw=g.measureText(m.tag).width+18;rr(bx+bw-14-tw,y+13,tw,22,6);g.fillStyle=m.col||'#ffe14d';g.fill();txt(m.tag,bx+bw-14-tw/2,y+24.5,12,'#10061e',null,'center',FU);
+   if(!q.op){pic(m,bx+8,y+8,104,76);const tx=bx+124;txt(m.title,tx,y+24,21,'#fff',INK,'left');g.font='700 13px '+FU;const ls=wrap(m.text,bw-124-22);txt(ls[0]+(ls.length>1?' …':''),tx,y+50,13,'#e6dcff',null,'left',FU);
+    txt(ago(m.at),tx,y+75,11,'#9a8cc4',null,'left',FU);txt((kb?'CLICK':'TAP')+' TO OPEN  ▾',bx+bw-14,y+75,11,'#ffe14d',null,'right',FU)}
+   else{txt(m.title,bx+16,y+24,23,'#fff',INK,'left');pic(m,bx+10,y+44,bw-20,ph);let ly=y+46+ph+14+8;q.ln.forEach(l=>{txt(l.t,bx+18,ly,l.hd?15:13,l.c,null,'left',FU);ly+=18});txt((kb?'CLICK':'TAP')+' TO CLOSE  ▴',bx+18,y+q.h-23,11,'#ffe14d',null,'left',FU);
+    if(db){rr(db.x,db.y,db.w,db.h,8);g.fillStyle='#7a2434';g.fill();g.strokeStyle=dfoc?'#ffe14d':'#fff';g.lineWidth=dfoc?3:2;g.stroke();txt('DELETE',db.x+db.w/2,db.y+db.h/2+1,13,'#fff',null,'center',FU)}}
+   if(!got)circ(bx+7,y+7,7,'#ff3d5a','#fff',1.5)});
+  g.restore();
+  if(NW.max>0){const tx=bx+bw+12,th=Math.max(30,VH*VH/(VH+NW.max)),ty=T+4+(VH-8-th)*(NW.sy/NW.max);rr(tx,T+4,6,VH-8,3);g.fillStyle='rgba(255,255,255,.14)';g.fill();rr(tx,ty,6,th,3);g.fillStyle='#ffe14d';g.fill()}
+  if(!L.length)txt('No news yet. New fighters, maps, modes, banners and updates show up here.',W/2,T+40,14,'#e6dcff',null,'center',FU);
+  if(kb&&G.focus!==NW.lf){NW.lf=G.focus;const q=items.find(z=>z.ui===G.focus);if(q){if(q.y0-8<NW.sy)NW.sy=q.y0-8;else if(q.y0+q.h+8>NW.sy+VH)NW.sy=Math.min(q.y0-8,q.y0+q.h+8-VH)}}
+  hdr('NEWS','menu')};
+ const lp=e=>{const q=PXY(e);return[q[0]/S,q[1]/S]},ins=(q,x,y)=>x>=q.x&&x<=q.x+q.w&&y>=q.y&&y<=q.y+q.h;
+ try{cv.addEventListener('pointerdown',e=>{if(G.mode!=='news'||e.pointerType==='mouse'||G.cf)return;const p=lp(e);if(p[1]<56)return;NW.vel=0;const now=performance.now();NW.drag={id:e.pointerId,x0:p[0],y0:p[1],sy0:NW.sy,mv:false,t0:now,ly:p[1],lt:now,v:0}});
+  cv.addEventListener('pointermove',e=>{const d=NW.drag;if(!d||d.id!==e.pointerId)return;const p=lp(e),now=performance.now();if(Math.abs(p[1]-d.y0)>8)d.mv=true;if(d.mv){NW.sy=clamp(d.sy0-(p[1]-d.y0),0,NW.max);const q=Math.max(1,now-d.lt);d.v=.5*d.v+.5*(-(p[1]-d.ly)/q*1000);d.ly=p[1];d.lt=now}});
+  const up=e=>{const d=NW.drag;if(!d||d.id!==e.pointerId)return;NW.drag=null;if(G.mode!=='news')return;if(d.mv){NW.vel=performance.now()-d.lt<90?clamp(d.v,-4000,4000):0;return}if(e.type==='pointercancel'||NW.lt>=d.t0-30)return;
+   const b=NW.btn.find(q=>ins(q,d.x0,d.y0));if(b){sfx('ui');b.fn();return}const c=NW.lay.find(q=>ins(q,d.x0,d.y0));if(c){sfx('ui');toggle(c.m)}};
+  cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
+  cv.addEventListener('wheel',e=>{if(G.mode!=='news')return;e.preventDefault();NW.vel=0;NW.sy=clamp(NW.sy+e.deltaY*(e.deltaMode===1?30:1)/S,0,NW.max)},{passive:false})}catch(e){}
+ /* the NEWS shows first when the lobby opens from the start screen */
+ const g0=goto;goto=function(m){if(m==='news'||(m==='menu'&&(G.mode==='title'||G.mode==='dl'||G.mode==='dlpick')&&list().length)){NW.sy=0;NW.vel=0;NW.open={};NW.lf=-1;NW.drag=null;return g0('news')}return g0(m)}}
 
 /* ---------- outside claude.ai (the GitHub / Render copy) ----------
    Released content comes from live.json. The game server can also run the studio: it is opened with the dev key
