@@ -720,4 +720,6 @@ let SCX=null,HCX=null;
    FORCE=true;try{if(G.mode==='scene'&&F().anime&&window.CFRONT){const v=f.view;f.view='front';try{dl0(f,sil)}finally{f.view=v}}
     else{g.save();try{g.translate(f.x,f.y);const sc=f.sc||f.c.sc||1;g.scale(sc,sc);fr0(f.c,{t:f.at,expr:exprOf(f),sway:f.sway,dmg:f.mhp?1-f.hp/f.mhp:0,win:f.state==='win'})}catch(e){}g.restore()}}finally{FORCE=false}
   }finally{CUR=pc}}}
+/* iconfull: every character face icon (fighter tiles, profile pictures, team circles, match portraits, quest list faces) is zoomed out so the whole head shows. The game icon is not changed. */
+{const dh0=drawHead;drawHead=function(c,x,y,sc,flip,expr,dmg,sil){if(F().iconfull&&expr!=='yell')sc*=.58;return dh0(c,x,y,sc,flip,expr,dmg,sil)}}
 })();

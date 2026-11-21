@@ -1862,5 +1862,20 @@
   "game": {
    "flag": "uidstart"
   }
+ },
+ {
+  "id": "update-icon-full-face",
+  "type": "update",
+  "name": "Full Face Icons",
+  "subtitle": "Character icons zoomed out",
+  "desc": "Every character face icon is zoomed out so the whole head shows, with hair, ears and horns inside the picture.",
+  "status": "staged",
+  "created": 1795239633506,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "iconfull"
+  }
  }
 ]
