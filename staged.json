@@ -2194,5 +2194,20 @@
   "game": {
    "flag": "newsarrow"
   }
+ },
+ {
+  "id": "update-summon-duel",
+  "type": "update",
+  "name": "Summon Duel",
+  "subtitle": "Kenko and Neto fight for your pull",
+  "desc": "The summon animation is now a duel. Kenko and Neto face off, fight, and you press FINISH. If Kenko's ultimate lands, better odds for higher rarity. If Neto dodges and finishes her, lower odds. If they trade one punch and walk away, normal odds. Each has an equal chance. The winner gets the aura of your best pull.",
+  "status": "staged",
+  "created": 1795248087877,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "sumduel"
+  }
  }
 ]
