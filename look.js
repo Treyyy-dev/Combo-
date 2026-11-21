@@ -1,5 +1,5 @@
 /* Look upgrades, each off unless released: weap2 (detailed weapons), hair2 (detailed hair), phys (hair and cloth physics),
-   stance (unique idle stances and poses), winpose (victory pose shot before the result), map2 (detailed maps), ult2 (cinematic ultimates), otsback (foreground shadow drawn as the character's back), winfront (the winner's pose shot shows them full body from the front, looking at the camera), lookcam (in those shots the other fighter is drawn from the front, facing the camera), noots (in over-the-shoulder cutscene shots show only the dark shadow, not that character). */
+   stance (unique idle stances and poses), winpose (victory pose shot before the result), map2 (detailed maps), ult2 (cinematic ultimates), otsback (foreground shadow drawn as the character's back), winscar (cuts, bruises and blood the winner took in the fight stay on them in the front victory shot), winfront (the winner's pose shot shows them full body from the front, looking at the camera), lookcam (in those shots the other fighter is drawn from the front, facing the camera), noots (in over-the-shoulder cutscene shots show only the dark shadow, not that character). */
 (function(){'use strict';
 const F=()=>(typeof FLAGS!=='undefined'&&FLAGS)||{};
 const hs=t=>{let x=5381;for(let i=0;i<t.length;i++)x=((x*33)^t.charCodeAt(i))>>>0;return x};
@@ -133,10 +133,17 @@ function drawFrontChar(c,o){const t=o.t||0,ex=o.expr||'',ink=INK,A=c.acc||[],lon
  if(A.includes('glasses')){g.strokeStyle=ink;g.lineWidth=1.6;g.fillStyle='rgba(180,230,255,.3)';[-1,1].forEach(sx=>{g.beginPath();g.ellipse(sx*5.8,2.6,4.9,5.2,0,0,TAU);g.fill();g.stroke()});g.beginPath();g.moveTo(-1,2);g.lineTo(1,2);g.stroke()}
  if(A.includes('patch')){g.strokeStyle=ink;g.lineWidth=1.5;g.beginPath();g.moveTo(-14,-6);g.lineTo(14,2);g.stroke();g.beginPath();g.ellipse(5.8,2.6,4.8,5.2,0,0,TAU);g.fillStyle='#14121c';g.fill();g.stroke()}
  if(A.includes('mark')){g.strokeStyle=c.col;g.lineWidth=1.8;g.beginPath();g.moveTo(7,8.5);g.lineTo(11,9.5);g.moveTo(-7,8.5);g.lineTo(-11,9.5);g.stroke()}
- g.restore()}
+ const dm=o.dmg||0;
+ if(dm>.25){g.lineCap='round';g.strokeStyle='#b3202a';g.lineWidth=1.1;g.beginPath();g.moveTo(-9.5,6);g.lineTo(-5.5,9.5);g.moveTo(-7,5.5);g.lineTo(-3.5,8.5);g.stroke()}
+ if(dm>.5){g.fillStyle='rgba(110,50,130,.35)';g.beginPath();g.ellipse(8,9,4.2,3,0,0,TAU);g.fill();g.strokeStyle='#b3202a';g.lineWidth=1.2;g.beginPath();g.moveTo(4,-9);g.lineTo(8,-4);g.moveTo(6,-10);g.lineTo(10,-5);g.stroke();ell(3.6,14.4,1.2,2.1,'#a0101c')}
+ if(dm>.75){g.strokeStyle='#a0101c';g.lineWidth=2;g.beginPath();g.moveTo(-4,-6);g.quadraticCurveTo(-6,2,-5,9);g.stroke();ell(-5,10.4,1.5,2,'#a0101c');circ(9.5,12.5,1,'#a0101c')}
+ if(o.fx)try{o.fx(1)}catch(e){}
+ g.restore();
+ if(dm>.5){g.fillStyle='rgba(150,16,28,.75)';g.beginPath();g.ellipse(5*bk,-96,5,3.5,.5,0,TAU);g.ellipse(8*bk,-90,2,3,0,0,TAU);g.fill();if(dm>.75){g.beginPath();g.ellipse(-5*bk,-82,4,2.6,-.4,0,TAU);g.fill();g.strokeStyle='#8a1420';g.lineWidth=1.3;g.beginPath();g.moveTo(-20*bk,-98);g.lineTo(-15*bk,-93);g.moveTo(5*bk,-56);g.lineTo(10*bk,-50);g.stroke()}}}
+try{window.CFRONT=drawFrontChar}catch(e){}
 function camSubject(){if(!OTSF||G.t-OTST>=.12)return null;if(G.mode==='intro'&&G.intro){const q=G.intro.sh[G.intro.i];return q&&q.ots&&q.who?q.who:null}if(G.mode!=='scene')return null;let best=null,bd=1e9;(G.f||[]).concat(G.al||[]).forEach(x=>{if(!x||x===OTSF||x.hide)return;const d=Math.abs(x.x-OTSF.x);if(d<bd){bd=d;best=x}});return best}
 const _df2=drawFighter;drawFighter=function(f,sil){const fl=F();if(fl.noots&&f===OTSF&&G.t-OTST<.12&&(G.mode==='intro'||G.mode==='scene'))return;
- if(fl.winfront&&!sil&&!f.hide&&f._vp&&f.state==='pose'&&(G.mode==='intro'||G.mode==='result')){try{g.save();g.translate(f.x,f.y);const sc=f.sc||f.c.sc||1;g.scale(sc,sc);drawFrontChar(f.c,{t:f.at,expr:G.intro&&G.intro.sp===f&&Math.sin(G.t*18)>0?'talk':'happy',win:1});g.restore();return}catch(e){try{g.restore()}catch(x){}}}
+ if(fl.winfront&&!sil&&!f.hide&&f._vp&&f.state==='pose'&&(G.mode==='intro'||G.mode==='result')){try{g.save();g.translate(f.x,f.y);const sc=f.sc||f.c.sc||1;g.scale(sc,sc);drawFrontChar(f.c,{t:f.at,expr:G.intro&&G.intro.sp===f&&Math.sin(G.t*18)>0?'talk':'happy',win:1,dmg:fl.winscar?1-f.hp/f.mhp:0});g.restore();return}catch(e){try{g.restore()}catch(x){}}}
  if(fl.lookcam&&!sil&&!f.hide&&f.state!=='enter'&&f===camSubject()){try{g.save();g.translate(f.x,f.y);const sc=f.sc||f.c.sc||1;g.scale(sc,sc);drawFrontChar(f.c,{t:f.at,expr:exprOf(f),sway:f.sway});g.restore();return}catch(e){try{g.restore()}catch(x){}}}
  return _df2(f,sil)};
 /* ================= CINEMATIC ULTIMATES ================= */

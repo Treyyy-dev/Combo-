@@ -1457,5 +1457,65 @@
   "game": {
    "flag": "mailpic"
   }
+ },
+ {
+  "id": "update-anime-cutscenes",
+  "type": "update",
+  "name": "Anime Cutscenes",
+  "subtitle": "Story scenes act like an anime",
+  "desc": "Same lines and voices. Characters stand relaxed instead of in a fight stance, turn to the camera or turn their back, walk in from and out to the background, and react to each line: blushing, sweat drops, anger marks, gloom, tears, question marks and music notes. Heated lines break into short fight exchanges between the lines.",
+  "status": "staged",
+  "created": 1795232036114,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "anime"
+  }
+ },
+ {
+  "id": "update-mood-music",
+  "type": "update",
+  "name": "Mood Music",
+  "subtitle": "Cutscene music and sounds follow the mood",
+  "desc": "The story music changes with the mood of the lines: happy, funny, sad, serious and fight themes, with a small sound cue when the mood shifts.",
+  "status": "staged",
+  "created": 1795232036115,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "moodmx"
+  }
+ },
+ {
+  "id": "update-story-places",
+  "type": "update",
+  "name": "Story Places",
+  "subtitle": "Story scenes get their own places",
+  "desc": "Story quests are set in places that are not part of the map: camp, market, road, woods, ruins, docks, a dojo, an inn or a cave, with people passing in the background, night and dawn light, and one walk to a second place in the middle of longer scenes.",
+  "status": "staged",
+  "created": 1795232036116,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "storyenv"
+  }
+ },
+ {
+  "id": "update-win-scars",
+  "type": "update",
+  "name": "Battle Scars on Victory",
+  "subtitle": "Cuts and blood stay on the winner",
+  "desc": "The cuts, bruises and blood your fighter took in the match stay on them in the victory shot while they talk.",
+  "status": "staged",
+  "created": 1795232036117,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "winscar"
+  }
  }
 ]
