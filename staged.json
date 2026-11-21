@@ -1817,5 +1817,50 @@
   "game": {
    "flag": "iconlast"
   }
+ },
+ {
+  "id": "update-look-both",
+  "type": "update",
+  "name": "Both Look At Camera",
+  "subtitle": "The other fighter turns to the camera too",
+  "desc": "When a fighter is shown facing the camera, the fighter they are facing turns to the camera too. Works in story cutscenes, match intros, ultimates and win shots.",
+  "status": "staged",
+  "created": 1795239277380,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "lookboth"
+  }
+ },
+ {
+  "id": "update-settings-start",
+  "type": "update",
+  "name": "Settings On Start Screen",
+  "subtitle": "Settings button moves out of the lobby",
+  "desc": "The settings button is removed from the lobby and sits at the top right of the start screen. Needs the Settings + Downloads update.",
+  "status": "staged",
+  "created": 1795239277381,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "setstart"
+  }
+ },
+ {
+  "id": "update-user-id-start",
+  "type": "update",
+  "name": "User ID On Start Screen",
+  "subtitle": "Top left of the start screen, hidden until tapped",
+  "desc": "Shows USER ID at the top left of the start screen. It starts hidden. Tap it to show the id and tap again to hide it.",
+  "status": "staged",
+  "created": 1795239343099,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "uidstart"
+  }
  }
 ]

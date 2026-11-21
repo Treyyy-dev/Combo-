@@ -650,7 +650,7 @@ let SCX=null,HCX=null;
  const g0=goto;goto=function(m){if(m!=='menu')G.set2=false;if(F().dlset&&m==='menu'&&G.mode==='title'&&web()){if(!DL.mode)return g0('dlpick');if(DL.mode==='full'&&!DL.ok)return g0('dl')}return g0(m)};
  SCR.dlpick=function(){scr();const n=manifest().length,bw=Math.min(330,(W-60)/2),y=96,h=160,x0=W/2-bw-10;
   [['min','MIN DOWNLOAD','Small and quick.','Voices load while you play,','so a line can start a little late.','#2f4f8f','Plays in LOW quality.'],['full','FULL DOWNLOAD',n+' voice files.','Bigger and slower to get,','then voices play right away.','#2f7a5f','Quality can go up to HIGH.']].forEach((q,k)=>{const x=x0+k*(bw+20);button(x,y,bw,h,'',q[5],()=>pick(q[0]),20);txt(q[1],x+bw/2,y+36,Math.min(26,bw*.085),'#fff',INK,'center',FB,5);[q[2],q[3],q[4],q[6]].forEach((t,j)=>txt(t,x+bw/2,y+72+j*20,14,j===3?'#ffe14d':'#fff',null,'center',FU))});
-  txt('You can switch any time in Settings, at the top right of the lobby.',W/2,y+h+28,13.5,'#e6dcff',null,'center',FU);txt('Every update adds its new files. The game still needs the internet to play.',W/2,y+h+48,13.5,'#e6dcff',null,'center',FU);hdr('CHOOSE YOUR DOWNLOAD','title',true)};
+  txt(F().setstart?'You can switch any time in Settings, at the top right of the start screen.':'You can switch any time in Settings, at the top right of the lobby.',W/2,y+h+28,13.5,'#e6dcff',null,'center',FU);txt('Every update adds its new files. The game still needs the internet to play.',W/2,y+h+48,13.5,'#e6dcff',null,'center',FU);hdr('CHOOSE YOUR DOWNLOAD','title',true)};
  SCR.dl=function(){scr();if(!DL.run&&!DL.fin&&!DL.started){DL.started=true;DL.stop=false;runDL()}
   if(DL.fin){DL.ok=true;DL.fin=false;DL.started=false;if(DL.full)note('Your device is out of room. The rest loads as you play.');else if(DL.fail)note(DL.fail+' files did not download. They load as you play.');goto('menu');return}
   const tot=DL.tot,k=tot?DL.done/tot:0,bw=Math.min(560,W-60),bx=(W-bw)/2,by=150;txt('DOWNLOADING',W/2,104,30,'#ffe14d',INK,'center',FB,7);
@@ -675,9 +675,17 @@ let SCX=null,HCX=null;
  {const cf0=SCR.config;SCR.config=function(){if(F().dlset&&DL.mode==='min'){const st=SV.set;if(st.q!==0){const tap=st.q0!=null;if(!tap)st.q0=st.q;st.q=0;save();resize();if(tap)note('MIN download plays in LOW. Pick FULL in Settings for higher.')}}return cf0()}}
  const me0=SCR.menu;SCR.menu=function(){me0();const f=F();if(f.dlset)qfix();
   if(f.uid){const t='USER ID: '+(G.uidOn?String(SV.pid||'none'):'TAP TO SHOW');txt(t,W-14,50,11,G.uidOn?'#fff':'#cbbfe6',INK,'right',FU,3);hit(W-210,43,200,15,()=>{G.uidOn=!G.uidOn;sfx('ui')})}
-  if(f.dlset){const x=(LX||W-330)-46,y=12,foc=hit(x,y,38,34,()=>{G.set2=true;sfx('ui')});rr(x,y,38,34,10);g.fillStyle='rgba(10,4,24,.6)';g.fill();if(foc){g.strokeStyle='#ffe14d';g.lineWidth=3;g.stroke()}
-   g.save();g.translate(x+19,y+17);g.strokeStyle='#fff';g.lineWidth=4;g.lineCap='butt';for(let k=0;k<8;k++){const a=k*TAU/8;g.beginPath();g.moveTo(Math.cos(a)*7,Math.sin(a)*7);g.lineTo(Math.cos(a)*12,Math.sin(a)*12);g.stroke()}g.lineWidth=3.5;g.beginPath();g.arc(0,0,7.5,0,TAU);g.stroke();circ(0,0,2.6,'#fff');g.restore();
+  if(f.dlset&&!f.setstart){const x=(LX||W-330)-46,y=12,foc=hit(x,y,38,34,()=>{G.set2=true;sfx('ui')});gear(x,y,foc);
    if(G.set2)panel()}};
+ function gear(x,y,foc){rr(x,y,38,34,10);g.fillStyle='rgba(10,4,24,.6)';g.fill();if(foc){g.strokeStyle='#ffe14d';g.lineWidth=3;g.stroke()}
+   g.save();g.translate(x+19,y+17);g.strokeStyle='#fff';g.lineWidth=4;g.lineCap='butt';for(let k=0;k<8;k++){const a=k*TAU/8;g.beginPath();g.moveTo(Math.cos(a)*7,Math.sin(a)*7);g.lineTo(Math.cos(a)*12,Math.sin(a)*12);g.stroke()}g.lineWidth=3.5;g.beginPath();g.arc(0,0,7.5,0,TAU);g.stroke();circ(0,0,2.6,'#fff');g.restore()}
+ /* setstart: the settings button leaves the lobby and sits at the top right of the start screen. uidstart: USER ID at the top left of the start screen, hidden until tapped.
+    Neither shows while the studio intro or CONNECTING is on screen. */
+ {const ti0=SCR.title;SCR.title=function(){ti0();const f=F(),st=f.dlset&&f.setstart,ui=f.uidstart;if(!(st||ui)||G.mode!=='title')return;g.setTransform(S*dpr,0,0,S*dpr,0,0);g.globalAlpha=1;
+   if(st&&G.set2){panel();return}if(G.ui.length!==1||G.cnn)return;let n=0;
+   if(st){const x=W-52,y=12;gear(x,y,false);G.ui.unshift({x,y,w:38,h:34,fn:()=>{G.set2=true}});n++}
+   if(ui){const t='USER ID: '+(G.uidOn?String(SV.pid||'none'):'TAP TO SHOW');txt(t,14,26,12,G.uidOn?'#fff':'#cbbfe6',INK,'left',FU,3);G.ui.unshift({x:8,y:12,w:230,h:28,fn:()=>{G.uidOn=!G.uidOn}});n++}
+   G.focus=n}}
  /* new update message */
  let UPD=null;const up0=update;update=function(rdt){up0(rdt);const q=window.COMBO_UPD;if(!q||!q.length)return;DL.ok=false;DL.started=false;DL.fin=false;if(!F().updmsg){q.length=0;return}
   if(G.mode==='menu'||G.mode==='title'){UPD={names:(UPD?UPD.names:[]).concat(q.splice(0)),t:0};G.set2=false;if(G.mode==='menu')goto('title')}};
@@ -686,7 +694,7 @@ let SCX=null,HCX=null;
   rr(x,y,w,h,14);g.fillStyle='rgba(16,8,34,.94)';g.fill();g.strokeStyle='#ffe14d';g.lineWidth=3;g.stroke();txt('NEW UPDATE',W/2,y+30,28,'#ffe14d',INK,'center',FB,6);nm.forEach((t,k)=>txt(t,W/2,y+60+k*20,15,'#fff',null,'center',FU));if(more)txt('+ '+more+' more',W/2,y+60+nm.length*20,14,'#e6dcff',null,'center',FU);g.restore()}}
 /* conn: tapping start keeps the start screen up with "CONNECTING TO COMBO" at the bottom for 8 seconds, then carries on to wherever start led before. */
 {const T=8000;let t0=0,on=false,pass=false,up=false,busy=false,last=0;const gc0=goto;goto=function(m){if(F().conn&&m==='menu'&&G.mode==='title'&&!pass){if(!on){on=true;up=false;last=0;t0=performance.now();sfx('ui')}return}if(m!=='title')on=false;return gc0(m)};
- const ct0=SCR.title;SCR.title=function(){if(!on||!F().conn){on=false;return ct0()}
+ const ct0=SCR.title;SCR.title=function(){if(!on||!F().conn){on=false;G.cnn=false;return ct0()}G.cnn=true;
   const tx0=txt;txt=function(s){if(typeof s==='string'&&/TO START$/.test(s))return;return tx0.apply(this,arguments)};try{ct0()}finally{txt=tx0}
   G.ui=[];const e=performance.now()-t0;g.setTransform(S*dpr,0,0,S*dpr,0,0);g.globalAlpha=1;txt('CONNECTING TO COMBO'+'.'.repeat(1+((e/450|0)%3)),W/2,H*.93,24,'#fff',INK,'center',FB,7);
   const need=F().rcover&&window.COMBO_SRV;if(need&&!up&&!busy&&performance.now()-last>2000){busy=true;last=performance.now();const tt=t0;
@@ -699,4 +707,17 @@ let SCX=null,HCX=null;
    if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});const c=await caches.open(SH);
    for(const f of FILES){try{const u=new URL(f,location.href);u.search='';u.hash='';const r=await fetch(u.href,{cache:'no-store'});if(r.status===200&&r.headers.get('x-combo')==='1')await c.put(u.href,r)}catch(x){}}}catch(x){}};
  {let n=0;const iv=setInterval(()=>{n++;if(window.LIVE_READY||n>=8){clearInterval(iv);keep()}},1000)}}
+/* lookboth: whenever a fighter is drawn facing the camera (story scenes, match intros, ultimates, win shots), the fighter they are facing turns to the camera too.
+   Only fighters who are standing (idle, posing or in their win pose) turn; someone attacking, hurt, knocked down, walking in or in the air stays as they are. */
+{let CUR=null,FORCE=false;const NOW=()=>performance.now();
+ const fr0=drawFrontChar;drawFrontChar=function(c,o){if(CUR&&!FORCE&&CUR.c===c)CUR._ft=NOW();return fr0(c,o)};try{window.CFRONT=drawFrontChar}catch(e){}
+ const all=()=>(G.f||[]).concat(G.al||[]).filter((x,i,a)=>x&&!x.hide&&a.indexOf(x)===i);
+ const target=p=>{let b=null,bd=1e9,b2=null,bd2=1e9;for(const x of all()){if(x===p)continue;const d=Math.abs(x.x-p.x);if(d<bd2){bd2=d;b2=x}if(Math.sign(x.x-p.x)===(p.face||1)&&d<bd){bd=d;b=x}}return b||b2};
+ const ok=f=>(f.state==='idle'||f.state==='pose'||f.state==='win')&&!(f.y<0)&&f.wz==null;
+ const dl0=drawFighter;drawFighter=function(f,sil){if(!f||!F().lookboth||sil)return dl0(f,sil);const pc=CUR;CUR=f;try{
+   let turn=false;if(!f.hide&&ok(f)){const t=NOW();for(const p of all()){if(p!==f&&p._ft&&t-p._ft<140&&target(p)===f){turn=true;break}}}
+   if(!turn)return dl0(f,sil);
+   FORCE=true;try{if(G.mode==='scene'&&F().anime&&window.CFRONT){const v=f.view;f.view='front';try{dl0(f,sil)}finally{f.view=v}}
+    else{g.save();try{g.translate(f.x,f.y);const sc=f.sc||f.c.sc||1;g.scale(sc,sc);fr0(f.c,{t:f.at,expr:exprOf(f),sway:f.sway,dmg:f.mhp?1-f.hp/f.mhp:0,win:f.state==='win'})}catch(e){}g.restore()}}finally{FORCE=false}
+  }finally{CUR=pc}}}
 })();
