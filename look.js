@@ -1430,15 +1430,15 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
    const arm=(s,e,h,back)=>{sph(s,7.6*bk,slv);cap(s,e,6.2*bk,5*bk,slv);ell(ml(ad(s,e),.5),sb(e,s),ln(sb(e,s))*.36,6.9*bk,6.5*bk,slv);cap(e,h,5.3*bk,3.9*bk,bare?skin:topS);sph(h,c.weapon==='fist'?6.2:5.1,c.weapon==='fist'?c.col2:skin)};
    arm(shB,elB,haB,1);arm(shF,elF,haF,0);
    /* head */
-   const ha=((p[0]||0)*.5+(p[1]||0))*R0+ra,HS=.98,hu=[Math.sin(ha)*HS,Math.cos(ha)*HS,0],hf=[Math.cos(ha)*HS,-Math.sin(ha)*HS,0],hs=[0,0,HS],nk=ad(neck,ml(sp,-2)),hc=ad(neck,ml(hu,14.6)),hp=(a,b,s)=>ad(hc,ad(ml(hf,a),ad(ml(hu,b),ml(hs,s))));
-   cyl(nk,hc,fem?4:5.2,fem?3.5:4.6,skin,2,3);/* human head (Trey: give the head a human head): a skull that is taller than wide, a jaw and chin, cheeks, a nose and ears, at a more human size */
+   const ha=((p[0]||0)*.5+(p[1]||0))*R0+ra,HS=.84,hu=[Math.sin(ha)*HS,Math.cos(ha)*HS,0],hf=[Math.cos(ha)*HS,-Math.sin(ha)*HS,0],hs=[0,0,HS],nk=ad(neck,ml(sp,-2)),hc=ad(neck,ml(hu,14.6+8/HS)),/* the head sits 8 higher than the shoulders so a real neck shows */hp=(a,b,s)=>ad(hc,ad(ml(hf,a),ad(ml(hu,b),ml(hs,s))));
+   cyl(nk,hc,fem?3.5:4.7,fem?3.1:4.1,skin,2,3);/* human head (Trey: give the head a human head): a skull that is taller than wide, a jaw and chin, cheeks, a nose and ears, at a more human size */
    /* smooth clean face (Trey): the head's skin parts share one soft shade (a single light band, shadow only on the far side), the nose has no outline, and the ball shapes are rounder */
    ell3(hp(-.6,1.2,0),ml(hf,13.3),ml(hu,13.6),ml(hs,11.6),skin,2,3);if(fem){ell3(hp(3,-6.8,0),ml(hf,9.1),ml(hu,7.4),ml(hs,7.9),skin,2,3);ell3(hp(7.4,-12,0),ml(hf,3.3),ml(hu,3),ml(hs,3),skin,2,3)}else{ell3(hp(3.2,-7.4,0),ml(hf,9.4),ml(hu,7.6),ml(hs,8.9),skin,2,3);ell3(hp(7.6,-12.6,0),ml(hf,4.2),ml(hu,3.4),ml(hs,4.6),skin,2,3)}[1,-1].forEach(k=>{ell3(hp(6.4,-4.6,(fem?6:6.6)*k),ml(hf,5.2),ml(hu,4.8),ml(hs,fem?4:4.4),skin,2,3);ell3(hp(-1.4,-1.4,11.6*k),ml(hf,2.6),ml(hu,4.2),ml(hs,1.7),skin,2,3)});if(fem){cyl(hp(11.6,-1,0),hp(13.5,-4,0),.9,1.2,skin,2,1);sph(hp(13.4,-4.2,0),1.25*HS,skin,2,1)}else{cyl(hp(11.4,-.2,0),hp(14.3,-4.2,0),1.2,1.7,skin,2,1);sph(hp(14.1,-4.4,0),1.7*HS,skin,2,1)}
    const hair=c.hair,long=[1,2,5,6,7].includes(st);ell3(hp(-2.8,3.6,0),ml(hf,14.2),ml(hu,14.2),ml(hs,12.9),hair);
-   [-6.5,0,6.5].forEach((s,i)=>cyl(hp(8,11.5,s),hp(14.4,4.5-(i===1?1.5:0),s*1.12),5,.3,hair));
-   [[-1,3,11.4],[-1,3,-11.4]].forEach(q=>cyl(hp(q[0],q[1]+4,q[2]),hp(q[0]+1,q[1]-9,q[2]*1.02),4.1,.4,hair));
-   if(!long)HAIRSP.forEach((d,i)=>{const n=nm(d),k=(st===4?1.25:st===3?.85:1)*(1+.12*Math.sin(i*2.3));cyl(hp(n[0]*8,n[1]*8+2,n[2]*8),hp(n[0]*(15+9*k)+Math.sin(t*3+i)*sw*1.2,n[1]*(15+9*k)+2,n[2]*(15+9*k)),7.4,.3,i%3===2&&c.hairHi?c.hairHi:hair)});
-   else{tail(K+'tail',hp(-12,5,0),[-.5,-.86,0],(st===2||st===7)?76:54,6.4,1.8,hair,t,sw);if(st===1||st===6)ell3(hp(-13,6,0),ml(hf,3),ml(hu,3.4),ml(hs,3.4),c.col2)}
+   [-6.5,0,6.5].forEach((s,i)=>cyl(hp(8,11.5,s),hp(14.4,4.5-(i===1?1.5:0),s*1.12),4.3,.3,hair));
+   [[-1,3,11.4],[-1,3,-11.4]].forEach(q=>cyl(hp(q[0],q[1]+4,q[2]),hp(q[0]+1,q[1]-9,q[2]*1.02),3.5,.4,hair));
+   if(!long)HAIRSP.forEach((d,i)=>{const n=nm(d),k=(st===4?1.25:st===3?.85:1)*(1+.12*Math.sin(i*2.3));cyl(hp(n[0]*8,n[1]*8+2,n[2]*8),hp(n[0]*(15+9*k)+Math.sin(t*3+i)*sw*1.2,n[1]*(15+9*k)+2,n[2]*(15+9*k)),6.4,.3,i%3===2&&c.hairHi?c.hairHi:hair)});
+   else{tail(K+'tail',hp(-12,5,0),[-.5,-.86,0],(st===2||st===7)?76:54,5.6,1.6,hair,t,sw);if(st===1||st===6)ell3(hp(-13,6,0),ml(hf,3),ml(hu,3.4),ml(hs,3.4),c.col2)}
    /* face */
    const ex=o.expr||'',blink=ex==='blink'||ex==='closed'||ex==='happy'||ex==='hurt'||(t%4.1)>3.95;
    /* eyes and mouth sit on the curve of the head, so they read from the side and from the front */
