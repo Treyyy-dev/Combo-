@@ -10,6 +10,9 @@ const crypto = require('crypto');
 
 const PORT = process.env.PORT || 10000;
 const ROOT = __dirname;
+// One short code for the game files this server is serving. The game compares it with the code it started with (flag "fresh") and reloads when they differ.
+let FILEV = '';
+try { const h = crypto.createHash('sha1'); ['index.html', 'live.js', 'story.js', 'voice.js', 'more.js', 'body.js', 'look.js'].forEach(f => { try { h.update(fs.readFileSync(path.join(ROOT, f))); } catch (e) {} }); FILEV = h.digest('hex').slice(0, 12); } catch (e) {}
 const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.png': 'image/png', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml', '.json': 'application/json' };
 const MAX_MSG = 16 * 1024;
 const RELAY = new Set(['i', 's', 'k', 'h', 'v', 'map', 'tg', 'bi']);
@@ -195,7 +198,7 @@ async function authApi(req, res, url) {
 
 const server = http.createServer((req, res) => {
   const url = (req.url || '/').split('?')[0];
-  if (url === '/health') { res.writeHead(200, { 'content-type': 'application/json' }); return res.end(JSON.stringify({ ok: true, online })); }
+  if (url === '/health') { res.writeHead(200, { 'content-type': 'application/json', 'cache-control': 'no-store' }); return res.end(JSON.stringify({ ok: true, online, v: FILEV })); }
   if (url === '/api/dev') return devApi(req, res);
   if (url === '/api/lb') return lbApi(req, res);
   if (url === '/api/save' || url.indexOf('/api/auth/') === 0) return authApi(req, res, url);

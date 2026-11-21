@@ -2479,5 +2479,35 @@
   "game": {
    "flag": "drops"
   }
+ },
+ {
+  "id": "update-maintenance",
+  "type": "update",
+  "name": "Maintenance Switch",
+  "subtitle": "A maintenance button in the Dev Studio",
+  "desc": "The Dev Studio gets a MAINTENANCE button. When it is on, players are sent to the start screen with SERVER UNDER MAINTENANCE, and after connecting they get the same message. Only people with dev access can still get in, and matchmaking does not work, even with bots.",
+  "status": "staged",
+  "created": 1795264177864,
+  "colors": [
+   "#ff5a6e"
+  ],
+  "game": {
+   "flag": "maintbtn"
+  }
+ },
+ {
+  "id": "update-fresh-files",
+  "type": "update",
+  "name": "Always Up To Date",
+  "subtitle": "Open games load new updates by themselves",
+  "desc": "A game that is already open now reloads by itself when new game files are out, the next time you are on the start screen or in the lobby. Before, a new update did nothing until you closed the game and opened it again.",
+  "status": "staged",
+  "created": 1795264177865,
+  "colors": [
+   "#7fdcff"
+  ],
+  "game": {
+   "flag": "fresh"
+  }
  }
 ]

@@ -1316,4 +1316,9 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
  const sm0=SCR.mail;if(sm0)SCR.mail=function(){if(!ON())return sm0();const hid=[];try{MAILS.forEach(m=>{if(m&&m.ytx){hid.push([m,m.ytx]);m.ytx=0}})}catch(e){}try{sm0()}finally{hid.forEach(q=>{q[0].ytx=q[1]})}};
  const sync=()=>{try{if(!window.LIVE_READY)return;if(ON()){if(SV.ytxb==null){SV.ytxb=SV.ytx||0;SV.ytx=0;save()}else if(SV.ytx){SV.ytx=0;save()}if(G.note&&typeof G.note.t==='string')G.note.t=fix(G.note.t)}else if(SV.ytxb!=null){SV.ytx=(SV.ytx||0)+SV.ytxb;delete SV.ytxb;save()}}catch(e){}};
  const ud0=update;let td=0;update=function(rdt){ud0(rdt);td+=rdt;if(td>.3){td=0;sync()}}}
+/* fresh: a game that was already open keeps running the files it started with, so an update released after new files went up did nothing until the page was opened again.
+   With the flag on the game asks the server which files it is serving (/health, field v) when it starts and every 40 seconds; when that changes it reloads the page the next time the player is on the start screen, the lobby or the NEWS (never in a match, a cutscene, a summon or the Dev Studio). */
+{let v0=null,need=false,busy=false,last=0;const ask=()=>{if(busy||!window.COMBO_SRV)return;busy=true;last=performance.now();fetch('health?c='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(q=>{const v=q&&q.v;if(typeof v==='string'&&v){if(v0==null)v0=v;else if(v!==v0)need=true}}).catch(()=>{}).then(()=>{busy=false})};
+ const uf0=update;update=function(rdt){uf0(rdt);try{const now=performance.now();if(v0==null?now-last>4000:now-last>40000)ask();if(need&&F().fresh&&!G.cnn&&!G.cf&&(G.mode==='title'||G.mode==='menu'||G.mode==='news')){need=false;try{save()}catch(e){}location.reload()}}catch(e){}};
+ try{window.COMBO_FRESH=()=>({v0,need})}catch(e){}}
 })();
