@@ -1424,7 +1424,10 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
    if(st===5){cloth(K+'scarf',ad(neck,[-4,-3,0]),[-.92,-.4,0],34,3.6,c.col,t,sw);cloth(K+'apron',ad(hip,ml(fw,8)),[.05,-1,0],24,10,c.col,t,sw*.3)}
    if(st===3){cloth(K+'s1',ad(neck,[-4,-3,3]),[-1,-.12,0],60,4,c.col2,t,sw);cloth(K+'s2',ad(neck,[-3,-5,-3]),[-1,-.3,0],44,3.4,c.col2,t+1,sw)}
    /* legs */
-   const leg=(h,k,f,ang)=>{cap(h,k,8.2*bk,6*bk,pants);cap(k,f,5.6*bk,4.2*bk,pants);ell(ad(ml(ad(k,f),.5),ad(ml(sb(k,f),.12),[-1.6,0,0])),sb(f,k),ln(sb(f,k))*.3,6.4*bk,6*bk,pants);const d=nm([Math.cos(ang*.35*R0)||1,Math.sin(-ang*.35*R0),0]);ell3(ad(f,[4.5,-1.2,0]),[9.5,0,0],[0,4.6,0],[0,0,5],'#2b2438');cyl(ad(f,[-2,1.6,0]),ad(f,[11,1.6,0]),.9,.9,c.col,1,1)};
+   const leg=(h,k,f,ang)=>{cap(h,k,8.2*bk,6*bk,pants);cap(k,f,5.6*bk,4.2*bk,pants);ell(ad(ml(ad(k,f),.5),ad(ml(sb(k,f),.12),[-1.6,0,0])),sb(f,k),ln(sb(f,k))*.3,6.4*bk,6*bk,pants);/* feet that look like feet (Trey): ankle, heel, the top of the foot sloping down, a squared toe box and a flat sole. Flat on the floor when standing; in the air the foot follows the shin. */
+     const sh=nm(sb(f,k)),air=f[1]>9,td=air?nm([-sh[1]+sh[0]*.45,sh[0]+sh[1]*.45,0]):[1,0,0],up=[-td[1],td[0],0],zz=[0,0,1],at=(a,b2)=>ad(f,ad(ml(td,a),ml(up,b2))),SH='#2b2438';
+     sph(at(-.5,1.2),4.3*bk,pants);ell3(at(-3.2,-1.6),ml(td,4),ml(up,3.6),ml(zz,3.9),SH);ell3(at(3.6,-.6),ml(td,7.2),ml(up,3.5),ml(zz,4.3),SH);blk3(at(10.2,-2.1),ml(td,4.2),ml(up,2.5),ml(zz,4.6),SH);
+     blk3(at(4,-4.4),ml(td,11.2),ml(up,1),ml(zz,4.9),'#f2ecff',1);cyl(at(1.5,2.2),at(8.6,.4),.9,.9,c.col,1,1)};
    leg(hpB,knB,ftB,p[8]+p[9]);leg(hpF,knF,ftF,p[6]+p[7]);
    /* torso, belt, pelvis, neck */
    const mid=ml(ad(hip,shC),.5),tl=ln(sb(shC,hip));/* stronger build (Trey: make the body look stronger): wide chest over a narrower waist, chest muscles, shoulders, thicker arms and legs */
