@@ -328,7 +328,10 @@ let SCX=null,HCX=null;
  const u0=update;update=function(rdt){u0(rdt);const on=!!F().icon2;if(on===IS)return;IS=on;try{const u=mkIcon(128),q=r=>document.querySelector('link[rel="'+r+'"]'),a=q('icon'),b=q('apple-touch-icon'),m=q('manifest');if(a&&u)a.href=u;if(location.protocol!=='blob:'){if(b)b.href=on?'icon2.png':'icon.png';if(m)m.href=on?'manifest2.json':'manifest.json'}}catch(e){}}}
 /* ================= flag "studio": the Treyyverse studio intro plays before the start menu =================
    Ported from the "Treyyverse Studio Intro" page: 5 seconds on black, a four-hit combo by Kaito, Rin, Zero and Gou, then the TREYYVERSE logo with the first
-   eight fighters lined up under it. Plays once each time the game is opened, then the start menu shows. */
+   eight fighters lined up under it. Plays once each time the game is opened, then the start menu shows.
+   The start screen never shows first: if the game does not yet know the intro is released (the saved list on the device is old or empty) the screen stays
+   black until the fresh released list has loaded (window.LIVE_READY, set by live.js; at most 2.5 s), then the intro starts. It cannot be skipped: no taps,
+   keys or buttons do anything until it has finished. */
 {const mkIntro=()=>{const dpr=1,DUR=5;let W,H,u,cx,cy,OS;
   const cl = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v));
   const mix = (a, b, t) => a + (b - a) * t;
@@ -586,13 +589,12 @@ let SCX=null,HCX=null;
 
   return{DUR,size(w,h){W=w;H=h;u=Math.min(W/420,H/520);cx=W/2;cy=H/2;OS=Math.ceil(Math.min(440*u,W,H))},
    draw(t){MODE=0;QI=0;drawCombo(t);drawLineup(t);MODE=1;QI=0;frame(t);g.setTransform(1,0,0,1,0,0)},free(){SP.length=0}}};
- let IN=null,T0=0,DONE=false,TT=0;const LSK='combo-studio';
- const want=()=>{try{if(F().studio){try{localStorage.setItem(LSK,'1')}catch(e){}return true}return localStorage.getItem(LSK)==='1'}catch(e){return !!F().studio}};
+ let IN=null,T0=0,DONE=false,TT=0;
  const t0=SCR.title;SCR.title=function(){const now=performance.now();if(!TT)TT=now;
-  if(!DONE&&!IN){if(want()&&now-TT<1500){try{if(!document.getElementById('bungee-font')){const l=document.createElement('link');l.id='bungee-font';l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Bungee&display=swap';document.head.appendChild(l);if(document.fonts&&document.fonts.load)document.fonts.load('64px Bungee')}}catch(e){}
+  if(!DONE&&!IN){if(F().studio){try{if(!document.getElementById('bungee-font')){const l=document.createElement('link');l.id='bungee-font';l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Bungee&display=swap';document.head.appendChild(l);if(document.fonts&&document.fonts.load)document.fonts.load('64px Bungee')}}catch(e){}
     try{IN=mkIntro();T0=now}catch(e){IN=null;DONE=true}}
-   else if(now-TT>=1500)DONE=true}
+   else if(!window.LIVE_READY&&now-TT<2500){G.ui=[];g.setTransform(1,0,0,1,0,0);g.fillStyle='#000';g.fillRect(0,0,cv.width,cv.height);return}
+   else DONE=true}
   if(IN){const t=(now-T0)/1000;if(t>=IN.DUR+.35){IN.free();IN=null;DONE=true}else{G.ui=[];try{IN.size(cv.width,cv.height);IN.draw(Math.min(t,IN.DUR));if(t>IN.DUR){g.fillStyle='rgba(0,0,0,'+Math.min(1,(t-IN.DUR)/.35)+')';g.fillRect(0,0,cv.width,cv.height)}}catch(e){IN=null;DONE=true}return}}
-  return t0()};
- setTimeout(()=>{try{if(!F().studio)localStorage.setItem(LSK,'0')}catch(e){}},4000)}
+  return t0()}}
 })();

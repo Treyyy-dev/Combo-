@@ -215,7 +215,7 @@ const RDB={doc(p){const q=String(p).split('/'),col=q[0],id=q[1];return{set:async
 async function devLogin(key,quiet){L.key=key;try{const res=await api('list');L.owner=true;L.db=RDB;L.remote=true;try{localStorage.setItem(DK,key)}catch(e){}take(res);if(!quiet){L.sel=0;G.devpg=0;goto('dev')}}
  catch(e){L.key='';L.owner=false;if(e.status===401){try{localStorage.removeItem(DK)}catch(x){}}if(!quiet)say(e.status===401?'That dev key is not right':e.status===429?'Too many tries. Wait ten minutes.':e.status===503?'The studio is not set up on this server yet':'Could not reach the studio')}}
 function askKey(){try{ask('Dev key',90,v=>{if(v)devLogin(v,false)})}catch(e){}}
-async function remote(){let ok=false;try{const r=await fetch('live.json',{cache:'no-store'});if(r.ok){const q=await r.json();if(Array.isArray(q)){ok=true;apply(q)}}}catch(e){}if(!ok)return;L.canKey=true;
+async function remote(){let ok=false;try{const r=await fetch('live.json',{cache:'no-store'});if(r.ok){const q=await r.json();if(Array.isArray(q)){ok=true;try{window.LIVE_READY=1}catch(e){}apply(q)}}}catch(e){}if(!ok)return;L.canKey=true;
  let key='';try{key=localStorage.getItem(DK)||''}catch(e){}if(key)await devLogin(key,true);
  const open=()=>{if(location.hash!=='#dev')return;if(L.owner){if(SCR[G.mode]&&G.mode!=='dev')goto('dev')}else{if(G.mode==='title')goto('menu');askKey()}};
  window.addEventListener('hashchange',open);open()}
@@ -226,7 +226,7 @@ try{const q=JSON.parse(localStorage.getItem(CK));if(Array.isArray(q))apply(q)}ca
 (async()=>{let c=null;try{if(window.claude&&window.claude.use)c=await window.claude.use('db')}catch(e){}L.ready=true;
  if(!c){remote();return}
  L.db=c;
- try{c.collection('live').onSnapshot(s=>{if(s.metadata&&s.metadata.fromCache&&!s.docs.length)return;apply(rows(s))},()=>{})}catch(e){}
+ try{c.collection('live').onSnapshot(s=>{if(s.metadata&&s.metadata.fromCache&&!s.docs.length)return;try{window.LIVE_READY=1}catch(e){}apply(rows(s))},()=>{})}catch(e){}
  let u=null,ow=false;try{u=await window.claude.use('user');if(u)ow=!!(await u.isOwner())}catch(e){u=null}
  if(!u){try{await c.doc('meta/studio').set({owner:1});ow=true}catch(e){ow=false}}L.owner=ow;if(!ow)return;
  try{c.collection('staged').onSnapshot(s=>{L.staged=rows(s).filter(d=>d&&d.name&&TNAME[d.type]).sort((a,b)=>(b.created||0)-(a.created||0))},()=>{})}catch(e){}
