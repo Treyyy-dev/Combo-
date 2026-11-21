@@ -2374,5 +2374,20 @@
   "game": {
    "flag": "clashots"
   }
+ },
+ {
+  "id": "update-gold-cosmetics",
+  "type": "update",
+  "name": "Gold Tab",
+  "subtitle": "Icons, banners and borders cost gold tickets",
+  "desc": "Everyone's profile icons, banners and borders are reset. You now get them in the GOLD tab of the gacha by summoning with gold tickets. There are four gold banners: ICONS for 5, BANNERS for 10, BORDERS for 15 and ALL for 10, each with SUMMON ×1 and ×10. Each summon gives a random one you do not own. The banner picture shows its top 4, one at a time, changing every 4 seconds. Summons with gems and red tickets no longer give them.",
+  "status": "staged",
+  "created": 1795251644618,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "goldcos"
+  }
  }
 ]

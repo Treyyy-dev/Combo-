@@ -1014,4 +1014,48 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
  const do0=drawOTS;drawOTS=function(f,k){if(cur()){try{return drawBack(f,k)}catch(e){}}return do0(f,k)};
  const df0=drawFighter;drawFighter=function(f,sil){const q=cur();if(!q||sil||!f)return df0(f,sil);if(f===q.ots)return;if(f!==q.cam)return df0(f,sil);
    g.save();try{g.translate(f.x,f.y);const sc=f.sc||f.c.sc||1;g.scale(sc,sc);drawFrontChar(f.c,{t:f.at,expr:G.intro&&G.intro.sp===f?exprOf(f):'',sway:f.sway,dmg:f.mhp?1-f.hp/f.mhp:0})}catch(e){}g.restore()}}
+/* goldcos: profile icons, banners and icon borders come from gold (yellow) tickets only.
+   - One time per save, everyone's icons, banners and borders are reset to the starting set (the old collection is kept in SV.cos0 and comes back if this update is pulled back).
+   - Summons no longer give icons, banners or borders.
+   - The EXCHANGE tab is named GOLD. Its list has four gold banners to summon on with gold tickets: ICONS 5, BANNERS 10, BORDERS 15 (prices chosen by Trey) and ALL 10 (a random kind; price picked by Claude), each ×1 or ×10,
+     and each summon gives a random one the player does not own yet. The old EXP exchange is the fifth entry, EXP SHOP. */
+{const ON=()=>!!F().goldcos,COST={icon:5,banner:10,border:15,all:10},D0={icons:[0,1,2],banners:[0,1,2],borders:[0]};
+ const sync=()=>{if(!window.LIVE_READY)return;try{if(ON()){if(!SV.cosr){SV.cos0={icons:(SV.icons||[]).slice(),banners:(SV.banners||[]).slice(),borders:(SV.borders||[]).slice(),icon:SV.icon|0,banner:SV.banner|0,border:SV.border|0};SV.icons=D0.icons.slice();SV.banners=D0.banners.slice();SV.borders=D0.borders.slice();
+      if(!SV.icons.includes(SV.icon))SV.icon=0;if(!SV.banners.includes(SV.banner))SV.banner=0;if(!SV.borders.includes(SV.border))SV.border=0;SV.cosr=1;save()}}
+    else if(SV.cosr&&SV.cos0){const b=SV.cos0,un=(a,c)=>Array.from(new Set((a||[]).concat(c||[])));SV.icons=un(b.icons,SV.icons);SV.banners=un(b.banners,SV.banners);SV.borders=un(b.borders,SV.borders);SV.icon=b.icon;SV.banner=b.banner;SV.border=b.border;delete SV.cosr;delete SV.cos0;save()}}catch(e){}};
+ const ug0=update;let tk=0;update=function(rdt){ug0(rdt);tk+=rdt;if(tk>1){tk=0;sync()}};
+ const pg0=pull;pull=function(){if(!ON())return pg0();const a=SV.icons.length,b=SV.banners.length,c=SV.borders.length,r=pg0();try{SV.icons.length=Math.min(SV.icons.length,a);SV.banners.length=Math.min(SV.banners.length,b);SV.borders.length=Math.min(SV.borders.length,c);if(r){delete r.icon;delete r.ban;delete r.bd}}catch(e){}return r};
+ /* GOLD tab: four gold banners in the list (ICONS, BANNERS, BORDERS, ALL) plus the EXP shop that was there before. Summon on a banner with gold tickets. */
+ const KINDS=[['icon','ICONS','#2f4f8f','Profile icons'],['banner','BANNERS','#2f7a5f','Profile banners'],['border','BORDERS','#b8782f','Icon borders'],['all','ALL','#8a3fb8','Icons, banners and borders']];
+ const left=k=>k==='icon'?CH.map((c,i)=>i).filter(i=>!SV.icons.includes(i)):k==='banner'?(()=>{const hb=new Set(SV.banners);return pools()[1].filter(i=>!hb.has(i))})():BD.map((q,i)=>i).filter(i=>!SV.borders.includes(i));
+ const one=kind=>{let k=kind;if(k==='all'){const ks=['icon','banner','border'].filter(q=>left(q).length);if(!ks.length)return null;k=ks[Math.floor(Math.random()*ks.length)]}const pool=left(k);if(!pool.length)return null;const id=pool[Math.floor(Math.random()*pool.length)];(k==='icon'?SV.icons:k==='banner'?SV.banners:SV.borders).push(id);return{kind:k,id}};
+ const buy=(kind,n)=>{const cost=COST[kind]*n;if((SV.ytx||0)<cost){G.gmsg={t:'Not enough gold tickets. You need '+cost,e:G.t+2.4};return}const got=[];for(let i=0;i<n;i++){const r=one(kind);if(!r)break;got.push(r)}
+   if(!got.length){G.gmsg={t:'You already own all of these',e:G.t+2.2};return}SV.ytx-=COST[kind]*got.length;save();sfx('ult');G.csr={list:got,t:G.t}};
+ /* The banner picture shows only its top 4 items the player does not own (highest rarity fighters first, last borders first), one picture at a time, and moves to the next every 4 seconds. */
+ const topOf=k=>{const p=left(k).slice();if(k==='border')p.sort((u,v)=>v-u);else p.sort((u,v)=>(CH[v].rar-CH[u].rar)||(u-v));return p.map(id=>({kind:k,id}))};
+ const sample=kind=>{if(kind!=='all')return topOf(kind).slice(0,4);const I=topOf('icon'),B=topOf('banner'),D=topOf('border'),out=[];for(let j=0;out.length<4&&j<4;j++)[I,B,D].forEach(q=>{if(q[j]&&out.length<4)out.push(q[j])});return out};
+ const art=(it,x,y,sz)=>{if(it.kind==='icon'){drawIcon(CH[it.id],x,y,sz,null,1);return CH[it.id].name}if(it.kind==='banner'){g.save();rr(x,y,sz,sz,sz*.16);g.clip();worldBG(CH[it.id],x,y,sz,sz);g.restore();rr(x,y,sz,sz,sz*.16);g.strokeStyle='#fff';g.lineWidth=2;g.stroke();return String(CH[it.id].wn||'').toUpperCase()}
+   drawIcon(CH[SV.icon|0],x,y,sz,it.id,1);return BD[it.id][0]};
+ const HIDE=['TICKET EXCHANGE','Fighters go up to level','Small EXP ×','Big EXP ×','Use EXP items','hold a fighter'],HIDEL=['Yellow tickets:','Casual or Ranked','5 for every Boss Raid'];
+ const gg0=SCR.gacha;if(gg0)SCR.gacha=function(){if(!ON()){G.csr=null;return gg0()}const b0=button,t0=txt,ti0=tixIcon,gold=G.gtab===2,sel=clamp(G.gsel|0,0,4),shop=sel===4;let X=null,cut=false;
+   button=function(x,y,w,h,l){if(l==='EXCHANGE')arguments[4]='GOLD';else if(gold&&typeof l==='string'&&(l.indexOf('SMALL EXP')===0||l.indexOf('BIG EXP')===0)){if(!X)X={x,y,w};if(!shop)return false}if(typeof arguments[8]==='string')arguments[8]=arguments[8].replace('yellow ticket','gold ticket');return b0.apply(this,arguments)};
+   txt=function(s){if(typeof s==='string'){if(s.indexOf('Each fighter unlocks their icon')===0){cut=true;return}if(cut&&s.indexOf('Banners change')===0)arguments[2]-=18;
+     if(gold){if(HIDEL.some(q=>s.indexOf(q)===0))return;if(s.charAt(0)==='×'&&arguments[3]===30)return;if(!shop&&HIDE.some(q=>s.indexOf(q)===0))return;if(shop&&(s.indexOf('Small EXP ×')===0||s.indexOf('Big EXP ×')===0||s.indexOf('Use EXP items')===0||s.indexOf('hold a fighter')===0))return}}return t0.apply(this,arguments)};
+   if(gold)tixIcon=function(x,y,k){if(k===2.2)return;return ti0.apply(this,arguments)};
+   try{gg0()}finally{button=b0;txt=t0;tixIcon=ti0}
+   if(G.mode!=='gacha')return;try{g.setTransform(S*dpr,0,0,S*dpr,0,0);
+    if(gold&&!G.gres){const lw=Math.min(250,W*.3),lx=14,ly=86,bh=Math.min(38,(H-ly-70)/5-5);KINDS.concat([['exp','EXP SHOP','#3a2a5e','Level-up items']]).forEach((q,k)=>button(lx,ly+k*(bh+5),lw,bh,q[1],k===sel?q[2]:'#2a1f45',()=>{G.gsel=k},Math.min(20,bh*.5),k<4?COST[q[0]]+' gold':'gold tickets'));
+     const gy=ly+5*(bh+5)+22;tixIcon(lx+lw/2-46,gy,2,'#ffb020');txt('×'+fmtG(SV.ytx||0),lx+lw/2-16,gy+2,26,'#fff',INK,'left');txt('Gold tickets: win matches and raids',lx+lw/2,gy+30,11,'#e6dcff',null,'center',FU);
+     if(!shop&&X){const K=KINDS[sel],kind=K[0],x=X.x,w=X.w,y=92,h=H-y-74,n=kind==='all'?left('icon').length+left('banner').length+left('border').length:left(kind).length;g.save();rr(x,y,w,h,14);const gr=g.createLinearGradient(x,y,x+w,y+h);gr.addColorStop(0,K[2]);gr.addColorStop(1,'#1a0f33');g.fillStyle=gr;g.fill();g.strokeStyle='#ffd36e';g.lineWidth=3;g.stroke();g.clip();
+       g.globalAlpha=.14;g.fillStyle='#ffd36e';for(let j=0;j<9;j++){const q=x+w*(j/8);g.beginPath();g.moveTo(q-h*.3,y+h);g.lineTo(q+h*.05,y+h);g.lineTo(q+h*.55,y);g.lineTo(q+h*.2,y);g.fill()}g.restore();
+       txt('GOLD BANNER: '+K[1],x+w/2,y+26,Math.min(28,w*.055),'#ffe14d',INK,'center',FB,6);txt(K[3]+'   ·   '+fmtG(n)+' left to get',x+w/2,y+52,13,'#fff',INK,'center',FU,3);
+       const sm=sample(kind),sz=Math.min(150,h-186),sy=y+82;if(sm.length){const k=Math.floor(Date.now()/4000)%sm.length,it=sm[k],f=((Date.now()%4000)/4000),al=Math.min(1,f*6,(1-f)*6);g.save();g.globalAlpha=al;const nm=art(it,x+w/2-sz/2,sy,sz);g.restore();txt(nm,x+w/2,sy+sz+16,15,'#fff',INK,'center',FB,4);
+        sm.forEach((q,j)=>{circ(x+w/2-(sm.length-1)*8+j*16,sy+sz+34,j===k?4.5:3,j===k?'#ffe14d':'rgba(255,255,255,.4)')})}
+       txt('Top '+sm.length+' in this banner. Each summon gives a random one you do not own.',x+w/2,sy+sz+50,11.5,'#e6dcff',null,'center',FU);
+       const by=H-64,bw=(w-12)/2;button(x,by,bw,50,'SUMMON ×1','#b8782f',()=>buy(kind,1),24,COST[kind]+' gold');button(x+bw+12,by,bw,50,'SUMMON ×10','#b8324f',()=>buy(kind,10),24,COST[kind]*10+' gold');const M=G.gmsg;if(M&&G.t<M.e){const mw=Math.min(w-40,360);rr(x+w/2-mw/2,y+h/2-20,mw,40,12);g.fillStyle='rgba(12,6,28,.94)';g.fill();g.strokeStyle='#ff5a6e';g.lineWidth=2;g.stroke();txt(M.t,x+w/2,y+h/2+1,15,'#fff',null,'center',FB)}}}
+    const R=G.csr;if(R&&R.list){G.ui=[];hit(0,0,W,H,()=>{G.csr=null});g.fillStyle='rgba(6,2,18,.9)';g.fillRect(0,0,W,H);const k=clamp((G.t-R.t)/.25,0,1),L=R.list,cx=W/2;g.save();g.globalAlpha=k;
+     g.save();g.translate(cx,H*.46);g.rotate(G.t*.3);g.fillStyle='rgba(255,211,110,.2)';for(let j=0;j<12;j++){g.rotate(TAU/12);g.beginPath();g.moveTo(0,0);g.lineTo(-18,-W);g.lineTo(18,-W);g.fill()}g.restore();
+     if(L.length===1){const sz=Math.min(150,H*.36)*(1+(1-k)*.4),cy=H*.44,nm=art(L[0],cx-sz/2,cy-sz/2,sz);txt('NEW '+(L[0].kind==='border'?'BORDER':L[0].kind.toUpperCase()),cx,cy-sz/2-34,30,'#ffe14d',INK,'center',FB,7);txt(nm,cx,cy+sz/2+30,24,'#fff',INK,'center',FB,6)}
+     else{const cols=5,sz=Math.min(86,(W-80)/cols-14,(H-170)/2-26),gw=cols*(sz+14)-14,x0=cx-gw/2,y0=H*.5-(sz+34);txt('YOU GOT '+L.length,cx,y0-26,28,'#ffe14d',INK,'center',FB,7);L.forEach((it,j)=>{const x=x0+(j%cols)*(sz+14),y=y0+(j/cols|0)*(sz+34),nm=art(it,x,y,sz);txt(nm,x+sz/2,y+sz+11,10,'#fff',INK,'center',FU,3)})}
+     txt('Use them in PROFILE.   Tap to close.',cx,H-26,13,'#e6dcff',null,'center',FU);g.restore()}}catch(e){try{g.restore()}catch(x){}}}}
 })();
