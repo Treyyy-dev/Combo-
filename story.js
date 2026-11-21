@@ -1,5 +1,5 @@
 /* COMBO: Chapter 1 story mode and music.
-   Loaded after the game and live.js. Everything here is behind update flags (FLAGS.story1, mlobby, mmap, msummon, mgacha)
+   Loaded after the game and live.js. Everything here is behind update flags (FLAGS.story1, mlobby, mmap, msummon, mgacha, dripmx)
    that are switched on by releasing the matching UPDATE item in the Dev Studio. With the flags off this file changes nothing. */
 (()=>{"use strict";
 if(typeof SCR==='undefined'||typeof CH==='undefined')return;
@@ -34,7 +34,15 @@ function mkTrack(p){let sd=(p.seed*2654435761)>>>0||1;const R=()=>{sd=(Math.imul
   if(p.arp){const stp=p.arp===2?1:2,at=[c,c+2,c+4,c+n,c+4,c+2];for(let s=0,k=0;s<16;s+=stp,k++)ev[base+s].push(['a',deg(at[k%at.length])+12,stp])}
   D.k.forEach(s=>ev[base+s].push(['k']));D.s.forEach(s=>ev[base+s].push(['s']));(D.r||[]).forEach(s=>ev[base+s].push(['r']));D.h.forEach(s=>ev[base+s].push(['h']))}
  return{spb:60/p.bpm/4,ev,len:bars*16,lead:p.lead||'square'}}
-function track(id){if(TC[id])return TC[id];let p=TRK[id];if(!p&&id.slice(0,3)==='map'){const i=+id.slice(3)|0;if(i<MAPT.length)p=Object.assign({seed:101+i*17},MAPT[i]);else{const h=hash(STAGES[i]?STAGES[i].name:id),ks=Object.keys(SCL);p={bpm:104+h%72,root:52+(h>>>3)%14,scale:ks[(h>>>7)%ks.length],prog:[[0,5,2,6],[0,3,4,3],[0,4,5,3],[0,1,0,6]][(h>>>11)%4],seed:h%9973+7,bass:['drive','half','walk'][(h>>>13)%3],drum:['pop','soft','fast'][(h>>>15)%3],arp:(h>>>17)%3,lead:['square','triangle','sawtooth'][(h>>>19)%3]}}}
+/* flag "dripmx": a scary water-drop beat for the loading screens (choose download, downloading, and the online match loading screen).
+   Slow heartbeat thuds, a low drone, and echoing water drops that fall in a pattern. Events: w = water drop, d = drone, e = eerie bell, q = breath of noise. */
+function mkDrip(){const bars=8,ev=[];for(let i=0;i<bars*16;i++)ev.push([]);const root=74,sc=SCL.phr,pt=d=>root+sc[((d%7)+7)%7]+12*Math.floor(d/7);
+ const pats=[[[0,4],[6,2],[9,0],[14,1]],[[2,4],[6,3],[11,0],[12,1],[15,-3]],[[0,7],[6,4],[9,2],[14,0]],[[3,1],[4,0],[10,-3],[12,-2],[15,-4]]];
+ for(let b=0;b<bars;b++){const base=b*16;ev[base].push(['k'],['d',38,16]);ev[base+3].push(['k']);if(b%2)ev[base+10].push(['k']);ev[base+8].push(['r']);if(b>=4)ev[base+4].push(['h']),ev[base+12].push(['h']);
+  if(b>=6)ev[base].push(['d',39,16]);pats[b%4].forEach((q,k)=>ev[base+q[0]].push(['w',pt(q[1]+(b>=4&&k===0?7:0)),k===0?.2:.13]));
+  if(b%4===3)ev[base+8].push(['e',pt(8)+12]);if(b===7)ev[base+8].push(['q'])}
+ return{spb:60/76/4,ev,len:bars*16,lead:'triangle'}}
+function track(id){if(TC[id])return TC[id];if(id==='drip')return TC[id]=mkDrip();let p=TRK[id];if(!p&&id.slice(0,3)==='map'){const i=+id.slice(3)|0;if(i<MAPT.length)p=Object.assign({seed:101+i*17},MAPT[i]);else{const h=hash(STAGES[i]?STAGES[i].name:id),ks=Object.keys(SCL);p={bpm:104+h%72,root:52+(h>>>3)%14,scale:ks[(h>>>7)%ks.length],prog:[[0,5,2,6],[0,3,4,3],[0,4,5,3],[0,1,0,6]][(h>>>11)%4],seed:h%9973+7,bass:['drive','half','walk'][(h>>>13)%3],drum:['pop','soft','fast'][(h>>>15)%3],arp:(h>>>17)%3,lead:['square','triangle','sawtooth'][(h>>>19)%3]}}}
  return TC[id]=mkTrack(p||TRK.lobby)}
 const fq=m=>440*Math.pow(2,(m-69)/12);
 function nt(type,m,t,dur,vol,out){const o=AC.createOscillator(),q=AC.createGain();o.type=type;o.frequency.value=fq(m);q.gain.setValueAtTime(.0001,t);q.gain.linearRampToValueAtTime(vol,t+.012);q.gain.setValueAtTime(vol,t+Math.max(.02,dur*.55));q.gain.exponentialRampToValueAtTime(.0008,t+dur);o.connect(q);q.connect(out);o.start(t);o.stop(t+dur+.03)}
@@ -45,10 +53,15 @@ function sched(T,st,t,out){const sp=T.spb;for(const e of T.ev[st]){switch(e[0]){
  case'p':nt('sine',e[1],t,e[2]*sp,.028,out);break;
  case'a':nt('triangle',e[1],t,Math.max(.09,e[2]*sp*.9),.035,out);break;
  case'k':{const o=AC.createOscillator(),q=AC.createGain();o.type='sine';o.frequency.setValueAtTime(150,t);o.frequency.exponentialRampToValueAtTime(45,t+.11);q.gain.setValueAtTime(.3,t);q.gain.exponentialRampToValueAtTime(.001,t+.14);o.connect(q);q.connect(out);o.start(t);o.stop(t+.16);break}
+ case'w':{const f=fq(e[1]);[[0,1,1],[.2,.42,.97],[.4,.18,.94],[.6,.08,.91]].forEach(z=>{const o=AC.createOscillator(),q=AC.createGain(),a=t+z[0],v=e[2]*z[1];o.type='sine';o.frequency.setValueAtTime(f*z[2]*.5,a);o.frequency.exponentialRampToValueAtTime(f*z[2]*1.45,a+.055);q.gain.setValueAtTime(.0001,a);q.gain.linearRampToValueAtTime(v,a+.006);q.gain.exponentialRampToValueAtTime(.0006,a+.17);o.connect(q);q.connect(out);o.start(a);o.stop(a+.2)});break}
+ case'd':{const dur=e[2]*sp,o=AC.createOscillator(),o2=AC.createOscillator(),fl=AC.createBiquadFilter(),q=AC.createGain();o.type='sawtooth';o2.type='sine';o.frequency.value=fq(e[1]);o2.frequency.value=fq(e[1])*1.006;fl.type='lowpass';fl.frequency.value=190;q.gain.setValueAtTime(.0001,t);q.gain.linearRampToValueAtTime(.085,t+dur*.35);q.gain.linearRampToValueAtTime(.05,t+dur*.9);q.gain.linearRampToValueAtTime(.0001,t+dur+.25);o.connect(fl);o2.connect(fl);fl.connect(q);q.connect(out);o.start(t);o2.start(t);o.stop(t+dur+.3);o2.stop(t+dur+.3);break}
+ case'e':{[0,.35].forEach(dt=>{const o=AC.createOscillator(),q=AC.createGain();o.type='sine';o.frequency.value=fq(e[1]+dt);q.gain.setValueAtTime(.0001,t);q.gain.linearRampToValueAtTime(.022,t+.03);q.gain.exponentialRampToValueAtTime(.0005,t+2.4);o.connect(q);q.connect(out);o.start(t);o.stop(t+2.5)});break}
+ case'q':{if(!noiseB)break;const src=AC.createBufferSource(),fl=AC.createBiquadFilter(),q=AC.createGain();src.buffer=noiseB;src.loop=true;fl.type='bandpass';fl.frequency.setValueAtTime(300,t);fl.frequency.exponentialRampToValueAtTime(1400,t+1.5);fl.Q.value=1.2;q.gain.setValueAtTime(.0001,t);q.gain.linearRampToValueAtTime(.07,t+1.4);q.gain.linearRampToValueAtTime(.0001,t+1.6);src.connect(fl);fl.connect(q);q.connect(out);src.start(t);src.stop(t+1.65);break}
  case's':nz(t,.12,.13,'bandpass',1800,out);break;case'r':nz(t,.05,.07,'bandpass',2600,out);break;case'h':nz(t,.03,.035,'highpass',7000,out);break}}}
 const MU={id:null,g:null,tr:null,step:0,nt:0};let SC=null;
 function wantTrack(){const m=G.mode,f=F();
  if(m==='title'&&f.combosay){try{if(window.COMBO_HOLD&&window.COMBO_HOLD())return null}catch(e){}}
+ if(f.dripmx&&(m==='dl'||m==='dlpick'||m==='loading'))return'drip';
  if(m==='scene')return f.story1&&SC?(QS[SC.qi].k==='B'?'tense':'story'):null;
  if(m==='summon')return f.msummon?'summon':null;
  if(m==='gacha')return f.mgacha?'gacha':f.mlobby?'lobby':null;

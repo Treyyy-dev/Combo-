@@ -2089,5 +2089,20 @@
   "game": {
    "flag": "dlart"
   }
+ },
+ {
+  "id": "update-drip-beat",
+  "type": "update",
+  "name": "Loading Screen Beat",
+  "subtitle": "A scary water drop beat while you load",
+  "desc": "The loading screens play a scary beat: slow heartbeat thuds, a low drone and echoing water drops. It plays on the choose download screen, while downloading, and on the online match loading screen.",
+  "status": "staged",
+  "created": 1795245780817,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "dripmx"
+  }
  }
 ]
