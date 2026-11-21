@@ -1127,5 +1127,20 @@
    "flag": "winfront"
   },
   "rev": 2
+ },
+ {
+  "id": "update-cel",
+  "type": "update",
+  "name": "Cel-Shaded Fighters",
+  "subtitle": "Hard anime shading and more detail",
+  "desc": "Fighters are cel shaded like an anime: hard-edged shadows and bright shine on arms, legs, chest, face and hair, plus extra detail such as clothing folds, seams, buttons and trouser stripes.",
+  "status": "staged",
+  "created": 1795219347906,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "cel"
+  }
  }
 ]
