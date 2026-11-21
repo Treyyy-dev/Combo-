@@ -2389,5 +2389,50 @@
   "game": {
    "flag": "goldcos"
   }
+ },
+ {
+  "id": "update-gold-mix",
+  "type": "update",
+  "name": "Gold Banners Mix",
+  "subtitle": "Four mixed gold banners, no exchange shop",
+  "desc": "The four gold banners now all give a mix. Each summon costs 5 gold tickets. Half of the summons give EXP items (SMALL EXP ×10 or BIG EXP ×2), the other half give a random profile banner or icon border you do not own. Each gold banner has its own top 4. The exchange shop is removed. Icons come with the fighter again: every fighter you summon gives its icon.",
+  "status": "staged",
+  "created": 1795252870576,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "goldmix"
+  }
+ },
+ {
+  "id": "update-borders-50",
+  "type": "update",
+  "name": "50 Anime Borders",
+  "subtitle": "All old icon borders replaced",
+  "desc": "All the old icon borders are gone. There are 50 new anime style borders: 25 still and 25 animated, with things like cat ears, auras, lightning, falling petals and spirit orbs. Everyone starts again with the first one and gets the rest from the gold banners.",
+  "status": "staged",
+  "created": 1795252870577,
+  "colors": [
+   "#ff7ad1"
+  ],
+  "game": {
+   "flag": "border50"
+  }
+ },
+ {
+  "id": "update-banners-50",
+  "type": "update",
+  "name": "50 Anime Banners",
+  "subtitle": "All old profile banners replaced",
+  "desc": "All the old profile banners are gone. There are 50 new anime style banners: 25 still and 25 animated. Some show fighters doing something, some show a power, some show both. Everyone starts again with the first one and gets the rest from the gold banners.",
+  "status": "staged",
+  "created": 1795252870578,
+  "colors": [
+   "#3fa9ff"
+  ],
+  "game": {
+   "flag": "banner50"
+  }
  }
 ]
