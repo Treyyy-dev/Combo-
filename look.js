@@ -824,4 +824,19 @@ let SCX=null,HCX=null;
     show.forEach((q,k)=>tile(P[k].x,P[k].y,sd,q,kb&&(k+(two?2:0))===f0));
     T.forEach((a,k)=>{a[1]=W/2;a[2]=H-12-(T.length-1-k)*16;a[6]='center';txt.apply(null,a)});if(G.focus>=G.ui.length)G.focus=0}catch(e){}}};
  wrapScr('menu',true);wrapScr('match');wrapScr('offline');wrapScr('online')}
+/* pvhold (look.js half): the fighter detail screen opened from another player's profile shows that player's level and stars, no level-up buttons, and BACK returns to the profile.
+   arttalk: on the fighter detail screen, tapping the fighter's artwork makes them say a line (speech bubble + their voice clip when fighter voices are on). Each fighter has two lines
+   (their greeting and their win line) and taps switch between them. A fighter shown as a dark shape (not owned) does not talk. */
+{const fd0=SCR.fdetail;if(fd0)SCR.fdetail=function(){const f=F(),v=G.fdv,c=CH[clamp(G.fd|0,0,CH.length-1)];let rest=null;
+  if(v&&c){const o=SV.owned[c.name],l=SV.lv?SV.lv[c.name]:undefined;SV.lv=SV.lv||{};SV.owned[c.name]=Math.max(1,v.st|0);SV.lv[c.name]=Math.max(1,v.lv|0);rest=()=>{if(o==null)delete SV.owned[c.name];else SV.owned[c.name]=o;if(l==null)delete SV.lv[c.name];else SV.lv[c.name]=l};BACK.fdetail=v.ret||'menu'}
+  const b0=button,t0=txt;if(v){button=function(x,y,w,h,l){if(typeof l==='string'&&l.indexOf('LEVEL UP')===0)return false;if(l==='BACK'||l==='TEST'){if(l==='TEST')return false;const a=Array.prototype.slice.call(arguments);a[6]=()=>{const q=G.fdv;G.fdv=null;goto(q.ret||'menu');G.pv=q.pv};return b0.apply(this,a)}return b0.apply(this,arguments)};
+   txt=function(s){if(typeof s==='string'&&s.indexOf('Get EXP items')===0){const a=Array.prototype.slice.call(arguments);a[0]=(v.who?v.who+"'s fighter":'Another player\'s fighter');a[3]=14;a[4]='#ffe14d';return t0.apply(this,a)}return t0.apply(this,arguments)}}
+  const shown=c&&(v||!!SV.owned[c.name]);try{fd0()}finally{button=b0;txt=t0;if(rest)rest()}
+  if(!f.arttalk||!c||!shown||G.mode!=='fdetail')return;
+  try{const T=(typeof TALK!=='undefined'&&TALK[c.name])||null,L=T?[T.say,T.win].filter(x=>typeof x==='string'&&x):[];if(!L.length)return;
+   G.ui.push({x:0,y:56,w:W*.44,h:H-56,fn:()=>{const pv=G.atk&&G.atk.n===c.name?G.atk.i:-1,i=(pv+1)%L.length,line=L[i];G.atk={n:c.name,i,t:G.t,line,d:1.8+line.length*.055};try{if(window.COMBO_SAY)COMBO_SAY(c.name,line)}catch(e){}}});
+   const A=G.atk;if(A&&A.n===c.name&&G.t-A.t<A.d&&G.t>=A.t){g.save();g.setTransform(S*dpr,0,0,S*dpr,0,0);const k=clamp((G.t-A.t)/.15,0,1)*clamp((A.d-(G.t-A.t))/.25,0,1),bw=Math.min(300,W*.4);g.font='700 15px '+FU;const ls=wrap(A.line,bw-28).slice(0,4),bh=22+ls.length*19,bx=Math.max(10,W*.3-bw/2),by=62;g.globalAlpha=k;
+    rr(bx,by,bw,bh,12);g.fillStyle='#fff';g.fill();g.strokeStyle=INK;g.lineWidth=3;g.stroke();g.beginPath();g.moveTo(bx+bw*.42,by+bh-1);g.lineTo(bx+bw*.5,by+bh+16);g.lineTo(bx+bw*.56,by+bh-1);g.closePath();g.fillStyle='#fff';g.fill();g.stroke();g.fillRect(bx+bw*.42+2,by+bh-4,bw*.14-4,5);
+    ls.forEach((t,j)=>txt(t,bx+bw/2,by+21+j*19,15,'#1a0f33',null,'center',FU));g.restore()}}catch(e){try{g.restore()}catch(x){}}};
+ const uf0=update;update=function(rdt){uf0(rdt);if(G.fdv&&G.mode!=='fdetail')G.fdv=null}}
 })();

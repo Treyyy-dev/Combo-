@@ -2013,5 +2013,35 @@
   "game": {
    "flag": "set1st"
   }
+ },
+ {
+  "id": "update-profile-hold-fighter",
+  "type": "update",
+  "name": "View Fighters On Profiles",
+  "subtitle": "Hold a fighter on someone's profile",
+  "desc": "On another player's profile, hold one of their three fighters to open that fighter in full view with that player's level and stars.",
+  "status": "staged",
+  "created": 1795242797403,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "pvhold"
+  }
+ },
+ {
+  "id": "update-art-talk",
+  "type": "update",
+  "name": "Fighters Talk",
+  "subtitle": "Tap a fighter's art to hear them",
+  "desc": "On a fighter's full view, tap their art and they say a line. Each fighter has two lines and taps switch between them.",
+  "status": "staged",
+  "created": 1795242797404,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "arttalk"
+  }
  }
 ]
