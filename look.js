@@ -948,4 +948,7 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
    else if(M.ph>=10&&M.ph<=12)txt('SUMMONING'+'...'.slice(0,1+Math.floor(G.t*3)%3),W/2,H*.08+22,18,'#fff',INK,'center',FB,5);
    if(M.ph===3){const s=1+Math.max(0,.3-M.st)*5;g.save();g.translate(W/2,H*.26);g.scale(s,s);g.rotate(-.04);txt(RN[M.rar],0,0,Math.min(130,W*.2),RC[M.rar],'#fff','center',FB,18);txt(RN[M.rar],0,0,Math.min(130,W*.2),RC[M.rar],INK,'center',FB,9);g.restore()}
    if(M.ph!==14&&M.ph!==16){const q=skipRect();button(q.x,q.y,q.w,q.h,'SKIP  »','rgba(10,4,24,.78)',endSummon,20)}}}
+/* combotap (needs combosay): the two start screen fighters shout COMBO when the player taps start, once per visit to the start screen. This wrapper is the outermost goto so it runs on the tap itself, before CONNECTING or a download. */
+{let shot=false;const gs0=goto;goto=function(m){try{if(F().combotap&&m==='menu'&&G.mode==='title'&&!shot){shot=true;if(window.COMBO_SHOUT)COMBO_SHOUT()}}catch(e){}return gs0(m)};
+ const us0=update;update=function(rdt){us0(rdt);if(shot&&G.mode!=='title')shot=false}}
 })();

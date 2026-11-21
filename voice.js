@@ -83,9 +83,11 @@ const _du=drawSummonUI;drawSummonUI=function(){_du();const M=G.sm;if(!M||!M.say|
    C.forEach((c,i)=>{const a=A[i];a.pause();a.src=c.u;a.volume=vol;const keep=!c.low;a.preservesPitch=keep;a.mozPreservesPitch=keep;a.webkitPreservesPitch=keep;a.playbackRate=c.low?.94:Math.min(1.3,Math.max(.77,c.d/T));const p=a.play();if(p&&p.catch)p.catch(()=>{want=true})})}catch(e){}};
  const unl=()=>{if(!cson())return;try{if(!A.length){const s=silent();for(let k=0;k<2;k++){const a=new Audio();a.preload='auto';a.src=s;a.volume=0;A.push(a);const p=a.play();if(p&&p.catch)p.catch(()=>{})}}if(want){want=false;setTimeout(fire,80)}}catch(e){}};
  ['pointerup','touchend','click','keyup'].forEach(e=>window.addEventListener(e,unl,{passive:true}));
- const tick=()=>{if(!cson()||!window.BOOTED||G.mode!=='title')return;try{clips().forEach(c=>{if(!W0[c.u]){const a=new Audio();a.preload='auto';a.src=c.u;W0[c.u]=a}})}catch(e){}const now=performance.now()/1000;if(now-last>1){hold=-1;app=performance.now();fire()}last=now};
+ const tick=()=>{if(!cson()||!window.BOOTED||G.mode!=='title')return;try{clips().forEach(c=>{if(!W0[c.u]){const a=new Audio();a.preload='auto';a.src=c.u;W0[c.u]=a}})}catch(e){}const now=performance.now()/1000;if(now-last>1){hold=-1;app=performance.now();if(!FLAGS.combotap)fire()}last=now};
+ /* flag "combotap": the shout no longer plays when the start screen appears; it plays when the player taps start (look.js calls window.COMBO_SHOUT). The start screen music still waits for it. */
+ try{window.COMBO_SHOUT=()=>{if(cson()&&FLAGS.combotap)fire()}}catch(e){}
  /* the start screen music waits for the shout (story.js asks this before it starts the lobby track on the start screen) */
- try{window.COMBO_HOLD=()=>{if(!cson()||G.mode!=='title')return false;if(hold===-1){if(A.length&&!want&&performance.now()-app>4000){hold=0;return false}return true}return performance.now()<hold}}catch(e){}
+ try{window.COMBO_HOLD=()=>{if(!cson()||G.mode!=='title')return false;if(hold===-1){if(FLAGS.combotap)return true;if(A.length&&!want&&performance.now()-app>4000){hold=0;return false}return true}return performance.now()<hold}}catch(e){}
  try{window.COMBO_TITLE=tick}catch(e){}const t0=SCR.title;SCR.title=function(){t0();tick()}}
 /* Summon duel lines (look.js flag "duel2" calls window.COMBO_DUELV(fighter name, key)). One clip per line; keys: face, ult / dodge, w0-3 (Kenko wins), l0-3 (Neto wins), d0-3 (draw), the number is the rarity tier.
    English and Japanese; the Japanese set is used when VOICES is Japanese. Both fighters share one voice, so the second fighter's clips play a little lower. */

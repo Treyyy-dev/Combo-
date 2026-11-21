@@ -2224,5 +2224,20 @@
   "game": {
    "flag": "duel2"
   }
+ },
+ {
+  "id": "update-combo-on-tap",
+  "type": "update",
+  "name": "COMBO Shout On Tap",
+  "subtitle": "They shout when you tap start",
+  "desc": "The two fighters on the start screen now shout COMBO when you tap start, instead of when the start screen appears.",
+  "status": "staged",
+  "created": 1795249389544,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "combotap"
+  }
  }
 ]
