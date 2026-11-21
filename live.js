@@ -222,14 +222,21 @@ SCR.dev=drawDev;
  const list=()=>MAILS.filter(m=>m.news&&!(SV.mdel||[]).includes(m.id));
  const who=m=>(m.pt==='character'?[m.pn]:m.pt==='banner'?(m.pf||[]):[]).map(q=>findCh(q)).filter(k=>k>=0).slice(0,4);
  const ago=t=>{if(!(t>1e11))return'';const h=Math.max(0,Date.now()-t)/36e5;return h<1?'JUST NOW':h<24?Math.floor(h)+' H AGO':h<48?'YESTERDAY':Math.floor(h/24)+' DAYS AGO'};
- const toggle=m=>{NW.open[m.id]=!NW.open[m.id];NW.lt=performance.now();SV.mail=SV.mail||[];if(NW.open[m.id]){NW.to=m.id;if(!SV.mail.includes(m.id)){SV.mail.push(m.id);save()}}};
+ /* flag "newsarrow": the picture of a grouped post no longer changes by itself; arrows on its left and right move to the previous / next picture */
+ NW.sl={};NW.arw={};NW.px=0;NW.py=0;NW.pt2=0;
+ const step=(m,d)=>{NW.sl[m.id]=(NW.sl[m.id]|0)+d;NW.lt=performance.now()};
+ try{window.addEventListener('pointerdown',e=>{if(G.mode!=='news')return;const q=PXY(e);NW.px=q[0]/S;NW.py=q[1]/S;NW.pt2=performance.now()},true)}catch(e){}
+ const toggle=m=>{if(FLAGS.newsarrow&&m.grp&&NW.open[m.id]&&NW.arw[m.id]&&performance.now()-NW.pt2<500){const a=NW.arw[m.id],on=r=>NW.px>=r.x&&NW.px<=r.x+r.w&&NW.py>=r.y&&NW.py<=r.y+r.h;if(on(a.L)){step(m,-1);return}if(on(a.R)){step(m,1);return}}
+  NW.open[m.id]=!NW.open[m.id];NW.lt=performance.now();SV.mail=SV.mail||[];if(NW.open[m.id]){NW.to=m.id;if(!SV.mail.includes(m.id)){SV.mail.push(m.id);save()}}};
  /* flag "newspic": an update's news post shows its own picture. Pictures are files in the news/ folder named <update id>.jpg, and news/index.json lists the ids that have one. */
  const NP={ids:null,im:{}};
  const npic=id=>{if(!FLAGS.newspic||!id)return null;if(NP.ids===null){NP.ids={};try{fetch('news/index.json',{cache:'no-cache'}).then(r=>r.ok?r.json():[]).then(a=>{const o={};(Array.isArray(a)?a:[]).forEach(k=>{o[String(k)]=1});NP.ids=o}).catch(()=>{})}catch(e){}}
   if(!NP.ids[id])return null;let q=NP.im[id];if(!q){q=NP.im[id]={ok:0,img:new Image()};q.img.onload=()=>{q.ok=1};q.img.onerror=()=>{q.ok=-1};q.img.src='news/'+id+'.jpg'}return q.ok===1?q.img:null};
  const shows=m=>{const P=m.grp.filter(q=>q.pt==='character'||q.pt==='map'||q.pt==='banner'||(q.pt==='update'&&FLAGS.newspic&&NP.ids&&NP.ids[q.did]));return P.length?P:m.grp};
- const pic=(m,x,y,w,h)=>{if(m.grp){const U=shows(m),k=Math.floor(G.t/4)%U.length,q=U[k];{const t1=txt;if(q.pt==='map')txt=function(){};try{pic(q,x,y,w,h)}finally{txt=t1}}if(w>=200){g.save();const cw=Math.min(w-20,360);rr(x+10,y+h-40,cw,30,8);g.fillStyle='rgba(10,4,24,.78)';g.fill();txt(q.title+'  \u00b7  '+q.tag,x+22,y+h-25,15,'#fff',INK,'left',FB,3);
-    if(U.length>1){const dx=x+w-16-(U.length-1)*14;U.forEach((z,j)=>circ(dx+j*14,y+h-25,j===k?5:3.5,j===k?'#ffe14d':'rgba(255,255,255,.55)',INK,1.5))}g.restore()}return}
+ const pic=(m,x,y,w,h)=>{if(m.grp){const U=shows(m),AR=!!FLAGS.newsarrow,k=AR?(((NW.sl[m.id]|0)%U.length)+U.length)%U.length:Math.floor(G.t/4)%U.length,q=U[k];{const t1=txt;if(q.pt==='map')txt=function(){};try{pic(q,x,y,w,h)}finally{txt=t1}}if(w>=200){g.save();const cw=Math.min(w-20,360);rr(x+10,y+h-40,cw,30,8);g.fillStyle='rgba(10,4,24,.78)';g.fill();txt(q.title+'  \u00b7  '+q.tag,x+22,y+h-25,15,'#fff',INK,'left',FB,3);
+    if(U.length>1){const dx=x+w-16-(U.length-1)*14;U.forEach((z,j)=>circ(dx+j*14,y+h-25,j===k?5:3.5,j===k?'#ffe14d':'rgba(255,255,255,.55)',INK,1.5))}g.restore();
+    if(AR&&U.length>1){const aw=40,ah=52,ay=y+(h-ah)/2-8,L={x:x+8,y:ay,w:aw,h:ah,fn:()=>step(m,-1)},R={x:x+w-8-aw,y:ay,w:aw,h:ah,fn:()=>step(m,1)};NW.arw[m.id]={L,R};
+     [L,R].forEach((r,j)=>{if(r.y>=56&&r.y+r.h<=H-6)NW.btn.push(r);g.save();rr(r.x,r.y,r.w,r.h,10);g.fillStyle='rgba(10,4,24,.72)';g.fill();g.strokeStyle='#fff';g.lineWidth=2;g.stroke();g.restore();txt(j?'\u203a':'\u2039',r.x+r.w/2,r.y+r.h/2-2,38,'#ffe14d',INK,'center',FB,4)})}else delete NW.arw[m.id]}return}
   {const im=m.pt==='update'?npic(m.did):null;if(im){g.save();rr(x,y,w,h,10);g.clip();g.fillStyle='#120a22';g.fillRect(x,y,w,h);const sc=w>=200?Math.min(w/im.width,h/im.height):Math.max(w/im.width,h/im.height),dw=im.width*sc,dh=im.height*sc;try{g.drawImage(im,x+(w-dw)/2,y+(h-dh)/2,dw,dh)}catch(e){}g.restore();rr(x,y,w,h,10);g.strokeStyle='#fff';g.lineWidth=2;g.stroke();return}}
   g.save();rr(x,y,w,h,10);g.clip();g.fillStyle='#120a22';g.fillRect(x,y,w,h);const f=who(m),col=m.col||'#ffd36e',si=m.pt==='map'?stageIdx(m.pn):-1;
   try{if(f.length){worldBG(CH[f[0]],x,y,w,h);const n=f.length,cw2=w/n,sc=Math.min((h-12)/152,cw2/84);f.forEach((ci,k)=>miniChar(CH[ci],x+cw2*(k+.5),y+h-7,sc,{}))}

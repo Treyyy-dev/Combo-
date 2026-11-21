@@ -2179,5 +2179,20 @@
   "game": {
    "flag": "newspic"
   }
+ },
+ {
+  "id": "update-news-arrows",
+  "type": "update",
+  "name": "News Picture Arrows",
+  "subtitle": "Arrows instead of auto switching",
+  "desc": "In a news post with several pictures, the picture no longer changes by itself. Use the arrows on its left and right to see the next one.",
+  "status": "staged",
+  "created": 1795247147796,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "newsarrow"
+  }
  }
 ]
