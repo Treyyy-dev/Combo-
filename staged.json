@@ -1532,5 +1532,20 @@
   "game": {
    "flag": "mailexp"
   }
+ },
+ {
+  "id": "update-views2",
+  "type": "update",
+  "name": "Front and Back Angles in Matches",
+  "subtitle": "Ultimates, intro close-ups and win poses",
+  "desc": "On an ultimate the fighter is seen from behind winding up, then turns to face the camera, and the face in the cut-in turns to the front too. Match intro close-ups show the fighter from the front, and a fighter in their win pose faces the camera.",
+  "status": "staged",
+  "created": 1795232538147,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "views2"
+  }
  }
 ]

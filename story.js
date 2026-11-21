@@ -1847,4 +1847,5 @@ function envScreen(){const E=SC.env,t=G.t;g.save();
  if(E.tint){g.fillStyle=E.tint;g.fillRect(0,0,W,H)}
  if(E.wipe>=0){const k=E.wipe,a=k<.5?clamp((k-.3)*5,0,1):clamp((.7-k)*5,0,1);if(a>0){g.fillStyle='rgba(5,2,12,'+a+')';g.fillRect(0,0,W,H)}}
  g.restore()}
+try{window.CBACK=drawBackChar}catch(e){}
 })();

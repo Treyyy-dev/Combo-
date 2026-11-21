@@ -197,4 +197,14 @@ function mapDetail(){const st=STAGES[G.stg||0],z=cam.z,hy=cam.ay-26*z-cam.y*z*.6
  g.restore();
  /* soft dark corners */
  const vg=g.createRadialGradient(W/2,H*.48,Math.min(W,H)*.45,W/2,H*.48,Math.max(W,H)*.78);vg.addColorStop(0,'rgba(0,0,0,0)');vg.addColorStop(1,'rgba('+(st.vg||'0,0,0')+',.38)');g.fillStyle=vg;g.fillRect(0,0,W,H)}
+/* ================= flag "views2": front and back views outside the story =================
+   Ultimate: while the cut-in plays the attacker is seen from behind winding up, then turns to face the camera, and the face in the cut-in turns to the front with them. Match intro: the close-up shot shows the
+   fighter from the front. In a match: a fighter in their win pose faces the camera. */
+{const _df3=drawFighter;drawFighter=function(f,sil){const fl=F();if(!fl.views2||sil||!f||f.hide||G.mode==='scene'||f.y<0)return _df3(f,sil);let v=null;const cn=G.cine,ult=cn&&cn.f===f;
+ if(ult)v=cn.t<cn.dur*.35?'back':'front';
+ else if(G.mode==='intro'&&G.intro&&G.intro.sh){const q=G.intro.sh[G.intro.i];if(q&&(q.kind==='cf'||q.kind==='front')&&q.who===f&&f.state!=='enter'&&f.state!=='atk'&&!f._vp)v='front'}
+ else if((G.mode==='fight'||G.mode==='ko')&&f.state==='win')v='front';
+ if(!v||(v==='back'&&!window.CBACK))return _df3(f,sil);
+ g.save();try{g.translate(f.x,f.y);const sc=f.sc||f.c.sc||1;g.scale(sc,sc);if(v==='back')window.CBACK(f.c,{t:f.at});else drawFrontChar(f.c,{t:f.at,expr:ult?'yell':exprOf(f),sway:f.sway,dmg:1-f.hp/f.mhp,win:f.state==='win'})}catch(e){}g.restore()}}
+{const _dc3=drawCine;drawCine=function(){const cn=G.cine;if(!F().views2||!cn||cn.t<cn.dur*.35)return _dc3();const hb=headBack,hf=headFront;headBack=function(){};headFront=function(c){try{g.save();g.translate(0,132);drawFrontChar(c,{t:G.t,expr:'yell'});g.restore()}catch(e){}};try{_dc3()}finally{headBack=hb;headFront=hf}}}
 })();
