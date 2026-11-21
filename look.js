@@ -1165,6 +1165,26 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
   ['RAINY ROOFTOP','#2a3048','#6b7a9a','storm',21,'stand','rain',1],['STAR FESTIVAL','#1a1f4a','#ffe14d','city',22,'win','stars',1],['DRAGON RISE','#0f3a2a','#4fc46a','void',23,'raise','fire',1],['LIMIT BREAK','#fff','#ff3d5a','speed',24,'charge','bolt',1],
   ['LEGENDS','#ffb020','#ffe9a8','rays',0,'beam','struggle',1,1]];
  window.COMBO_BN50=BN;
+ /* banner50b (own flag, banner50 was already released): Trey asked to remake the 50 banners. A second set, 25 still and 25 animated, with big close shots:
+    bust = one fighter close up from the front, back = a fighter from behind looking at the scene, vs = two fighters face to face, act = a full-body move, team = three fighters, pow = a power alone.
+    Spec: [name, colour 1, colour 2, background, shot, fighters, power, animated, expression]. Banner ids stay 0-49, so what a player owns carries over by number. */
+ const V2=()=>!!F().banner50b;
+ const BN2=[['FIRST STEP','#3fa9ff','#bfeeff','sky','bust',[0],'none',0,''],
+  ['RED DAWN','#ff3d2a','#ffd36e','rays','bust',[1],'none',0,'yell'],['MIDNIGHT EYES','#0c1030','#3a4a9a','night','bust',[2],'stars',0,''],['CHERRY SMILE','#ffc2e2','#ff7ad1','sakura','bust',[3],'petals',0,''],['STORM FACE','#2a3048','#6b7a9a','storm','bust',[4],'bolt',0,'yell'],
+  ['GOLD HEART','#ffb020','#ff5a8a','sunset','bust',[5],'none',0,''],['COLD STARE','#5d8ad8','#bfeeff','mount','bust',[6],'ice',0,''],['INK HERO','#ffffff','#c9d6e6','tone','bust',[7],'none',0,'yell'],['VOID WALKER','#07040f','#8a3fb8','void','bust',[8],'hole',0,''],
+  ['MOON GAZER','#0c1030','#3a4a9a','night','back',[9],'none',0],['LAST SUNSET','#ff7a1f','#5a1f6a','sunset','back',[10],'none',0],['CITY WATCH','#1a1f4a','#b06bff','city','back',[11],'none',0],['SUMMIT VIEW','#7fb8ff','#fff3d6','mount','back',[12],'none',0],['FALLING STARS','#2a1050','#ff7a1f','night','back',[13],'meteor',0],
+  ['OLD RIVALS','#ff3d5a','#3fa9ff','tone','vs',[14,15],'bolt',0],['FIRE AND ICE','#ff7a1f','#7fdcff','speed','vs',[16,17],'shock',0],['DOJO DUEL','#c8824a','#ffe9c2','dojo','vs',[18,19],'none',0],
+  ['SKY UPPER','#3fa9ff','#fff','sky','act',[20],'shock',0,'punch'],['MOON SLASH','#1a0f33','#b06bff','night','act',[21],'slash',0,'slash'],['WAVE KICK','#1a5fa8','#7fdcff','sea','act',[22],'none',0,'kick'],['DASH PANEL','#ffe14d','#ff7a1f','speed','act',[23],'clones',0,'dash'],
+  ['TEAM COMBO','#ffd36e','#ff3d5a','rays','team',[0,1,2],'none',0],['NIGHT SHIFT','#1a1f4a','#ff3d9a','city','team',[3,4,5],'none',0],
+  ['DRAGON COIL','#4a0f0f','#ff7a1f','void','pow',[],'fire',0],['SEAL OF NINE','#3a1f6a','#ff7ad1','void','pow',[],'circle',0],
+  ['BURNING SOUL','#ff7a1f','#ffe14d','speed','bust',[6],'aura',1,'yell'],['THUNDER EYES','#2a3048','#ffe14d','storm','bust',[7],'bolt',1,'yell'],['PETAL DREAM','#ffc2e2','#ff5a8a','sakura','bust',[8],'petals',1,''],['RAIN CHECK','#2a3048','#6b7a9a','storm','bust',[9],'rain',1,''],
+  ['STAR CHILD','#0c1030','#3a4a9a','night','bust',[10],'stars',1,''],['DARK MATTER','#07040f','#ff3d9a','void','bust',[11],'hole',1,''],['OVERDRIVE','#fff','#ff3d5a','speed','bust',[12],'bolt',1,'yell'],['SPIRAL HAND','#1a2a4a','#7fdcff','void','bust',[13],'orb',1,''],
+  ['COMET NIGHT','#0c1030','#3a4a9a','night','back',[14],'meteor',1],['NEON CITY','#1a1f4a','#ff3d9a','city','back',[15],'rain',1],['OCEAN ROAD','#1a5fa8','#7fdcff','sea','back',[16],'none',1],['SNOW PEAK','#5d8ad8','#bfeeff','mount','back',[17],'stars',1],['RISING DRAGON','#0f3a2a','#4fc46a','void','back',[18],'fire',1],
+  ['BEAM STRUGGLE','#ffb020','#ffe9a8','rays','vs',[0,1],'struggle',1],['SPARK WAR','#ff3d5a','#3fa9ff','tone','vs',[19,20],'bolt',1],['FINAL ROUND','#ff3d5a','#ffe14d','speed','vs',[21,22],'shock',1],
+  ['FLAME RUSH','#4a0f0f','#ff7a1f','speed','act',[23],'fire',1,'punch'],['BLADE STORM','#1a0f33','#ff7ad1','night','act',[24],'slash',1,'slash'],['MEGA CANNON','#3fa9ff','#fff','speed','act',[2],'beam',1,'beam'],['POWER SURGE','#ff7a1f','#ffe14d','rays','act',[3],'aura',1,'charge'],['SHADOW RUN','#2a1f45','#8a3fb8','tone','act',[4],'clones',1,'dash'],
+  ['SQUAD GOALS','#3fa9ff','#bfeeff','sky','team',[5,6,7],'stars',1],['FESTIVAL NIGHT','#1a1f4a','#ffe14d','city','team',[8,9,10],'stars',1],
+  ['EVENT HORIZON','#07040f','#8a3fb8','void','pow',[],'hole',1],['GOD STORM','#2f7a5f','#c8f7a8','sky','pow',[],'tornado',1]];
+ const LIST=()=>V2()?BN2:BN;
  const hs=i=>{const v=Math.sin(i*12.9898)*43758.5453;return v-Math.floor(v)};
  const al=(c,a)=>{const n=parseInt(c.length===4?c[1]+c[1]+c[2]+c[2]+c[3]+c[3]:c.slice(1),16);return'rgba('+(n>>16&255)+','+(n>>8&255)+','+(n&255)+','+a+')'};
  const POSE=()=>({stand:IDLE,guard:GUARD,punch:L1B,kick:L3B,dash:DASH,jump:JUMP,charge:CHG,cast:CAST,beam:CAST2,win:WIN,raise:RAISE,kneel:KNEEL,sit:KNEEL,slash:L4B,fall:FALL});
@@ -1208,7 +1228,28 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
   clones:()=>{},none:()=>{}};
  const FRONT={aura:0};
  const fig=(c,pose,px,gy,sc,d,T,alp,sil)=>{g.save();g.translate(px,gy);g.scale(sc*d*(c.sc||1),sc*(c.sc||1));if(alp!=null)g.globalAlpha=alp;try{drawChar(c,pose,{t:T,sway:.15,ground:true,sil:sil})}catch(e){}g.restore()};
- const draw=(id,x,y,w,h)=>{const B=BN[((id|0)%BN.length+BN.length)%BN.length],an=!!B[7],T=an?G.t:1.3+(id%7)*.37;g.save();try{g.beginPath();g.rect(x,y,w,h);g.clip();const gr=g.createLinearGradient(x,y,x,y+h);gr.addColorStop(0,B[1]);gr.addColorStop(1,B[2]);g.fillStyle=gr;g.fillRect(x,y,w,h);
+ const AMB={bolt:1,petals:1,rain:1,stars:1,meteor:1,none:1,clones:1};
+ const front=(c,px,fy,k,T,ex,win)=>{g.save();g.translate(px,fy);g.scale(k*(c.sc||1),k*(c.sc||1));try{drawFrontChar(c,{t:T,expr:ex||'',win:!!win})}catch(e){}g.restore()};
+ const draw2=(id,x,y,w,h)=>{const B=BN2[((id|0)%BN2.length+BN2.length)%BN2.length],an=!!B[7],T=an?G.t:1.3+(id%7)*.37,comp=B[4],fs=B[5].map(i=>CH[i%CH.length]);g.save();try{g.beginPath();g.rect(x,y,w,h);g.clip();const gr=g.createLinearGradient(x,y,x,y+h);gr.addColorStop(0,B[1]);gr.addColorStop(1,B[2]);g.fillStyle=gr;g.fillRect(x,y,w,h);
+   (BG[B[3]]||BG.sky)(x,y,w,h,B,T,an);const wide=w>h*1.3,R={x,y,w,h},pw=PW[B[6]]||PW.none,bob=an?Math.sin(T*2.2)*h*.012:0,FBx=[B[0],B[1],B[2],B[3],comp==='pow'?-1:0,comp==='act'?B[8]:'',B[6],B[7],comp==='vs'?1:null];
+   if(comp==='bust'||comp==='back'){const left=id%2===0,px=x+w*(wide?(left?.27:.73):.5),ox=x+w*(wide?(left?.7:.3):.5),u=h*.3,c=fs[0];
+     if(B[6]==='aura')PW.aura(R,{cx:px,x:px,y:y+h*.5},h*.42,y+h*1.02,FBx,T);else if(AMB[B[6]])pw(R,{cx:ox,x:ox,y:y+h*.45},u,y+h*.95,FBx,T);else pw(R,{cx:ox-u*.4,x:ox-u*.25,y:y+h*.48},u,y+h*.95,[B[0],B[1],B[2],B[3],-1,'',B[6],B[7],null],T);
+     g.fillStyle='rgba(10,4,24,.22)';g.beginPath();g.ellipse(px,y+h*1.02,h*.7,h*.2,0,0,TAU);g.fill();
+     if(comp==='bust')front(c,px,y+h*1.66+bob,h*1.5/160,T,an&&B[8]==='yell'?(Math.sin(T*9)>0?'yell':'talk'):B[8],false);else{g.save();g.translate(px,y+h*1.58+bob);const k=h*1.45/160*(c.sc||1);g.scale(k,k);try{(window.CBACK||(()=>{}))(c,{t:T})}catch(e){}g.restore()}}
+   else if(comp==='vs'){const u=h*.3,m=x+w*.5;g.save();g.beginPath();g.moveTo(m+h*.18,y);g.lineTo(x+w,y);g.lineTo(x+w,y+h);g.lineTo(m-h*.18,y+h);g.closePath();g.fillStyle=al(B[2],.55);g.fill();g.restore();
+     const k=h*1.45/125,P=POSE(),ps=(B[6]==='struggle'?P.beam:P.guard).slice();if(an){ps[0]+=Math.sin(T*3)*1.5;ps[2]+=Math.sin(T*3)*3}
+     if(B[6]==='struggle'){fig(fs[0],ps,x+w*.14,y+h*.96,h*.8/125,1,T);fig(fs[1],ps,x+w*.86,y+h*.96,h*.8/125,-1,T+.4);PW.struggle(R,{cx:x+w*.14,x:x+w*.14+h*.24,y:y+h*.96-h*.52},h*.26,y+h*.96,FBx,T)}
+     else{fig(fs[0],ps,x+w*.2,y+h*1.5+bob,k,1,T);fig(fs[1],ps,x+w*.8,y+h*1.5-bob,k,-1,T+.4);if(B[6]==='bolt'){const sd=an?Math.floor(T*11):4;zig(m+h*.18,y-4,m-h*.18,y+h+4,h*.3,sd,al('#ffffff',.5),h*.09);zig(m+h*.18,y-4,m-h*.18,y+h+4,h*.3,sd,'#fff',h*.035)}else if(B[6]==='shock')PW.shock(R,{cx:m,x:m-u*.2,y:y+h*.5},u,y+h*.95,FBx,T);
+      else{g.strokeStyle='#fff';g.lineWidth=h*.03;g.beginPath();g.moveTo(m+h*.18,y);g.lineTo(m-h*.18,y+h);g.stroke()}}}
+   else if(comp==='act'){const c=fs[0],P=POSE(),sc=Math.min(h*.86,w*.7)/125,u=sc*40,air=B[8]==='jump',gy=y+h*.95,cx=x+w*(wide?.3:.4),f={cx,x:cx+u*.9,y:gy-u*2.05};let pose=(P[B[8]]||IDLE).slice();
+     if(an){if(B[8]==='charge'){pose[0]+=Math.sin(T*20)*.8;pose[11]=Math.sin(T*20)*.6}else if(B[8]==='dash'){const q=Math.sin(T*9);pose[6]+=q*30;pose[8]-=q*30;pose[2]+=q*20}else if(B[8]==='punch'||B[8]==='kick'||B[8]==='slash'){const q0=(T*1.4)%1,q=q0<.25?q0/.25:1,A=B[8]==='punch'?L1A:B[8]==='kick'?L3A:L4A;pose=pose.map((v,i)=>A[i]+(v-A[i])*q)}}
+     g.save();g.strokeStyle='rgba(255,255,255,.55)';g.lineWidth=Math.max(1.5,h*.02);for(let i=0;i<6;i++){const ly=y+h*(.25+i*.11),q=an?((T*1.5+hs(i))%1):hs(i+3);g.beginPath();g.moveTo(x+w*(q*.25),ly);g.lineTo(x+w*(q*.25)+w*.14,ly);g.stroke()}g.restore();
+     const bk=B[6]==='aura'||B[6]==='slash';if(bk)pw(R,f,u,gy,FBx,T);g.fillStyle='rgba(10,4,24,.3)';g.beginPath();g.ellipse(cx,gy,u*.9,u*.16,0,0,TAU);g.fill();
+     if(B[6]==='clones')for(let q=3;q>0;q--)fig(c,pose,cx-q*u*(.9+(an?.25*Math.sin(T*6+q):0)),gy,sc,1,T-q*.1,.6-q*.14,q%2?B[2]:'#ffffff');fig(c,pose,cx,gy,sc,1,T);if(!bk)pw(R,f,u,gy,FBx,T)}
+   else if(comp==='team'){pw(R,{cx:x+w/2,x:x+w/2,y:y+h*.4},h*.3,y+h*.95,FBx,T);const k=h*1.02/160;[[.22,1,1],[.78,1,2],[.5,1.16,0]].forEach(q=>{const c=fs[q[2]];if(c)front(c,x+w*q[0],y+h*(q[1]>1?1.2:1.16)+(an?Math.sin(T*2.2+q[2]*1.3)*h*.012:0),k*q[1],T+q[2],'',q[2]===0)})}
+   else{const u=h*.34;pw(R,{cx:x+w/2,x:x+w/2,y:y+h*.5},u,y+h*.95,[B[0],B[1],B[2],B[3],-1,'',B[6],B[7],null],T)}
+  }catch(e){}g.restore();return true};
+ const draw=(id,x,y,w,h)=>{if(V2())return draw2(id,x,y,w,h);const B=BN[((id|0)%BN.length+BN.length)%BN.length],an=!!B[7],T=an?G.t:1.3+(id%7)*.37;g.save();try{g.beginPath();g.rect(x,y,w,h);g.clip();const gr=g.createLinearGradient(x,y,x,y+h);gr.addColorStop(0,B[1]);gr.addColorStop(1,B[2]);g.fillStyle=gr;g.fillRect(x,y,w,h);
    (BG[B[3]]||BG.sky)(x,y,w,h,B,T,an);const wide=w>h*1.5,two=B[8]!=null,sc=Math.min(h*.62,w*(B[6]==='struggle'?.34:.8))/125,u=sc*40,air=B[5]==='jump'||B[5]==='fall',gy=y+h*(air?.66:.93),cx=B[4]<0?x+w*.5:x+w*(B[6]==='struggle'?.17:two?.3:wide?.3:.4),R={x,y,w,h},f={cx,x:cx+u*.9,y:gy-u*2.05};
    const c=B[4]>=0?CH[B[4]%CH.length]:null,P=POSE();let pose=c?(P[B[5]]||IDLE).slice():null;
    if(c&&an){const s=Math.sin(T*3.2);if(B[5]==='stand'||B[5]==='sit'||B[5]==='guard'||B[5]==='win'){pose[0]+=s*1.5;pose[2]+=s*3;pose[3]-=s*4}else if(B[5]==='charge'){pose[0]+=Math.sin(T*20)*.8;pose[11]=Math.sin(T*20)*.6}else if(B[5]==='dash'){const k=Math.sin(T*9);pose[6]+=k*30;pose[8]-=k*30;pose[2]+=k*20}else if(B[5]==='punch'||B[5]==='kick'||B[5]==='slash'){const k=(T*1.4)%1,q=k<.25?k/.25:1;const A=B[5]==='punch'?L1A:B[5]==='kick'?L3A:L4A;pose=pose.map((v,i)=>A[i]+(v-A[i])*q)}else if(B[5]==='jump'||B[5]==='fall'){pose[11]=Math.sin(T*2.4)*8}else{pose[0]+=s}}
@@ -1218,10 +1259,61 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
    if(!(B[6]==='aura'||B[6]==='circle'||B[6]==='tornado'||B[6]==='ice'||B[6]==='hole'||B[6]==='meteor'||B[6]==='slash')){if(two&&B[6]==='beam'){const m=x+w*.5;g.save();g.beginPath();g.rect(x,y,m-x,h);g.clip();pw(R,f,u,gy,B,T);g.restore();g.save();g.translate(2*m,0);g.scale(-1,1);g.beginPath();g.rect(x,y,m-x,h);g.clip();pw(R,f,u,gy,[B[0],B[2],B[1]].concat(B.slice(3)),T);g.restore();PW.shock(R,{cx:m,x:m-u*.26,y:f.y},u*1.3,gy,B,T)}else pw(R,f,u,gy,B,T)}
    }catch(e){}g.restore();return true};
  window.COMBO_BAN=function(id,x,y,w,h){if(!ON())return false;return draw(id,x,y,w,h)};
- window.COMBO_BAN_NAME=id=>ON()?(BN[((id|0)%BN.length+BN.length)%BN.length][0]):null;
+ window.COMBO_BAN_NAME=id=>ON()?(LIST()[((id|0)%BN.length+BN.length)%BN.length][0]):null;
  const ol0=ordList;let OC2=null;ordList=function(kind){if(kind!=='ban'||!ON())return ol0(kind);const own=SV.banners||[],key=own.length+':'+own.join(',');if(OC2&&OC2.key===key)return OC2;const S2=new Set(own),has=i=>S2.has(i),l=BN.map((b,i)=>i);l.sort((a,b)=>(has(b)?1:0)-(has(a)?1:0)||a-b);return OC2={key,l,has}};
- const sp0=SCR.profile;if(sp0)SCR.profile=function(){if(!ON())return sp0();const t0=txt;txt=function(s){if(typeof s==='string'){if(s.indexOf('Banner: ')===0)arguments[0]='Banner: '+BN[(SV.banner|0)%BN.length][0]+s.slice(s.indexOf('   ·   '));else if(s.indexOf('Banners: ')===0)arguments[0]='Banners: '+SV.banners.length+' / '+BN.length+' (GOLD tab in the gacha)'}return t0.apply(this,arguments)};const np2=Math.max(1,Math.ceil(BN.length/30)),pg0=pager;G.pg3=clamp(G.pg3|0,0,np2-1);pager=function(x,y,key,np){return pg0(x,y,key,key==='pg3'?np2:np)};try{sp0()}finally{txt=t0;pager=pg0}if(G.note&&typeof G.note.t==='string'&&G.note.t.indexOf(' banner drops from summons')>0)G.note.t='Get this banner in the GOLD tab of the gacha'};
+ const sp0=SCR.profile;if(sp0)SCR.profile=function(){if(!ON())return sp0();const t0=txt;txt=function(s){if(typeof s==='string'){if(s.indexOf('Banner: ')===0)arguments[0]='Banner: '+LIST()[(SV.banner|0)%BN.length][0]+s.slice(s.indexOf('   ·   '));else if(s.indexOf('Banners: ')===0)arguments[0]='Banners: '+SV.banners.length+' / '+BN.length+' (GOLD tab in the gacha)'}return t0.apply(this,arguments)};const np2=Math.max(1,Math.ceil(BN.length/30)),pg0=pager;G.pg3=clamp(G.pg3|0,0,np2-1);pager=function(x,y,key,np){return pg0(x,y,key,key==='pg3'?np2:np)};try{sp0()}finally{txt=t0;pager=pg0}if(G.note&&typeof G.note.t==='string'&&G.note.t.indexOf(' banner drops from summons')>0)G.note.t='Get this banner in the GOLD tab of the gacha'};
  const sync=()=>{try{const on=ON();if(!window.LIVE_READY)return;if(on&&!SV.bnr){const src=SV.cos0||SV;SV.bn0={banners:(src.banners||[0]).slice(),banner:src.banner|0};if(SV.cos0){SV.cos0.banners=[0];SV.cos0.banner=0}SV.banners=[0];SV.banner=0;SV.bnr=1;save()}
    else if(!on&&SV.bnr){const b=SV.bn0||{banners:[0,1,2],banner:0};if(SV.cosr&&SV.cos0){SV.cos0.banners=b.banners;SV.cos0.banner=b.banner;SV.banners=[0,1,2];SV.banner=0}else{SV.banners=b.banners;SV.banner=b.banner}delete SV.bnr;delete SV.bn0;save()}}catch(e){}};
  const un0=update;let tn=0;update=function(rdt){un0(rdt);tn+=rdt;if(tn>.5){tn=0;sync()}}}
+/* bordpage (own flag, border50 was already released): the ICON BORDERS list in the profile shows 30 per page with its own page counter, so all 50 fit, and its texts say where borders come from now. */
+{const d0=drawBorders;drawBorders=function(gx){if(!F().bordpage)return d0(gx);const cols=10,per=30,ts=Math.min(46,(W-gx-14-9*(cols-1))/cols),own=new Set(SV.borders),np=Math.max(1,Math.ceil(BD.length/per));G.pgb=clamp(G.pgb|0,0,np-1);
+  txt('ICON BORDER',gx,68,16,'#ffe14d',INK,'left');txt(SV.borders.length+' / '+BD.length+' owned  ·  get them in the GOLD tab of the gacha',W-14,68,12,'#e6dcff',null,'right',FU);
+  for(let k=0;k<per;k++){const i=G.pgb*per+k,B=BD[i];if(!B)break;const x=gx+4+(k%cols)*(ts+9),y=92+(k/cols|0)*(ts+34),ow=own.has(i),foc=hit(x-4,y-8,ts+8,ts+30,()=>{if(ow){SV.border=i;save();netHello()}else G.note={t:'Get the '+B[0]+' border in the GOLD tab of the gacha',T:2.4}});
+   g.save();g.globalAlpha=ow?1:.3;drawIcon(CH[SV.icon]||CH[0],x,y,ts,i,1,ow?null:'#05030c');g.restore();txt(B[0],x+ts/2,y+ts+16,Math.min(10,ts*1.5/B[0].length+3),SV.border===i?'#ffe14d':foc?'#fff':'#e6dcff',INK,'center',FU,2.5);if(SV.border===i||foc){rr(x-4,y-8,ts+8,ts+30,6);g.strokeStyle=foc?'#ffe14d':'#fff';g.lineWidth=1.5;g.stroke()}}
+  const py=92+3*(ts+34)+2;txt('borders',gx+(W-gx-14)/2-108,py+16,11,'#e6dcff',null,'right',FU);pager(gx+(W-gx-14)/2-78,py,'pgb',np)}}
+/* maintenance (Dev Studio switch, see live.js): while window.COMBO_MAINT is set, everyone but the owner is sent from the lobby back to the start screen with a SERVER UNDER MAINTENANCE box,
+   and after the connecting step (or right away without it) the start screen shows the same box in place of letting them in. The state is fetched again each time start is tapped.
+   Only someone signed in to the Dev Studio (the owner) still gets in. */
+{const own=()=>{try{return!!(window.COMBO_LIVE&&window.COMBO_LIVE.owner)}catch(e){return false}},MT=()=>!!window.COMBO_MAINT&&!own();let box=0;
+ const gm0=goto;goto=function(m){if(m==='menu'&&G.mode==='title'){if(!G.cnn){try{if(window.COMBO_MCHK)window.COMBO_MCHK()}catch(e){}}if(MT()&&(G.cnn||!F().conn)){box=performance.now();try{sfx('ui')}catch(e){}return}}return gm0(m)};
+ /* matchmaking is off for everyone while maintenance is on, the owner too, and no bot is matched either: a search is never started and a running search is stopped */
+ const stopQ=()=>{try{netClose()}catch(e){}G.net=null;G.note={t:'SERVER UNDER MAINTENANCE. Matchmaking is off.',T:3.2};if(G.mode==='online')gm0('menu')};
+ const nq0=netQueue;netQueue=function(type){if(window.COMBO_MAINT){stopQ();return}return nq0.apply(this,arguments)};
+ const um0=update;update=function(rdt){um0(rdt);if(window.COMBO_MAINT&&G.net&&G.net.st==='search')stopQ();if(MT()&&(G.mode==='menu'||G.mode==='news')){box=performance.now();G.set2=false;gm0('title')}};
+ const tm0=SCR.title;SCR.title=function(){tm0();if(!box||G.mode!=='title')return;const e=performance.now()-box;if(e>9000){box=0;return}g.setTransform(S*dpr,0,0,S*dpr,0,0);const w=Math.min(480,W-40),h=64,x=(W-w)/2,y=H*.34;g.save();g.globalAlpha=clamp(e/250,0,1)*clamp((9000-e)/500,0,1);
+  rr(x,y,w,h,14);g.fillStyle='rgba(16,8,34,.94)';g.fill();g.strokeStyle='#ff5a6e';g.lineWidth=3;g.stroke();txt('SERVER UNDER MAINTENANCE',W/2,y+33,Math.min(26,w*.058),'#ffe14d',INK,'center',FB,6);g.restore()}}
+/* drops (asked for by Trey, 2026-11-21): the exchange shop, the GOLD tab and gold (yellow) tickets are deleted.
+   - Winning a match in any mode (not training) has a 1 in 2 chance of EXP items (SMALL EXP x5 or BIG EXP x1; amounts picked by Claude).
+   - Winning a Boss Raid or a Ranked match has a 1 in 4 chance of one profile banner or icon border the player does not own yet. Only EXP can repeat.
+   - Gold tickets: the count is set to 0 (the old count is kept in SV.ytxb and comes back if the update is pulled back), nothing pays them, and they are taken out of the top bar and the texts. */
+{const ON=()=>!!F().drops;
+ const needB=()=>{const hb=new Set(SV.banners);return(window.COMBO_BAN_NAME&&window.COMBO_BAN_NAME(0)?window.COMBO_BN50.map((q,i)=>i):pools()[1]).filter(i=>!hb.has(i))},needD=()=>BD.map((q,i)=>i).filter(i=>!SV.borders.includes(i));
+ const roll=(win,type)=>{const out=[];if(!win||type==='training')return out;if(Math.random()<.5){const big=Math.random()<.5,n=big?1:5;SV.items=SV.items||{};SV.items[big?'b':'s']=(SV.items[big?'b':'s']|0)+n;out.push({kind:'exp',id:big?'b':'s',n})}
+   if((type==='raid'||type==='ranked')&&Math.random()<.25){const b=needB(),d=needD(),ks=[];if(b.length)ks.push('banner');if(d.length)ks.push('border');if(ks.length){const k=ks[Math.floor(Math.random()*ks.length)],p=k==='banner'?b:d,id=p[Math.floor(Math.random()*p.length)];(k==='banner'?SV.banners:SV.borders).push(id);out.push({kind:k,id})}}return out};
+ window.COMBO_DROPROLL=roll;
+ const fi0=finish;finish=function(win){const r=fi0.apply(this,arguments);try{if(ON()&&G.res){if(G.res.yt){SV.ytx=Math.max(0,(SV.ytx||0)-G.res.yt);G.res.yt=0}G.res.drops=roll(!!G.res.win,G.rules&&G.rules.type);save()}}catch(e){}return r};
+ const tile=(it,x,y,sz)=>{if(it.kind==='exp'){const big=it.id==='b';rr(x,y,sz,sz,sz*.16);g.fillStyle=big?'#8a3fb8':'#2f6fb8';g.fill();g.strokeStyle='#fff';g.lineWidth=2;g.stroke();txt('EXP',x+sz/2,y+sz*.4,sz*.3,'#fff',INK,'center',FB,3);txt('×'+it.n,x+sz/2,y+sz*.74,sz*.26,'#ffe14d',INK,'center',FB,3);return(big?'BIG':'SMALL')+' EXP ×'+it.n}
+   if(it.kind==='banner'){g.save();rr(x,y,sz,sz,sz*.16);g.clip();banBG(it.id,x,y,sz,sz);g.restore();rr(x,y,sz,sz,sz*.16);g.strokeStyle='#fff';g.lineWidth=2;g.stroke();return'NEW BANNER: '+((window.COMBO_BAN_NAME&&window.COMBO_BAN_NAME(it.id))||String((CH[it.id]||CH[0]).wn||'').toUpperCase())}
+   drawIcon(CH[SV.icon|0]||CH[0],x,y,sz,it.id,1);return'NEW BORDER: '+(BD[it.id]||BD[0])[0]};
+ const dr0=drawResult;drawResult=function(){dr0();try{const D=ON()&&G.res&&G.res.drops;if(!D||!D.length)return;g.setTransform(S*dpr,0,0,S*dpr,0,0);const sz=34,y=H-sz-8;g.font='700 13px '+FU;const ws=D.map(it=>sz+10+g.measureText(it.kind==='exp'?'SMALL EXP ×10':'NEW BANNER: XXXXXXXXXXXXXX').width),tot=ws.reduce((a,b)=>a+b,0)+64;let x=(W-tot)/2;
+   rr(x-12,y-6,tot+24,sz+12,12);g.fillStyle='rgba(10,4,24,.78)';g.fill();g.strokeStyle='#ffe14d';g.lineWidth=2;g.stroke();txt('DROPS',x+24,y+sz/2+1,15,'#ffe14d',INK,'center',FB,4);x+=64;D.forEach((it,i)=>{const nm=tile(it,x,y,sz);txt(nm,x+sz+8,y+sz/2+1,13,'#fff',INK,'left',FU,3);x+=ws[i]})}catch(e){}};
+ /* gold tickets out of the top bar: the ticket pill is the first pill drawn after the NEWS label; it is drawn narrower and the red ticket part moves right */
+ const ge0=gems;gems=function(){if(!ON())return ge0();const r0=rr,ti0=tixIcon,t0=txt;let st=0,d=0;
+   txt=function(s){if(s==='NEWS'&&st===0)st=1;else if(st===3){st=4;return}else if(st===2&&d&&arguments[6]==='left')arguments[1]+=d;return t0.apply(this,arguments)};
+   rr=function(x,y,w,h,rad){if(st===1&&h===34&&rad===17){st=2;d=g.measureText(fmtG(SV.ytx||0)).width+30;return r0(x+d,y,w-d,h,rad)}return r0.apply(this,arguments)};
+   tixIcon=function(x,y,k,col){if(st>=2&&col==='#ffb020'){st=3;return}if(st===2)return ti0(x+d,y,k,col);return ti0.apply(this,arguments)};
+   try{const tx=ge0();return typeof tx==='number'?tx+d:tx}finally{rr=r0;tixIcon=ti0;txt=t0}};
+ /* texts that mention gold tickets, the exchange or the gold tab */
+ const fix=s=>{if(s.indexOf('ellow')<0&&s.indexOf('GOLD tab')<0&&s.indexOf('YELLOW')<0)return s;return s.replace(' + 1 yellow ticket','').replace('Win = 5 red + 5 yellow tickets + 300 gems.','Win = 5 red tickets + 300 gems.').replace(' Yellow tickets are for the ticket exchange in GACHA.','').replace(' and 1,000,000,000 yellow tickets for the exchange shop','')
+   .replace('(GOLD tab in the gacha)','(win Boss Raids and Ranked matches)').replace('get them in the GOLD tab of the gacha','win Boss Raids and Ranked matches to get them').replace(' in the GOLD tab of the gacha',' by winning Boss Raids and Ranked matches').replace(/\+[\d,]+ yellow tickets?\s*·\s*/,'')};
+ const tx0=txt;txt=function(s){if(typeof s==='string'&&ON())arguments[0]=fix(s);return tx0.apply(this,arguments)};
+ const bt0=button;button=function(x,y,w,h,l,col,fn,size,desc){if(ON()&&typeof desc==='string')arguments[8]=fix(desc);return bt0.apply(this,arguments)};
+ const wr0=wrap;wrap=function(s){if(typeof s==='string'&&ON())arguments[0]=fix(s);return wr0.apply(this,arguments)};
+ /* gacha: no EXCHANGE / GOLD tab */
+ const gg0=SCR.gacha;if(gg0)SCR.gacha=function(){if(!ON())return gg0();if(G.gtab===2)G.gtab=0;G.csr=null;const b0=button;button=function(x,y,w,h,l){if(l==='EXCHANGE'||(l==='GOLD'&&h===26))return false;return b0.apply(this,arguments)};try{gg0()}finally{button=b0}};
+ /* challenges: no gold ticket reward shown */
+ const ch0=SCR.chal;if(ch0)SCR.chal=function(){if(!ON())return ch0();const ti0=tixIcon,t0=txt;let sk=false;tixIcon=function(x,y,k,col){if(col==='#ffb020'){sk=true;return}return ti0.apply(this,arguments)};txt=function(s){if(sk){sk=false;if(typeof s==='string'&&/^x\d+$/.test(s))return}return t0.apply(this,arguments)};try{ch0()}finally{tixIcon=ti0;txt=t0}};
+ const sm0=SCR.mail;if(sm0)SCR.mail=function(){if(!ON())return sm0();const hid=[];try{MAILS.forEach(m=>{if(m&&m.ytx){hid.push([m,m.ytx]);m.ytx=0}})}catch(e){}try{sm0()}finally{hid.forEach(q=>{q[0].ytx=q[1]})}};
+ const sync=()=>{try{if(!window.LIVE_READY)return;if(ON()){if(SV.ytxb==null){SV.ytxb=SV.ytx||0;SV.ytx=0;save()}else if(SV.ytx){SV.ytx=0;save()}if(G.note&&typeof G.note.t==='string')G.note.t=fix(G.note.t)}else if(SV.ytxb!=null){SV.ytx=(SV.ytx||0)+SV.ytxb;delete SV.ytxb;save()}}catch(e){}};
+ const ud0=update;let td=0;update=function(rdt){ud0(rdt);td+=rdt;if(td>.3){td=0;sync()}}}
 })();

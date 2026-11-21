@@ -2434,5 +2434,50 @@
   "game": {
    "flag": "banner50"
   }
+ },
+ {
+  "id": "update-banners-remake",
+  "type": "update",
+  "name": "Banners Remade",
+  "subtitle": "A new set of 50 anime banners",
+  "desc": "The 50 profile banners are remade. The new set has big close shots: a fighter up close, a fighter from behind looking at the view, two fighters face to face, a full move, a team of three, or a power alone. 25 are still and 25 are animated. The ones you own carry over by number.",
+  "status": "staged",
+  "created": 1795263382464,
+  "colors": [
+   "#3fa9ff"
+  ],
+  "game": {
+   "flag": "banner50b"
+  }
+ },
+ {
+  "id": "update-border-pages",
+  "type": "update",
+  "name": "Border Pages",
+  "subtitle": "All 50 icon borders fit in the list",
+  "desc": "The ICON BORDERS list in your profile now has pages with a page counter, 30 borders per page, so all 50 new borders can be seen and picked.",
+  "status": "staged",
+  "created": 1795263382465,
+  "colors": [
+   "#ff7ad1"
+  ],
+  "game": {
+   "flag": "bordpage"
+  }
+ },
+ {
+  "id": "update-match-drops",
+  "type": "update",
+  "name": "Match Drops",
+  "subtitle": "No gold tab, no exchange shop, no gold tickets",
+  "desc": "The GOLD tab, the exchange shop and gold tickets are gone. Winning a match in any mode has a 1 in 2 chance to drop EXP. Winning a Boss Raid or a Ranked match has a 1 in 4 chance to drop a profile banner or an icon border you do not own. You never get a repeat, only EXP can repeat.",
+  "status": "staged",
+  "created": 1795263382466,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "drops"
+  }
  }
 ]
