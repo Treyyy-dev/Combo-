@@ -1307,5 +1307,65 @@
   "game": {
    "flag": "jpstory"
   }
+ },
+ {
+  "id": "update-lb-level-rank",
+  "type": "update",
+  "name": "Leaderboard: Level and Rank",
+  "subtitle": "Every row shows level and rank",
+  "desc": "Every row on the leaderboard now also shows the player's level and their rank.",
+  "status": "staged",
+  "created": 1795227313562,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "lblvl"
+  }
+ },
+ {
+  "id": "update-profile-stats",
+  "type": "update",
+  "name": "Profile: Ranked Wins and Most Used Team",
+  "subtitle": "And other players can open your profile",
+  "desc": "Your profile shows your ranked wins and your most used team. Other players can open your profile from the friends screen and the end of an online match to see them, with each fighter's level and stars. Ranked wins and team use are counted from when this update is on.",
+  "status": "staged",
+  "created": 1795227313563,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "prof2"
+  }
+ },
+ {
+  "id": "update-match-end",
+  "type": "update",
+  "name": "Online Match End Screen",
+  "subtitle": "Both profiles, VS, add friend",
+  "desc": "The end of an online match shows your profile and your opponent's with VS between, VICTORY or DEFEAT, PLAY AGAIN and LEAVE. You can send your opponent a friend request, and it says if they are online or offline.",
+  "status": "staged",
+  "created": 1795227313564,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "endcard"
+  }
+ },
+ {
+  "id": "update-300-bots",
+  "type": "update",
+  "name": "300 Bots",
+  "subtitle": "Every bot has a name and a full profile",
+  "desc": "There are now 300 bots in total, each with its own name and profile. They are the bots you meet online and the bots on the leaderboard.",
+  "status": "staged",
+  "created": 1795227313565,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "bots300"
+  }
  }
 ]

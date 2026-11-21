@@ -175,7 +175,11 @@ function drop(c) {
 
 const int = (v, a, b) => Math.min(b, Math.max(a, Number.isFinite(+v) ? Math.floor(+v) : a));
 function cleanName(v) { return String(v == null ? '' : v).replace(/[^A-Za-z0-9_ \-]/g, '').trim().slice(0, 14); }
-function cleanProf(p, name) { p = p && typeof p === 'object' ? p : {}; return { name, icon: int(p.icon, 0, 8191), banner: int(p.banner, 0, 8191), lvl: int(p.lvl, 1, 999), rank: int(p.rank, 0, 9999), border: int(p.border, 0, 29) }; }
+function cleanProf(p, name) { p = p && typeof p === 'object' ? p : {}; const o = { name, icon: int(p.icon, 0, 8191), banner: int(p.banner, 0, 8191), lvl: int(p.lvl, 1, 999), rank: int(p.rank, 0, 9999), border: int(p.border, 0, 29) };
+  // extra profile facts (ranked wins, most used team as [fighter, level, stars]); only sent by games with the profile update on
+  if (p.rw != null) o.rw = int(p.rw, 0, 1000000);
+  if (Array.isArray(p.mt)) o.mt = p.mt.slice(0, 3).filter(q => Array.isArray(q)).map(q => [int(q[0], 0, 8191), int(q[1], 1, 200), int(q[2], 1, 14)]);
+  return o; }
 function cleanTeam(t) {
   const out = [];
   if (Array.isArray(t)) for (const v of t.slice(0, 3)) if (Number.isInteger(v) && v >= 0 && v < 8192) out.push(v);
