@@ -1922,5 +1922,20 @@
   "game": {
    "flag": "bg25"
   }
+ },
+ {
+  "id": "update-character-art",
+  "type": "update",
+  "name": "Character Artwork",
+  "subtitle": "Every fighter has their own art",
+  "desc": "Every fighter now has their own artwork, with their own pose and backdrop design. It shows on the lobby, the fighter detail screen, team cards and the summon reveal.",
+  "status": "staged",
+  "created": 1795240484818,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "art1"
+  }
  }
 ]

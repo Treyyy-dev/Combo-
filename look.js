@@ -756,4 +756,28 @@ let SCX=null,HCX=null;
    g.strokeStyle='rgba(255,255,255,.13)';g.lineWidth=1.2;g.beginPath();g.rect(0,y0,W,fh);g.clip();
    for(let i=-16;i<=16;i++){const wx=i*90-dr;g.beginPath();g.moveTo(W/2+wx*.3,y0);g.lineTo(W/2+wx*2.1,H);g.stroke()}
    const ph=(G.t*.22)%1;for(let j=0;j<8;j++){const d=(j+ph)/8,y=y0+fh*d*d;g.globalAlpha=.25+d*.75;g.beginPath();g.moveTo(0,y);g.lineTo(W,y);g.stroke()}g.restore()}catch(e){try{g.restore()}catch(x){}}}}
+/* art1: every fighter gets their own artwork on the lobby panel, the fighter detail screen, team cards and the summon reveal. It is drawn by the game from the fighter's name:
+   own pose (front, front with raised fist, from behind, or one of six action poses), tilt, zoom, expression and facing, and own backdrop design (rays, bands, rings, burst, speed lines or split)
+   in the fighter's colours over their world. A fighter the player does not own stays a dark shape as before. */
+{let ART=0;const A=()=>F().art1,SP=new Map();
+ const hs=n=>{let x=2166136261;for(let i=0;i<n.length;i++){x^=n.charCodeAt(i);x=Math.imul(x,16777619)}return x>>>0};
+ const spec=c=>{let q=SP.get(c.name);if(!q){const h=hs(String(c.name)),h2=hs(c.name+'#');q={bg:h%6,pk:(h>>>3)%8,sp:(h>>>6)%6,tilt:((h>>>9)%7-3)*.035,zoom:((h>>>3)%8<=3?.76:.9)+((h>>>12)%5)*.04,ex:['','smirk','yell','','smirk'][(h>>>15)%5],flip:(h>>>18)&1,dx:((h>>>19)%5-2)*5,rot:(h2%628)/100,seed:h2};SP.set(c.name,q)}return q};
+ const rnd=(s,i)=>{const v=Math.sin(s*.0001+i*12.9898)*43758.5453;return v-Math.floor(v)};
+ const back=(c,q,cx,cy,R)=>{g.save();const a=c.col2||'#fff',b=c.col||'#fff';
+  if(q.bg===0){g.translate(cx,cy);g.rotate(q.rot+G.t*.04);g.fillStyle=a;g.globalAlpha=.2;for(let k=0;k<12;k++){g.rotate(TAU/12);g.beginPath();g.moveTo(0,0);g.lineTo(-R*.14,-R*2.4);g.lineTo(R*.14,-R*2.4);g.fill()}}
+  else if(q.bg===1){g.translate(cx,cy);g.rotate(-.5+q.tilt*3);[[-.75,b,.3],[-.1,a,.26],[.5,b,.22]].forEach(v=>{g.globalAlpha=v[2];g.fillStyle=v[1];g.fillRect(-R*3,v[0]*R,R*6,R*.34)})}
+  else if(q.bg===2){g.globalAlpha=.16;g.fillStyle=a;g.beginPath();g.arc(cx,cy,R*.92,0,TAU);g.fill();g.strokeStyle=a;[[.92,5,.5],[1.22,2.5,.35],[1.5,1.5,.25]].forEach(v=>{g.globalAlpha=v[2];g.lineWidth=v[1];g.beginPath();g.arc(cx,cy,R*v[0],0,TAU);g.stroke()})}
+  else if(q.bg===3){g.translate(cx,cy);g.rotate(q.rot);g.globalAlpha=.26;g.fillStyle=a;g.beginPath();for(let k=0;k<20;k++){const r=k%2?R*.72:R*(1.25+rnd(q.seed,k)*.5),an=k*TAU/20;g.lineTo(Math.cos(an)*r,Math.sin(an)*r)}g.closePath();g.fill();g.globalAlpha=.3;g.fillStyle='#fff';g.beginPath();g.arc(0,0,R*.5,0,TAU);g.fill()}
+  else if(q.bg===4){g.strokeStyle='#fff';g.lineCap='round';for(let k=0;k<16;k++){const yy=cy-R*1.3+rnd(q.seed,k)*R*2.4,w=R*(.5+rnd(q.seed,k+40)*1.4),xx=cx-R*1.8+((rnd(q.seed,k+80)*R*3.6+G.t*R*.5*(q.flip?-1:1))%(R*3.6)+R*3.6)%(R*3.6);g.globalAlpha=.14+rnd(q.seed,k+9)*.22;g.lineWidth=1.5+rnd(q.seed,k+5)*3;g.beginPath();g.moveTo(xx,yy);g.lineTo(xx+w,yy);g.stroke()}}
+  else{g.translate(cx,cy);g.rotate(q.flip?.9:-.9);g.globalAlpha=.3;g.fillStyle=b;g.fillRect(-R*3,0,R*6,R*3);g.globalAlpha=.7;g.fillStyle=a;g.fillRect(-R*3,-R*.03,R*6,R*.06)}
+  g.restore();g.save();g.fillStyle=a;for(let k=0;k<14;k++){const px=cx+(rnd(q.seed,k+200)-.5)*R*2.6,py=cy+R*1.2-((rnd(q.seed,k+300)*R*2.6+G.t*R*(.05+rnd(q.seed,k+7)*.08))%(R*2.6));g.globalAlpha=.25+rnd(q.seed,k+400)*.45;g.beginPath();g.arc(px,py,R*(.012+rnd(q.seed,k+500)*.022),0,TAU);g.fill()}g.restore()};
+ const mc0=miniChar;miniChar=function(c,x,y,sc,o){if(!ART||!A()||!c||(o&&o.sil))return mc0(c,x,y,sc,o);const q=spec(c),k=sc*(c.sc||1)*q.zoom;let done=false;
+  try{back(c,q,x,y-78*sc,sc*100);g.fillStyle='rgba(10,0,30,.42)';g.beginPath();g.ellipse(x+q.dx*sc,y+3*sc,sc*38,sc*6,0,0,TAU);g.fill()}catch(e){try{g.restore()}catch(x2){}}
+  g.save();try{g.translate(x+q.dx*sc,y);g.rotate(q.tilt);const ex=o&&o.expr&&o.expr!=='blink'?o.expr:q.ex;
+   if(q.pk<=2){g.scale(k,k);drawFrontChar(c,{t:G.t,expr:ex,win:q.pk===2});done=true}
+   else if(q.pk===3&&window.CBACK){g.scale(k,k);window.CBACK(c,{t:G.t});done=true}
+   else{const P=[RAISE,L1B,L4A,HA,HB,WIN][q.sp]||IDLES[c.idle||0];g.scale(q.flip?-k:k,k);drawChar(c,P,{t:G.t,sway:.15,ground:true,expr:ex});done=true}}catch(e){}g.restore();
+  if(!done)return mc0(c,x,y,sc,o)};
+ const ctx=fn=>function(){ART++;try{return fn.apply(this,arguments)}finally{ART--}};
+ SCR.menu=ctx(SCR.menu);if(SCR.fdetail)SCR.fdetail=ctx(SCR.fdetail);teamCard=ctx(teamCard);drawReveal=ctx(drawReveal)}
 })();
