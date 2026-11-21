@@ -1157,5 +1157,20 @@
   "game": {
    "flag": "dbz"
   }
+ },
+ {
+  "id": "update-open-stance-full",
+  "type": "update",
+  "name": "Whole Body Faces the Screen",
+  "subtitle": "Hips, legs, feet and both arms too",
+  "desc": "The whole body is turned toward the screen, not just the chest: hips drawn from the front, legs set wide with kneecaps showing, feet pointing outward, and both arms in front of the body. The head still looks at the opponent.",
+  "status": "staged",
+  "created": 1795219706947,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "dbz2"
+  }
  }
 ]
