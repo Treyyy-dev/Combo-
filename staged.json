@@ -1382,5 +1382,80 @@
   "game": {
    "flag": "padd"
   }
+ },
+ {
+  "id": "update-lb-tap",
+  "type": "update",
+  "name": "Leaderboard: Tap to View Profile",
+  "subtitle": "Tap a player to open their profile",
+  "desc": "Tap any player on the leaderboard to open their profile.",
+  "status": "staged",
+  "created": 1795230884704,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "lbtap"
+  }
+ },
+ {
+  "id": "update-lb-borders",
+  "type": "update",
+  "name": "Leaderboard: Icon Borders",
+  "subtitle": "Icons show each player's border",
+  "desc": "Leaderboard icons now show each player's icon border. Bots use every kind of border.",
+  "status": "staged",
+  "created": 1795230884705,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "lbbord"
+  }
+ },
+ {
+  "id": "update-bot-search",
+  "type": "update",
+  "name": "Find More Players",
+  "subtitle": "More players show up in friend search",
+  "desc": "Friend search now finds more players. Send them a request and they may accept it or ignore it.",
+  "status": "staged",
+  "created": 1795230884706,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "botfind"
+  }
+ },
+ {
+  "id": "update-gacha-hold",
+  "type": "update",
+  "name": "Gacha: Hold for Stats",
+  "subtitle": "Hold a featured fighter to see their stats",
+  "desc": "In the gacha, hold a featured fighter to open their stats. The stats screen has a TEST button for a free practice match.",
+  "status": "staged",
+  "created": 1795230884707,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "gahold"
+  }
+ },
+ {
+  "id": "update-mail-pictures",
+  "type": "update",
+  "name": "Mailbox Pictures",
+  "subtitle": "Fighters, maps and banners show a picture",
+  "desc": "Mailbox news about a new fighter, map or banner now shows a picture of it.",
+  "status": "staged",
+  "created": 1795230884708,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "mailpic"
+  }
  }
 ]
