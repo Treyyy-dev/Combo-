@@ -1937,5 +1937,20 @@
   "game": {
    "flag": "art1"
   }
+ },
+ {
+  "id": "update-lobby-leader-bg",
+  "type": "update",
+  "name": "Team Leader Background",
+  "subtitle": "Lobby background is your first fighter",
+  "desc": "The lobby background is now the first fighter of your team and their world, instead of your profile banner. The fighter picture on the right side of the lobby is removed.",
+  "status": "staged",
+  "created": 1795240661201,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "lobbychar"
+  }
  }
 ]

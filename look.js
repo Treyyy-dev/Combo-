@@ -349,7 +349,9 @@ let SCX=null,HCX=null;
   g.globalAlpha=.55+.45*Math.sin(G.t*5);txt(lastDev==='touch'?'TAP TO START':'CLICK OR PRESS ANY BUTTON TO START',W/2,H*.93,24,'#fff',INK,'center',FB,7);g.globalAlpha=1;hit(0,0,W,H,()=>goto('menu'))}}
 /* ================= flag "lobbybg": the lobby background is the player's profile banner =================
    The main lobby and the Match, Offline and Online menus draw the world picture of the banner chosen in the profile, darkened so the buttons stay readable. */
-{const LOB={menu:1,match:1,offline:1,online:1},s0=scr;scr=function(){s0();if(!F().lobbybg||!LOB[G.mode])return;try{const c=CH[SV.banner|0];if(!c)return;g.save();worldBG(c,0,0,W,H);const gr=g.createLinearGradient(0,0,W,0);gr.addColorStop(0,'rgba(10,4,24,.72)');gr.addColorStop(1,'rgba(10,4,24,.4)');g.fillStyle=gr;g.fillRect(0,0,W,H);g.restore()}catch(e){try{g.restore()}catch(x){}}}}
+{const LOB={menu:1,match:1,offline:1,online:1},s0=scr;scr=function(){s0();const lc=F().lobbychar;if(!(F().lobbybg||lc)||!LOB[G.mode])return;try{const c=lc?CH[SV.team[0]]:CH[SV.banner|0];if(!c)return;g.save();worldBG(c,0,0,W,H);
+  /* lobbychar: the background is the first fighter of the player's team (their world, with the fighter standing large on the right) instead of the profile banner; the fighter picture panel on the right of the lobby is removed (see the last block of this file) */
+  if(lc){g.fillStyle='rgba(10,0,30,.4)';g.beginPath();g.ellipse(W*.72,H-14,H*.3,H*.035,0,0,TAU);g.fill();miniChar(c,W*.72,H-16,(H-70)/165,{anim:1,sway:.3})}const gr=g.createLinearGradient(0,0,W,0);gr.addColorStop(0,'rgba(10,4,24,.72)');gr.addColorStop(1,'rgba(10,4,24,.4)');g.fillStyle=gr;g.fillRect(0,0,W,H);g.restore()}catch(e){try{g.restore()}catch(x){}}}}
 /* ================= flag "studio": the Treyyverse studio intro plays before the start menu =================
    Ported from the "Treyyverse Studio Intro" page: 5 seconds on black, a four-hit combo by Kaito, Rin, Zero and Gou, then the TREYYVERSE logo with the first
    eight fighters lined up under it. Plays once each time the game is opened, then the start menu shows.
@@ -780,4 +782,12 @@ let SCX=null,HCX=null;
   if(!done)return mc0(c,x,y,sc,o)};
  const ctx=fn=>function(){ART++;try{return fn.apply(this,arguments)}finally{ART--}};
  SCR.menu=ctx(SCR.menu);if(SCR.fdetail)SCR.fdetail=ctx(SCR.fdetail);teamCard=ctx(teamCard);drawReveal=ctx(drawReveal)}
+/* lobbychar, part 2: remove the fighter picture panel on the right side of the lobby. The panel is drawn by drawMenu right after scr(): box, world picture, fighter, header strip and two labels.
+   While the flag is on those draws are skipped (canvas fill/stroke/fillRect are switched off from the end of scr() until the second label), so only the background fighter shows. */
+{let REQ=false,ARM=0;const N=function(){},disarm=()=>{if(ARM){ARM=0;try{delete g.fill;delete g.stroke;delete g.fillRect}catch(e){}}};
+ const sc0=scr;scr=function(){sc0();if(REQ){REQ=false;ARM=1;g.fill=N;g.stroke=N;g.fillRect=N}};
+ const wb0=worldBG;worldBG=function(){if(ARM===1){ARM=2;return}return wb0.apply(this,arguments)};
+ const mc1=miniChar;miniChar=function(){if(ARM===2){ARM=3;return}return mc1.apply(this,arguments)};
+ const tx1=txt;txt=function(){if(ARM>=3){ARM++;if(ARM>=5)disarm();return}if(ARM){disarm()}return tx1.apply(this,arguments)};
+ const m1=SCR.menu;SCR.menu=function(){REQ=!!F().lobbychar;try{return m1.apply(this,arguments)}finally{REQ=false;disarm()}}}
 })();
