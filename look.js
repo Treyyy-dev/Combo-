@@ -1408,7 +1408,7 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
    if(o.ground)gy=-Math.max(T2(J.lf[1])[1],T2(J.lb[1])[1]);
    const P3=(q,z)=>{const a=T2(q);return[a[0],-(a[1]+gy),z]},t=o.t||0,sw=(o.sway==null?.15:o.sway)+.12,bk=(c.sc>1.07||c.dm>1)?1.14:1,bare=!!c.bare;
    const hip=P3(J.hip,0),neck=P3(J.neck,0),shC=P3(J.sh,0),sp=nm(sb(neck,hip)),fw=nm(cr(sp,[0,0,1]));
-   const SW=15.6*bk,HW=7.6*bk;
+   /* boys' shoulders are a little wider than girls' (Trey) */const SW=(isFem(c)?15.6:17.4)*bk,HW=7.6*bk;
    /* body faces the player (Trey): in the side view the chest is turned toward the camera around the spine (the waist less, the hips least); the head still looks at the opponent. The arms and legs hang from the turned shoulders and hips. */
    const tw=view==='s'?.95:0,rt0=cr(fw,sp),rotv=a=>{const c=Math.cos(a),s2=Math.sin(a);return[ad(ml(fw,c),ml(rt0,s2)),ad(ml(rt0,c),ml(fw,-s2))]},FT=rotv(tw),FM=rotv(tw*.72),FH=rotv(tw*.45),fwT=FT[0],rtT=FT[1],fwM=FM[0],rtM=FM[1],fwH=FH[0],rtH=FH[1];
    const shF=ad(shC,ml(rtT,SW)),shB=ad(shC,ml(rtT,-SW)),elF=ad(P3(J.af[0],0),ml(rtT,SW+2)),haF=ad(P3(J.af[1],0),ml(rtT,SW)),elB=ad(P3(J.ab[0],0),ml(rtT,-SW-2)),haB=ad(P3(J.ab[1],0),ml(rtT,-SW)),hpF=ad(hip,ml(rtH,HW)),hpB=ad(hip,ml(rtH,-HW)),knF=ad(P3(J.lf[0],0),ml(rtH,HW+1.5)),ftF=ad(P3(J.lf[1],0),ml(rtH,HW+1.5)),knB=ad(P3(J.lb[0],0),ml(rtH,-HW-1.5)),ftB=ad(P3(J.lb[1],0),ml(rtH,-HW-1.5));
@@ -1429,8 +1429,10 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
    /* torso, belt, pelvis, neck */
    const mid=ml(ad(hip,shC),.5),tl=ln(sb(shC,hip));/* stronger build (Trey: make the body look stronger): wide chest over a narrower waist, chest muscles, shoulders, thicker arms and legs */
    tor(ad(mid,ml(sp,-4)),tl/2+5,8.4*bk,10.6*bk,top,FM);/* fit waist with abs: three rows of two */for(let r=0;r<3;r++)[3.1,-3.1].forEach(z=>ell3(ad(hip,ad(ml(sp,12.5+r*6.2),ad(ml(fwM,(7.9-r*.15)*bk),ml(rtM,z*bk)))),ml(fwM,2.5),ml(sp,2.8),ml(rtM,2.9*bk),top));
-   {const ab=(u,d,z)=>ad(hip,ad(ml(sp,u),ad(ml(fwM,d*bk),ml(rtM,z*bk)))),li=(A,B)=>cyl(A,B,.75,.75,topS,1,1);li(ab(10.5,10.5,0),ab(28.5,10.4,0));[15.6,21.8].forEach(u=>{li(ab(u,10.4,0),ab(u,9.4,5.6));li(ab(u,10.4,0),ab(u,9.4,-5.6))});[1,-1].forEach(k=>{const pc=(d,z)=>ad(shC,ad(ml(sp,-13.4),ad(ml(fwT,d*bk),ml(rtT,z*k*bk))));li(pc(11.6,.8),pc(11.9,6));li(pc(11.9,6),pc(9.6,11.5))});li(ad(shC,ad(ml(sp,-13),ml(fwT,11.3*bk))),ad(shC,ad(ml(sp,-3),ml(fwT,10.6*bk))))}
-   tor(ad(shC,ml(sp,-7)),13,11.4*bk,17*bk,top,FT);[6.6,-6.6].forEach(z=>ell3(ad(shC,ad(ml(sp,-7.5),ad(ml(fwT,7.4*bk),ml(rtT,z*bk)))),ml(fwT,4.6),ml(sp,6),ml(rtT,6.6*bk),top));tor(ad(neck,ml(sp,-3)),5,7.5*bk,11*bk,top,FT);tor(ad(hip,ml(sp,1)),8.5,9.4*bk,12.6*bk,pants,FH);tor(ad(hip,ml(sp,8)),2.6,10.3*bk,14.2*bk,c.col2,FH);
+   {const ab=(u,d,z)=>ad(hip,ad(ml(sp,u),ad(ml(fwM,d*bk),ml(rtM,z*bk)))),li=(A,B)=>cyl(A,B,.75,.75,topS,1,1);li(ab(10.5,10.5,0),ab(28.5,10.4,0));[15.6,21.8].forEach(u=>{li(ab(u,10.4,0),ab(u,9.4,5.6));li(ab(u,10.4,0),ab(u,9.4,-5.6))});[1,-1].forEach(k=>{const pd=fem?0:1.7,pw=fem?1:1.2,pc=(d,z)=>ad(shC,ad(ml(sp,-13.4-(fem?0:.8)),ad(ml(fwT,(d+pd)*bk),ml(rtT,z*pw*k*bk))));li(pc(11.6,.8),pc(11.9,6));li(pc(11.9,6),pc(9.6,11.5))});li(ad(shC,ad(ml(sp,-13),ml(fwT,(11.3+(fem?0:1.9))*bk))),ad(shC,ad(ml(sp,-3),ml(fwT,(10.6+(fem?0:1.6))*bk))))}
+   /* a man's chest for boys (Trey): wider and deeper rib cage, two broad squared chest muscles and a wide upper back; girls keep the chest they had */
+   if(fem){tor(ad(shC,ml(sp,-7)),13,11.4*bk,17*bk,top,FT);[6.6,-6.6].forEach(z=>ell3(ad(shC,ad(ml(sp,-7.5),ad(ml(fwT,7.4*bk),ml(rtT,z*bk)))),ml(fwT,4.6),ml(sp,6),ml(rtT,6.6*bk),top))}
+   else{tor(ad(shC,ml(sp,-7.5)),14,12.6*bk,19.4*bk,top,FT);[7.6,-7.6].forEach(z=>ell3(ad(shC,ad(ml(sp,-7.2),ad(ml(fwT,8.6*bk),ml(rtT,z*bk)))),ml(fwT,5),ml(sp,6.6),ml(rtT,8*bk),top));tor(ad(shC,ad(ml(sp,-5),ml(fwT,-3*bk))),9,10*bk,18.6*bk,top,FT)}tor(ad(neck,ml(sp,-3)),5,7.5*bk,11*bk,top,FT);tor(ad(hip,ml(sp,1)),8.5,9.4*bk,12.6*bk,pants,FH);tor(ad(hip,ml(sp,8)),2.6,10.3*bk,14.2*bk,c.col2,FH);
    ell3(ad(mid,ad(ml(sp,6),ml(fwM,7.6*bk))),ml(fwM,2.2),ml(sp,tl/2-3),ml(rtM,2.2),c.col);
    /* arms */
    /* hands with fingers (Trey: give them fingers): a palm, four fingers in two joints curled into a loose fist, and a thumb. Fist fighters wear the glove colour. */
