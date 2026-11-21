@@ -902,7 +902,7 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
    Smoke covers whoever was hit; the winner (both of them on a draw) gets the aura in the colour of the highest rarity pulled, and the rarity is shown.
    Voice: window.COMBO_DUELV(fighter name, line key) is called for each line; it plays nothing until clips exist. Rarity lines use a tier picked from the pulled rarity and lower. */
 {const ON=()=>!!F().sumduel,D2=()=>!!F().duel2;let PEND=null;
- /* duel2 (sumduel was already released): the face-off is one close shot, 3 s so the two lines do not overlap: Kenko and Neto stand near each other, side-on, looking at each other at the same time (Trey's correction; an earlier version cut to Neto facing the camera);
+ /* duel2 (sumduel was already released): the face-off is one over-the-shoulder shot like the cutscenes, 3 s so the two lines do not overlap: Kenko large in front with her back to us, Neto beyond her facing the camera (Trey's wording; two earlier versions were replaced);
     the ending uses the raised-hand pose of the old summon animation instead of the win animation; and the voice lines play (window.COMBO_DUELV in voice.js). */
  const sm0=summon;summon=function(k){if(!ON())return sm0(k);const n=window.COMBO_TITLE_CH||['KENKO','NETO'],ki=CH.findIndex(c=>c&&c.name===n[0]),ni=CH.findIndex(c=>c&&c.name===n[1]);if(ki<0||ni<0)return sm0(k);
    const o=['win','lose','draw'][Math.floor(Math.random()*3)],m=o==='win'?1.5:o==='lose'?.67:1,keep=TW.map(r=>r.slice());PEND={o,ki,ni};try{TW.forEach(r=>{for(let j=1;j<r.length;j++)r[j]=r[j]*m});return sm0(k)}finally{TW.forEach((r,a)=>{for(let j=0;j<r.length;j++)r[j]=keep[a][j]});PEND=null}};
@@ -919,8 +919,8 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
    if(M.o==='draw'){go(M,17);const mid=(K.x+N.x)/2;K.x=mid-38;N.x=mid+38;K.face=1;N.face=-1;K.state='pose';K.pz=L1B;N.state='pose';N.pz=L1B;spark(mid,-84,'#fff',true);shake(20);G.flash=.4;sfx('hit');say(M,K,'d'+tier(M));return}
    go(M,14);N.hp=M.o==='win'?1:N.mhp;N.inv=M.o==='lose'?9:0;K.inv=0;K.meter=100;faceO(K,N);say(M,K,'ult');try{startUlt(K,N)}catch(e){go(M,15);M.hitx=N.x;M.loser=N;M.winner=K}}
  const st0=stepSummon;stepSummon=function(rdt){const M=G.sm;if(!M||!M.duel)return st0(rdt);const K=M.K,N=M.N;M.t+=rdt;M.st+=rdt;const col=RC[M.rar];let c={x:(K.x+N.x)/2,y:-70,z:1.1,rot:0},kk=Math.min(1,rdt*6);
-   if(M.ph===10){still(K);still(N);K.face=1;N.face=-1;if(D2()){if(M.st<.1){K.x=-120;N.x=120;K.vx=N.vx=0;kk=1}if(M.st>.05&&!M.said.a){M.said.a=1;say(M,K,'face')}if(M.st>=1.9&&!M.said.b){M.said.b=1;say(M,N,'face')}M.front=null;
-      c={x:0,y:-102,z:lerp(1.75,1.95,M.st/3),rot:Math.sin(M.st*1.1)*.012};if(M.st>=3)go(M,11)}
+   if(M.ph===10){still(K);still(N);K.face=1;N.face=-1;if(D2()){if(M.st<.1)kk=1;K.hide=true;M.ots=K;M.front=N;if(M.st>.05&&!M.said.a){M.said.a=1;say(M,K,'face')}if(M.st>=1.9&&!M.said.b){M.said.b=1;say(M,N,'face')}
+      c={x:N.x-58,y:-104,z:lerp(2.1,2.3,M.st/3),rot:-.015};if(M.st>=3){K.hide=false;M.ots=null;M.front=null;go(M,11);kk=1}}
      else{if(M.st>.25&&!M.said.a){M.said.a=1;say(M,K,'face')}if(M.st>1.15&&!M.said.b){M.said.b=1;say(M,N,'face')}c={x:0,y:-74,z:lerp(1.02,1.16,M.st/2),rot:0};if(M.st>=2)go(M,11)}}
    else if(M.ph===11){K.inp.mx=1;N.inp.mx=-1;K.inp.guard=N.inp.guard=false;c.z=1.12;if(Math.abs(N.x-K.x)<130||M.st>2.2)go(M,12)}
    else if(M.ph===12){try{ai(K,N,rdt);ai(N,K,rdt)}catch(e){}K.hp=K.hpLag=K.mhp;N.hp=N.hpLag=N.mhp;K.meter=0;N.meter=0;const kinds=['wide','low','orbit','wide','front','pull'],kd=kinds[Math.floor(M.st/1.2)%kinds.length],k2=(M.st%1.2)/1.2;
@@ -943,7 +943,7 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
    cam.x=lerp(cam.x,c.x,kk);cam.y=lerp(cam.y,c.y,kk);cam.z=lerp(cam.z,c.z,kk);cam.rot=lerp(cam.rot,c.rot||0,kk);cam.ay=lerp(GY,H*.46,clamp(cam.z-1.1,0,1))};
  const da0=drawAura;drawAura=function(f,col,t){const M=G.sm;if(!M||!M.duel)return da0(f,col,t);M.aura.forEach(q=>da0(q,col,t))};
  const df9=drawFighter;drawFighter=function(f,sil){const M=G.sm;if(!M||!M.duel||M.front!==f||sil||G.mode!=='summon')return df9(f,sil);g.save();try{g.translate(f.x,f.y);const sc=f.sc||f.c.sc||1;g.scale(sc,sc);drawFrontChar(f.c,{t:f.at,expr:'',sway:f.sway})}catch(e){}g.restore()};
- const ui0=drawSummonUI;drawSummonUI=function(){const M=G.sm;if(!M||!M.duel)return ui0();G.ui=[];g.fillStyle='#05020c';g.fillRect(0,0,W,H*.08);g.fillRect(0,H-H*.08,W,H*.08);
+ const ui0=drawSummonUI;drawSummonUI=function(){const M=G.sm;if(!M||!M.duel)return ui0();G.ui=[];if(M.ots&&M.ph===10){try{drawBack(M.ots,clamp(M.st/3,0,1))}catch(e){}}g.fillStyle='#05020c';g.fillRect(0,0,W,H*.08);g.fillRect(0,H-H*.08,W,H*.08);
    if(M.ph===13&&M.set){const p=1+Math.sin(G.t*8)*.05,bw=Math.min(280,W*.5)*p,bh=66*p;button(W/2-bw/2,H*(H>W?.66:.7)-bh/2,bw,bh,'FINISH!','#d0282f',finish,40);G.focus=0}
    else if(M.ph>=10&&M.ph<=12)txt('SUMMONING'+'...'.slice(0,1+Math.floor(G.t*3)%3),W/2,H*.08+22,18,'#fff',INK,'center',FB,5);
    if(M.ph===3){const s=1+Math.max(0,.3-M.st)*5;g.save();g.translate(W/2,H*.26);g.scale(s,s);g.rotate(-.04);txt(RN[M.rar],0,0,Math.min(130,W*.2),RC[M.rar],'#fff','center',FB,18);txt(RN[M.rar],0,0,Math.min(130,W*.2),RC[M.rar],INK,'center',FB,9);g.restore()}
