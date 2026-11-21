@@ -2359,5 +2359,20 @@
   "game": {
    "flag": "newsnew"
   }
+ },
+ {
+  "id": "update-clash-shot",
+  "type": "update",
+  "name": "Clash Close-Up",
+  "subtitle": "Cutscene shot after a clash",
+  "desc": "After a clash in a match, the two fighters talk in a cutscene-style shot: your fighter stands with their back to you and the other fighter faces the camera. Then it is back to the battle.",
+  "status": "staged",
+  "created": 1795251338320,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "clashots"
+  }
  }
 ]

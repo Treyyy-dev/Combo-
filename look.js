@@ -1006,4 +1006,12 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
      const GT=8+((h>>>21)%6),gk=(t+3.1)%GT;if(gk<1.1){const e=Math.sin(gk/1.1*Math.PI),g2=Math.sin(gk/1.1*Math.PI*2),gv=(h>>>24)%4;
        if(gv===0){q[2]-=e*22;q[4]+=e*22;q[0]-=e*3}else if(gv===1){q[11]-=Math.abs(g2)*7;q[7]-=Math.abs(g2)*10;q[9]-=Math.abs(g2)*10}else if(gv===2){q[1]+=g2*16}else{q[2]+=e*58;q[3]-=e*36;q[1]-=e*4}}
      return q}}catch(e){}return p}}
+/* clashots: after the clash that follows a knockout in a match, the two lines are spoken in one over-the-shoulder shot like the cutscenes: the player's fighter large in front with their back to us,
+   the other fighter beyond them facing the camera. Whoever's line it is still speaks it (and their voice clip still plays). Then the match goes on as before. */
+{const so0=startClash;startClash=function(nf,op){so0(nf,op);try{if(!F().clashots)return;const I=G.intro;if(!I||!I.mid)return;const me=G.f[G.me|0],ot=G.f[1-(G.me|0)];if(!me||!ot||me===ot)return;I.sh.forEach(q=>{if(q.kind==='cf'&&q.line){q.kind='ots2';q.ots=me;q.cam=ot}})}catch(e){}};
+ const sc0=shotCam;shotCam=function(s,k){if(s&&s.kind==='ots2'&&s.cam&&s.ots){const f=s.cam;return{x:f.x-s.ots.face*58,y:-104*(f.c.sc||1),z:lerp(2.1,2.3,k),rot:-s.ots.face*.015}}return sc0(s,k)};
+ const cur=()=>{const I=G.intro;if(!I||G.mode!=='intro')return null;const q=I.sh[I.i];return q&&q.kind==='ots2'?q:null};
+ const do0=drawOTS;drawOTS=function(f,k){if(cur()){try{return drawBack(f,k)}catch(e){}}return do0(f,k)};
+ const df0=drawFighter;drawFighter=function(f,sil){const q=cur();if(!q||sil||!f)return df0(f,sil);if(f===q.ots)return;if(f!==q.cam)return df0(f,sil);
+   g.save();try{g.translate(f.x,f.y);const sc=f.sc||f.c.sc||1;g.scale(sc,sc);drawFrontChar(f.c,{t:f.at,expr:G.intro&&G.intro.sp===f?exprOf(f):'',sway:f.sway,dmg:f.mhp?1-f.hp/f.mhp:0})}catch(e){}g.restore()}}
 })();
