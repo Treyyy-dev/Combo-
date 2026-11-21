@@ -1998,5 +1998,20 @@
   "game": {
    "flag": "dlgame"
   }
+ },
+ {
+  "id": "update-settings-first-time",
+  "type": "update",
+  "name": "First-Time Settings",
+  "subtitle": "Settings shows only sign-in before the first download",
+  "desc": "The first time you open the game, Settings on the start screen only shows Sign in with Google. Tap start afterwards to choose MIN or FULL download.",
+  "status": "staged",
+  "created": 1795242193781,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "set1st"
+  }
  }
 ]

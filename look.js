@@ -675,13 +675,15 @@ let SCX=null,HCX=null;
  BACK.dlpick='title';BACK.dl='title';
  /* settings panel */
  let LX=0;{const ge0=gems;gems=function(){return LX=ge0()}}
- function panel(){G.ui=[];g.fillStyle='rgba(6,2,18,.86)';g.fillRect(0,0,W,H);const w=Math.min(520,W-40),h=306,x=(W-w)/2,y=(H-h)/2;rr(x,y,w,h,14);g.fillStyle='#1a0f33';g.fill();g.strokeStyle='#fff';g.lineWidth=3;g.stroke();txt('SETTINGS',W/2,y+34,28,'#ffe14d',INK,'center',FB,6);
+ function panel(){G.ui=[];g.fillStyle='rgba(6,2,18,.86)';g.fillRect(0,0,W,H);const first=!!F().set1st&&!DL.mode,w=Math.min(520,W-40),h=first?210:306,x=(W-w)/2,y=(H-h)/2;rr(x,y,w,h,14);g.fillStyle='#1a0f33';g.fill();g.strokeStyle='#fff';g.lineWidth=3;g.stroke();txt('SETTINGS',W/2,y+34,28,'#ffe14d',INK,'center',FB,6);
   const GG=window.COMBO_G,ga=GG&&GG.get?GG.get():null,full=DL.mode==='full',bw=(w-48-12)/2;
   button(x+24,y+60,w-48,44,ga?'SIGN OUT':'SIGN IN WITH GOOGLE',ga?'#3a2a5e':'#2f4f8f',()=>{if(!F().gsign||!GG){note('Google sign-in is not switched on yet');return}if(ga)GG.out();else GG.open()},20,ga?String(ga.name||'Google').slice(0,16)+' · saved':'Save progress');
+  /* set1st: before the player has picked MIN or FULL, Settings only offers sign-in; the download choice comes when they tap start */
+  if(first){txt('Tap start to choose MIN or FULL download.',W/2,y+128,13.5,'#e6dcff',null,'center',FU)}else{
   txt('DOWNLOAD',W/2,y+126,14,'#e6dcff',null,'center',FU);
   button(x+24,y+140,bw,44,'MIN DOWNLOAD',!full?'#2f7a5f':'#3a2a5e',()=>{if(DL.mode!=='min'){setMode('min');if(MD()&&web()){DL.ok=false;DL.started=false;DL.fin=false;DL.stop=true;G.set2=false;g0('dl');return}DL.ok=true;note('MIN download: LOW quality, voices load while you play')}},18,!full?'ON':'');
   button(x+36+bw,y+140,bw,44,'FULL DOWNLOAD',full?'#2f7a5f':'#3a2a5e',()=>{if(!web()){note('Downloads work on the game website');return}setMode('full');DL.ok=false;DL.started=false;DL.fin=false;G.set2=false;g0('dl')},18,full?'ON':'');
-  txt(full?'FULL: every voice file is kept on this device. Quality up to HIGH.':'MIN: voices load as they play. Quality stays LOW.',W/2,y+206,13.5,'#fff',null,'center',FU);txt('Each update adds its new files. The game still needs the internet.',W/2,y+225,12.5,'#e6dcff',null,'center',FU);
+  txt(full?'FULL: every voice file is kept on this device. Quality up to HIGH.':'MIN: voices load as they play. Quality stays LOW.',W/2,y+206,13.5,'#fff',null,'center',FU);txt('Each update adds its new files. The game still needs the internet.',W/2,y+225,12.5,'#e6dcff',null,'center',FU)}
   button(W/2-70,y+h-52,140,38,'CLOSE','#3a2a5e',()=>{G.set2=false},18);
   if(G.note){g.save();g.font='700 16px '+FU;const nw=g.measureText(G.note.t).width+36;g.globalAlpha=clamp(G.note.T*3,0,1);rr((W-nw)/2,y-44,nw,36,10);g.fillStyle='rgba(10,4,24,.96)';g.fill();g.strokeStyle='#ff7ad1';g.lineWidth=2;g.stroke();txt(G.note.t,W/2,y-26,16,'#fff',null,'center',FU);g.restore()}
   if(GG&&GG.pend&&GG.pend())drawConfirm()}
