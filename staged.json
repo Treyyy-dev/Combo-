@@ -1877,5 +1877,20 @@
   "game": {
    "flag": "iconfull"
   }
+ },
+ {
+  "id": "update-download-6",
+  "type": "update",
+  "name": "Download Only On Big Releases",
+  "subtitle": "Players download only when 6 or more go out at once",
+  "desc": "Players on FULL download are only sent to the download screen when 6 or more things are released at once. Smaller releases load while you play.",
+  "status": "staged",
+  "created": 1795239750089,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "dl6"
+  }
  }
 ]
