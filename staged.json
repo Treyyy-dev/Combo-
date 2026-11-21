@@ -2616,5 +2616,20 @@
   "game": {
    "flag": "tlayout"
   }
+ },
+ {
+  "id": "update-subtitle-no-head",
+  "type": "update",
+  "name": "No Head In Subtitles",
+  "subtitle": "Subtitles are the name and the words only",
+  "desc": "The character's head is removed from the cutscene subtitles. Only the speaker's name and the words are left.",
+  "status": "staged",
+  "created": 1795266999254,
+  "colors": [
+   "#7fdcff"
+  ],
+  "game": {
+   "flag": "subnohead"
+  }
  }
 ]
