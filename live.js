@@ -77,7 +77,12 @@ function apply(docs){try{const rel=(Array.isArray(docs)?docs:[]).filter(d=>d&&d.
  L.modes=docs.filter(d=>d.type==='mode').map(mkMode).slice(0,12);flagSync();
  resetCaches();remap(old);clampG();
  try{for(let i=MAILS.length-1;i>=0;i--)if(MAILS[i].news)MAILS.splice(i,1);const RNM=['R','SR','SSR','UR'],sub=d=>str(d.subtitle,40),nw=docs.filter(d=>d.releasedAt>0).sort((x,y)=>y.releasedAt-x.releasedAt).slice(0,30).map(d=>{const n=str(d.name,20).toUpperCase(),t=d.type;
-  return{id:'news-'+str(d.id,60)+'-'+d.releasedAt,news:1,full:str(d.desc,600),sub:sub(d),at:+d.releasedAt||0,md:t==='mode'?mkMode(d):null,pt:t,pn:n,pf:arr(obj(d.game).featured).slice(0,4).map(q=>str(q,20).toUpperCase()),tag:t==='hint'?'COMING SOON':'NEW '+TNAME[t],col:TCOL[t],title:n,text:t==='hint'?str(d.desc,150,'Something new is coming.'):t==='character'?(sub(d)?sub(d)+' ('+RNM[int(obj(d.game).rar,0,3,2)]+'). ':'')+'A new fighter has joined. Summon them in GACHA.':t==='mode'?(sub(d)?sub(d)+'. ':'')+'A new mode is open. Play it in MATCH, OFFLINE, NEW MODES.':t==='map'?(sub(d)?sub(d)+'. ':'')+'A new stage has been added to matches.':t==='update'?str(d.desc,150,'The game has been updated.'):(sub(d)?sub(d)+'. ':'')+'A new banner is up in GACHA.'}});MAILS.unshift.apply(MAILS,nw)}catch(e){}
+  return{id:'news-'+str(d.id,60)+'-'+d.releasedAt,news:1,bt:+d.batch||0,full:str(d.desc,600),sub:sub(d),at:+d.releasedAt||0,md:t==='mode'?mkMode(d):null,pt:t,pn:n,pf:arr(obj(d.game).featured).slice(0,4).map(q=>str(q,20).toUpperCase()),tag:t==='hint'?'COMING SOON':'NEW '+TNAME[t],col:TCOL[t],title:n,text:t==='hint'?str(d.desc,150,'Something new is coming.'):t==='character'?(sub(d)?sub(d)+' ('+RNM[int(obj(d.game).rar,0,3,2)]+'). ':'')+'A new fighter has joined. Summon them in GACHA.':t==='mode'?(sub(d)?sub(d)+'. ':'')+'A new mode is open. Play it in MATCH, OFFLINE, NEW MODES.':t==='map'?(sub(d)?sub(d)+'. ':'')+'A new stage has been added to matches.':t==='update'?str(d.desc,150,'The game has been updated.'):(sub(d)?sub(d)+'. ':'')+'A new banner is up in GACHA.'}});
+  /* flag "newsgrp": things released together with Dev Studio's select-multiple RELEASE are one NEWS post that lists all of them; its picture shows the new
+     stages, fighters and banners one at a time and moves to the next every 4 seconds */
+  let out=nw;if(FLAGS.newsgrp){const by={};nw.forEach(m=>{if(m.bt>0)(by[m.bt]=by[m.bt]||[]).push(m)});const done={};out=[];nw.forEach(m=>{const q=m.bt>0?by[m.bt]:null;if(!q||q.length<2){out.push(m);return}if(done[m.bt])return;done[m.bt]=1;
+    const names=q.map(z=>z.title);out.push({id:'news-grp-'+m.bt,news:1,grp:q,at:Math.max.apply(null,q.map(z=>z.at)),pt:'group',pn:'',pf:[],tag:'NEW',col:'#ffd36e',title:q.length+' NEW THINGS',text:names.join('  \u00b7  '),full:'',sub:''})})}
+  MAILS.unshift.apply(MAILS,out)}catch(e){}
  try{localStorage.setItem(CK,sig);localStorage.setItem(CN,JSON.stringify(L.names))}catch(e){}}
 
 /* ---------- hooks into the game (wrapping, so the main script stays untouched) ---------- */
@@ -218,13 +223,17 @@ SCR.dev=drawDev;
  const who=m=>(m.pt==='character'?[m.pn]:m.pt==='banner'?(m.pf||[]):[]).map(q=>findCh(q)).filter(k=>k>=0).slice(0,4);
  const ago=t=>{if(!(t>1e11))return'';const h=Math.max(0,Date.now()-t)/36e5;return h<1?'JUST NOW':h<24?Math.floor(h)+' H AGO':h<48?'YESTERDAY':Math.floor(h/24)+' DAYS AGO'};
  const toggle=m=>{NW.open[m.id]=!NW.open[m.id];NW.lt=performance.now();SV.mail=SV.mail||[];if(NW.open[m.id]){NW.to=m.id;if(!SV.mail.includes(m.id)){SV.mail.push(m.id);save()}}};
- const pic=(m,x,y,w,h)=>{g.save();rr(x,y,w,h,10);g.clip();g.fillStyle='#120a22';g.fillRect(x,y,w,h);const f=who(m),col=m.col||'#ffd36e',si=m.pt==='map'?stageIdx(m.pn):-1;
+ const shows=m=>{const P=m.grp.filter(q=>q.pt==='character'||q.pt==='map'||q.pt==='banner');return P.length?P:m.grp};
+ const pic=(m,x,y,w,h)=>{if(m.grp){const U=shows(m),k=Math.floor(G.t/4)%U.length,q=U[k];{const t1=txt;if(q.pt==='map')txt=function(){};try{pic(q,x,y,w,h)}finally{txt=t1}}if(w>=200){g.save();const cw=Math.min(w-20,360);rr(x+10,y+h-40,cw,30,8);g.fillStyle='rgba(10,4,24,.78)';g.fill();txt(q.title+'  \u00b7  '+q.tag,x+22,y+h-25,15,'#fff',INK,'left',FB,3);
+    if(U.length>1){const dx=x+w-16-(U.length-1)*14;U.forEach((z,j)=>circ(dx+j*14,y+h-25,j===k?5:3.5,j===k?'#ffe14d':'rgba(255,255,255,.55)',INK,1.5))}g.restore()}return}
+  g.save();rr(x,y,w,h,10);g.clip();g.fillStyle='#120a22';g.fillRect(x,y,w,h);const f=who(m),col=m.col||'#ffd36e',si=m.pt==='map'?stageIdx(m.pn):-1;
   try{if(f.length){worldBG(CH[f[0]],x,y,w,h);const n=f.length,cw2=w/n,sc=Math.min((h-12)/152,cw2/84);f.forEach((ci,k)=>miniChar(CH[ci],x+cw2*(k+.5),y+h-7,sc,{}))}
    else if(si>=0){const t1=txt;if(w<200)txt=function(){};try{stageCard(si,x,y,w,h)}finally{txt=t1}}
    else{const gr=g.createLinearGradient(x,y,x+w,y+h);gr.addColorStop(0,col);gr.addColorStop(1,'#120a22');g.fillStyle=gr;g.fillRect(x,y,w,h);g.globalAlpha=.14;g.fillStyle='#fff';for(let i=0;i<7;i++){const q=x+w*(i/6);g.beginPath();g.moveTo(q-h*.3,y+h);g.lineTo(q+h*.1,y+h);g.lineTo(q+h*.6,y);g.lineTo(q+h*.2,y);g.fill()}g.globalAlpha=1;
     txt(m.pt==='hint'?'COMING SOON':m.pt==='mode'?'NEW MODE':m.pt==='map'?'NEW MAP':m.pt==='update'?'UPDATE':'NEW',x+w/2,y+h/2,Math.min(h*.34,w*.13),'#fff',INK,'center',FB,Math.max(3,h*.04))}}catch(e){}
   g.restore();rr(x,y,w,h,10);g.strokeStyle='#fff';g.lineWidth=2;g.stroke()};
  const det=m=>{const o=[],f=who(m),add=(t,c,hd)=>{if(t)o.push({t:String(t),c:c||'#e6dcff',hd:hd?1:0})},tn=c=>(TY[c.ty|0]||TY[0])[0];
+  if(m.grp){m.grp.forEach(q=>{add(q.title+'  \u00b7  '+q.tag,q.col||'#ffe14d',1);det(q).forEach(z=>{if(z.t.indexOf('Released ')!==0)o.push({t:z.t,c:z.c,hd:0})})});if(m.at>1e11){try{add('Released '+new Date(m.at).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'}),'#9a8cc4')}catch(e){}}return o}
   if(m.sub)add(m.sub,'#ffe14d',1);
   if(m.pt==='character'&&f.length){const c=CH[f[0]],t5=c.ty|0,st=SV.owned[c.name]||0;add(RN[c.rar]+'  ·  '+tn(c)+' TYPE  ·  beats '+TY[(t5+1)%5][0]+'  ·  weak to '+TY[(t5+4)%5][0],RC[c.rar]);if(m.full)add(m.full);
    add('Skill 1: '+c.sn[0]+'   ·   Skill 2: '+c.sn[1],'#fff');add('Ultimate: '+c.un,'#fff');if(c.wn)add('World: '+c.wn);let say='';try{say=TALK[c.name].say}catch(e){}if(say)add('"'+say+'"','#7fdcff');

@@ -2149,5 +2149,20 @@
   "game": {
    "flag": "studioq"
   }
+ },
+ {
+  "id": "update-news-group",
+  "type": "update",
+  "name": "News: One Post Per Release",
+  "subtitle": "Things released together share one news post",
+  "desc": "When several things are released together, they show as one news post that lists all of them. Its picture shows the new stages, fighters and banners one at a time and switches every 4 seconds.",
+  "status": "staged",
+  "created": 1795246534012,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "newsgrp"
+  }
  }
 ]
