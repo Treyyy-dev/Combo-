@@ -1339,4 +1339,6 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
   ['pointerdown','pointerup','touchend','click','keydown'].forEach(ev=>window.addEventListener(ev,()=>{if(want||(typeof AC!=='undefined'&&AC&&AC.state!=='running'))kick()},true))}catch(e){}
  const us0=update;update=function(rdt){us0(rdt);if(!want)return;tick+=rdt;if(tick>.5){tick=0;if(!document.hidden)kick()}};
  try{window.COMBO_SND=()=>({state:typeof AC!=='undefined'&&AC?AC.state:null,want})}catch(e){}}
+/* devquiet: the Dev Studio has no music (story.js wantTrack) and leaving it (BACK or Escape) goes to the start screen, where start connects as usual. TEST still comes back to the studio. */
+{const gq0=goto;goto=function(m){if(F().devquiet&&G.mode==='dev'&&m==='menu'){G.set2=false;return gq0('title')}return gq0(m)}}
 })();

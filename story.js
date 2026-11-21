@@ -60,6 +60,8 @@ function sched(T,st,t,out){const sp=T.spb;for(const e of T.ev[st]){switch(e[0]){
  case's':nz(t,.12,.13,'bandpass',1800,out);break;case'r':nz(t,.05,.07,'bandpass',2600,out);break;case'h':nz(t,.03,.035,'highpass',7000,out);break}}}
 const MU={id:null,g:null,tr:null,step:0,nt:0};let SC=null;
 function wantTrack(){const m=G.mode,f=F();
+ /* devquiet: no music while the Dev Studio is open */
+ if(m==='dev'&&f.devquiet)return null;
  /* flag "studioq": no music while the studio intro plays; with "combosay" on, the start screen music then waits for the COMBO shout as before */
  if(m==='title'&&f.studioq){try{if(window.COMBO_INTRO&&window.COMBO_INTRO())return null}catch(e){}}
  if(m==='title'&&f.combosay){try{if(window.COMBO_HOLD&&window.COMBO_HOLD())return null}catch(e){}}
@@ -69,6 +71,7 @@ function wantTrack(){const m=G.mode,f=F();
  if(m==='gacha')return f.mgacha?'gacha':f.mlobby?'lobby':null;
  if(m==='fight'||m==='intro'||m==='ko'||m==='result'){const r=G.rules||{};if(r.type==='show')return null;if(f.mmap)return'map'+(G.stg|0);return r.type==='story1'&&f.story1?'battle':null}
  return f.mlobby?'lobby':null}
+try{window.COMBO_WANT=()=>wantTrack()}catch(e){}
 function musicTick(){if(typeof AC==='undefined'||!AC||AC.state!=='running'||!MG)return;const now=AC.currentTime;let w=null;try{w=SV.set.vol?wantTrack():null}catch(e){}
  if(w!==MU.id){if(MU.g){const og=MU.g;try{og.gain.cancelScheduledValues(now);og.gain.setValueAtTime(Math.max(.0001,og.gain.value),now);og.gain.linearRampToValueAtTime(.0001,now+.4)}catch(e){}setTimeout(()=>{try{og.disconnect()}catch(e){}},900)}
   MU.id=w;MU.g=null;if(w){MU.tr=track(w);MU.g=AC.createGain();MU.g.gain.setValueAtTime(.0001,now);MU.g.gain.linearRampToValueAtTime(.6,now+.5);MU.g.connect(MG);MU.step=0;MU.nt=now+.1}}

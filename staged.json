@@ -2571,5 +2571,20 @@
   "game": {
    "flag": "duelcap"
   }
+ },
+ {
+  "id": "update-dev-quiet",
+  "type": "update",
+  "name": "Quiet Dev Studio",
+  "subtitle": "No music in the Dev Studio, BACK goes to start",
+  "desc": "The Dev Studio has no music. Leaving it takes you back to the start screen, and tapping start connects you as usual.",
+  "status": "staged",
+  "created": 1795266451055,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "devquiet"
+  }
  }
 ]
