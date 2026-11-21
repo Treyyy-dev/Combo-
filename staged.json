@@ -2209,5 +2209,20 @@
   "game": {
    "flag": "sumduel"
   }
+ },
+ {
+  "id": "update-summon-duel-2",
+  "type": "update",
+  "name": "Summon Duel: Voices And Close-Ups",
+  "subtitle": "Face-off shots, voices, raised hand ending",
+  "desc": "The summon duel now opens with close shots: Kenko looks at Neto, then Neto looks at the camera. Both fighters speak during the duel, and the winner raises a hand in the aura at the end.",
+  "status": "staged",
+  "created": 1795248887294,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "duel2"
+  }
  }
 ]
