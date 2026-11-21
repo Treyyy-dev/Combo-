@@ -1,4 +1,4 @@
-/* Sculpted fighter bodies: shaped torso, tapered limbs, hands with fingers and real feet. Off unless the "body2" update is released. "d25" turns fighters to a three-quarter angle with depth shading (and uses these bodies). "cel" adds hard-edged cel shading and extra detail (also uses these bodies). */
+/* Sculpted fighter bodies: shaped torso, tapered limbs, hands with fingers and real feet. Off unless the "body2" update is released. "d25" turns fighters to a three-quarter angle with depth shading (and uses these bodies). "dbz" turns the chest fully toward the screen with a wide stance. "cel" adds hard-edged cel shading and extra detail (also uses these bodies). */
 (function(){'use strict';
 const F=()=>(typeof FLAGS!=='undefined'&&FLAGS)||{};
 const _dc=drawChar;
@@ -30,8 +30,8 @@ function foot(f,a,c,C,ink,sil,back){g.save();g.translate(f.x,f.y);g.rotate(-a*R*
   if(!sil){g.strokeStyle='#efeaf8';g.lineWidth=1.7;g.beginPath();g.moveTo(-4.2,4.4);g.lineTo(13.4,4.4);g.stroke();g.strokeStyle=ink;g.lineWidth=.9;g.beginPath();g.moveTo(9.4,.2);g.quadraticCurveTo(10.6,2,10,3.5);g.moveTo(4.2,-2.6);g.lineTo(6,-.2);g.moveTo(6.2,-1.8);g.lineTo(8,.6);g.stroke();
    g.strokeStyle=c.col;g.lineWidth=1.6;g.beginPath();g.moveTo(-3.4,-3.4);g.lineTo(3.4,-3.9);g.stroke()}}
  g.restore()}
-function drawChar2(c,p,o){CEL=F().cel?1:0;const J=joints(p),D=F().d25?1:0,sil=o.sil,ink=sil||INK,C=x=>sil||x,t=o.t||0,sw=o.sway||0,bk=(c.sc>1.07||c.dm>1)?1.14:1,hi=sil?null:tint(c.skin,.38);
- if(D){const tl0=p[0]*R,nx=Math.cos(tl0),ny=Math.sin(tl0),sh=(P,dx,dy)=>({x:P.x+dx,y:P.y+dy}),a=-5*bk,b=7*bk;J.shA=sh(J.sh,nx*a,ny*a);J.shB=sh(J.sh,nx*b,ny*b);J.af=J.af.map(q=>sh(q,nx*a,ny*a));J.ab=J.ab.map(q=>sh(q,nx*b,ny*b));J.hipA=sh(J.hip,-3.6*bk,0);J.hipB=sh(J.hip,4.6*bk,0);J.lf=J.lf.map(q=>sh(q,-3.6*bk,0));J.lb=J.lb.map(q=>sh(q,4.6*bk,0))}else{J.shA=J.shB=J.sh;J.hipA=J.hipB=J.hip}
+function drawChar2(c,p,o){CEL=F().cel?1:0;const J=joints(p),DZ=F().dbz?1:0,D=DZ||F().d25?1:0,sil=o.sil,ink=sil||INK,C=x=>sil||x,t=o.t||0,sw=o.sway||0,bk=(c.sc>1.07||c.dm>1)?1.14:1,hi=sil?null:tint(c.skin,.38);
+ if(D){const tl0=p[0]*R,nx=Math.cos(tl0),ny=Math.sin(tl0),sh=(P,dx,dy)=>({x:P.x+dx,y:P.y+dy}),a=(DZ?-11.5:-5)*bk,b=(DZ?12:7)*bk,hA=(DZ?-6.8:-3.6)*bk,hB=(DZ?7.2:4.6)*bk;J.shA=sh(J.sh,nx*a,ny*a);J.shB=sh(J.sh,nx*b,ny*b);J.af=J.af.map(q=>sh(q,nx*a,ny*a));J.ab=J.ab.map(q=>sh(q,nx*b,ny*b));J.hipA=sh(J.hip,hA,0);J.hipB=sh(J.hip,hB,0);J.lf=J.lf.map(q=>sh(q,hA,0));J.lb=J.lb.map(q=>sh(q,hB,0))}else{J.shA=J.shB=J.sh;J.hipA=J.hipB=J.hip}
  const LT=D&&!sil?'rgba(255,255,255,.17)':null;
  g.save();
  if(o.ground)g.translate(0,-Math.max(J.lf[1].y,J.lb[1].y));
@@ -61,9 +61,18 @@ function drawChar2(c,p,o){CEL=F().cel?1:0;const J=joints(p),D=F().d25?1:0,sil=o.
  if(c.style===2||c.style===7)ribbon(J.hip.x+4,J.hip.y-6,c.style===7?52:44,20,24,8,sw*.6,t+1,C(c.top),ink);
  if(c.style===5)ribbon(J.hip.x-1,J.hip.y-8,24,24,40,0,sw*.3,t,C(c.col),ink);
  /* torso */
- const tl=p[0]*R,TP=[[9,7],[10.6,2],[8.4,-11],[10.4,-20],[13,-28],[11.6,-35.5],[8,-41],[3,-43.5],[-4,-43.5],[-9.6,-40],[-12,-30],[-9,-14],[-10.9,-1],[-8.6,7]].map(q=>[(D?q[0]*1.2+1.2:q[0])*bk,q[1]]);
+ const tl=p[0]*R,TP=[[9,7],[10.6,2],[8.4,-11],[10.4,-20],[13,-28],[11.6,-35.5],[8,-41],[3,-43.5],[-4,-43.5],[-9.6,-40],[-12,-30],[-9,-14],[-10.9,-1],[-8.6,7]].map(q=>[(D?q[0]*1.2+1.2:q[0])*bk,q[1]]),TPZ=[[-11.5,7],[-13.4,0],[-10.6,-12],[-13.6,-24],[-18.6,-33],[-15.5,-40.5],[-6,-44],[7,-44],[16.5,-40.5],[19.6,-33],[14.6,-24],[11.6,-12],[14.4,0],[12.5,7]].map(q=>[q[0]*bk,q[1]]);if(DZ)TP.splice(0,TP.length,...TPZ);
  g.save();g.translate(J.hip.x,J.hip.y);g.rotate(tl);g.lineJoin='round';smooth(TP);g.strokeStyle=ink;g.lineWidth=4;g.stroke();g.fillStyle=C(c.top);g.fill();
  if(!sil){g.save();smooth(TP);g.clip();
+  if(DZ){g.fillStyle=c.topSh;g.beginPath();g.moveTo(-24,10);g.lineTo(-9*bk,10);g.quadraticCurveTo(-12*bk,-18,-10*bk,-46);g.lineTo(-24,-46);g.closePath();g.fill();g.fillStyle='rgba(0,0,0,.1)';g.fillRect(14*bk,-46,12,56);
+   g.fillStyle='rgba(0,0,0,.16)';g.beginPath();g.moveTo(-13*bk,-25);g.quadraticCurveTo(-6*bk,-19.5,.4,-24);g.quadraticCurveTo(7.5*bk,-19.5,15*bk,-25);g.lineTo(15*bk,-21);g.quadraticCurveTo(7.5*bk,-15.5,.4,-20);g.quadraticCurveTo(-6*bk,-15.5,-13*bk,-21);g.closePath();g.fill();
+   g.fillStyle='rgba(255,255,255,.16)';g.beginPath();g.ellipse(8*bk,-31,4*bk,5,.2,0,TAU);g.fill();g.beginPath();g.ellipse(-5*bk,-31.5,3*bk,4.2,-.2,0,TAU);g.fill();
+   g.strokeStyle='rgba(0,0,0,.24)';g.lineWidth=1.2;g.lineCap='round';g.beginPath();g.moveTo(-12*bk,-26);g.quadraticCurveTo(-6*bk,-21,0,-25);g.moveTo(1,-25);g.quadraticCurveTo(7.5*bk,-21,14*bk,-26);g.moveTo(.5,-23);g.lineTo(.5,-6);g.moveTo(-5.5*bk,-17.5);g.lineTo(6.5*bk,-17.5);g.moveTo(-5*bk,-12);g.lineTo(6*bk,-12);g.moveTo(-10*bk,-14);g.quadraticCurveTo(-8*bk,-9,-10.5*bk,-4);g.moveTo(11*bk,-14);g.quadraticCurveTo(9*bk,-9,11.5*bk,-4);g.stroke();
+   g.strokeStyle=c.col;g.lineWidth=2.2;g.beginPath();g.moveTo(-9*bk,-42);g.lineTo(.5,-28);g.lineTo(10*bk,-42);g.stroke();
+   if(CEL){g.fillStyle='rgba(0,0,0,.2)';g.beginPath();g.moveTo(-24,-9);g.lineTo(-3*bk,-9);g.lineTo(-6*bk,-3);g.lineTo(-24,-3);g.fill();poly([[-9.5*bk,-21],[-5*bk,-18.5],[-10.5*bk,-15]],'rgba(0,0,0,.22)');g.fillStyle='rgba(255,255,255,.3)';g.beginPath();g.moveTo(15.4*bk,-34);g.quadraticCurveTo(18.6*bk,-27,13.6*bk,-17);g.quadraticCurveTo(16.4*bk,-27,14*bk,-34);g.fill()}
+   g.fillStyle=c.col2;g.fillRect(-24,-3.2,48,5.4);g.fillStyle='rgba(0,0,0,.25)';g.fillRect(-24,1.2,48,1);g.fillStyle=INK;g.fillRect(-2,-4,5,7);g.fillStyle=c.col;g.fillRect(-1,-3,3,5);
+   g.beginPath();g.moveTo(-6*bk,-45);g.lineTo(7*bk,-45);g.lineTo(.5,-31);g.closePath();g.fillStyle=c.skin;g.fill();g.strokeStyle=INK;g.lineWidth=1.4;g.stroke();g.strokeStyle=c.skinSh;g.lineWidth=1;g.beginPath();g.moveTo(-3.5,-41.5);g.lineTo(-.5,-39.6);g.moveTo(4.5,-41.5);g.lineTo(1.5,-39.6);g.stroke()}
+  else{
   g.fillStyle=c.topSh;g.beginPath();g.moveTo(-16,10);g.lineTo(-3.5*bk,10);g.quadraticCurveTo(-6*bk,-18,-2.5*bk,-46);g.lineTo(-16,-46);g.closePath();g.fill();
   g.fillStyle='rgba(0,0,0,.16)';g.beginPath();g.moveTo(2*bk,-24);g.quadraticCurveTo(8*bk,-19.5,14*bk,-25);g.lineTo(14*bk,-19);g.quadraticCurveTo(8*bk,-14,1*bk,-20);g.closePath();g.fill();
   g.fillStyle='rgba(255,255,255,.16)';g.beginPath();g.ellipse(7.5*bk,-31,3.2*bk,5,.2,0,TAU);g.fill();
@@ -79,6 +88,7 @@ function drawChar2(c,p,o){CEL=F().cel?1:0;const J=joints(p),D=F().d25?1:0,sil=o.
    if(!D){}g.fillStyle=c.col2;[-30,-22,-14].forEach(y=>{g.beginPath();g.arc(cx-1.6*bk,y,1.05,0,TAU);g.fill()})}
   g.fillStyle=c.col2;g.fillRect(-16,-3.2,32,5.4);g.fillStyle='rgba(0,0,0,.25)';g.fillRect(-16,1.2,32,1);g.fillStyle=INK;g.fillRect(5*bk,-4,4,7);g.fillStyle=c.col;g.fillRect(5.8*bk,-3,2.4,5);
   g.beginPath();g.moveTo(.5,-45);g.lineTo(9*bk,-41.5);g.lineTo(4.6*bk,-33);g.closePath();g.fillStyle=c.skin;g.fill();g.strokeStyle=INK;g.lineWidth=1.4;g.stroke();g.strokeStyle=c.skinSh;g.lineWidth=1;g.beginPath();g.moveTo(2.6,-41.5);g.lineTo(6.6*bk,-39.6);g.stroke();
+  }
   g.restore()}
  g.restore();
  if(!sil){const dm=o.dmg||0;if(dm>.5){const mx=(J.hip.x+J.sh.x)/2,my=(J.hip.y+J.sh.y)/2;g.fillStyle='rgba(150,16,28,.75)';g.beginPath();g.ellipse(mx+4,my-4,5,3.5,.5,0,TAU);g.ellipse(mx+7,my+1,2,3,0,0,TAU);g.fill();if(dm>.75){g.beginPath();g.ellipse(mx-2,my+10,4,2.6,-.4,0,TAU);g.fill();g.strokeStyle='#8a1420';g.lineWidth=1.3;g.beginPath();g.moveTo(J.af[0].x-3,J.af[0].y-3);g.lineTo(J.af[0].x+3,J.af[0].y+2);g.moveTo(J.lf[0].x-4,J.lf[0].y-6);g.lineTo(J.lf[0].x+2,J.lf[0].y-1);g.stroke()}}}
@@ -96,5 +106,5 @@ function drawChar2(c,p,o){CEL=F().cel?1:0;const J=joints(p),D=F().d25?1:0,sil=o.
  else{weapon(c,J.af[1],p[2]+p[3],o,false);hand(J.af[1],p[2]+p[3],C(c.skin),'rgba(120,50,40,.55)',ink,sil,grip,1)}
  if(glove&&!sil)circ(J.af[1].x+2,J.af[1].y-2,2.2,'#fff7d0');
  g.restore()}
-drawChar=function(c,p,o){if(F().body2||F().d25||F().cel){try{return drawChar2(c,p,o)}catch(e){return _dc(c,p,o)}}return _dc(c,p,o)};
+drawChar=function(c,p,o){if(F().body2||F().d25||F().cel||F().dbz){try{return drawChar2(c,p,o)}catch(e){return _dc(c,p,o)}}return _dc(c,p,o)};
 })();

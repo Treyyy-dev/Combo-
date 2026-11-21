@@ -1142,5 +1142,20 @@
   "game": {
    "flag": "cel"
   }
+ },
+ {
+  "id": "update-open-stance",
+  "type": "update",
+  "name": "Body Faces the Screen",
+  "subtitle": "Chest toward you, wide stance",
+  "desc": "Fighters stand the way they do in big anime fighting games: chest and both shoulders turned toward the screen in a wide stance, head still looking at the opponent, so you can see the detail on their body.",
+  "status": "staged",
+  "created": 1795219548346,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "dbz"
+  }
  }
 ]
