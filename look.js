@@ -1403,7 +1403,8 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
  const cloth=(key,A,dir,len,w,col,t,sw)=>{const P=chain(key,A,dir,len,4,t,sw);for(let i=0;i<4;i++){const h=ml(sb(P[i+1],P[i]),.62),y=nm(h),Z=[0,0,1],x=nm(cr(y,Z)),z=cr(x,y),ww=w*(.8+.2*i/3);ell3(ml(ad(P[i],P[i+1]),.5),ml(x,1.5),h,ml(z,ww),col)}};
  const HAIRSP=[[-.15,1,0],[-.65,.8,.4],[-.65,.8,-.4],[-1,.3,0],[-.9,.5,.55],[-.9,.5,-.55],[.25,.97,.3],[.25,.97,-.3],[-.5,.95,0]];
  const model=(c,p,o,view)=>{const J=joints(p),R0=Math.PI/180,ra=(p[10]||0)*R0,ca=Math.cos(ra),sa=Math.sin(ra);let gy=0;
-   const T2=q=>{let x=q.x,y=q.y;if(p[10]||p[11]){const y2=y+75;const rx=x*ca-y2*sa,ry=x*sa+y2*ca;x=rx;y=ry+(p[11]||0)-75}return[x,y]};
+   /* taller (Trey: make them taller): the skeleton is 14% longer from the feet up; the head and the thickness of the body stay the same, so they read as taller, not just bigger */
+   const TALL=1.14,T2=q=>{let x=q.x*TALL,y=q.y*TALL;if(p[10]||p[11]){const y2=y+75;const rx=x*ca-y2*sa,ry=x*sa+y2*ca;x=rx;y=ry+(p[11]||0)-75}return[x,y]};
    if(o.ground)gy=-Math.max(T2(J.lf[1])[1],T2(J.lb[1])[1]);
    const P3=(q,z)=>{const a=T2(q);return[a[0],-(a[1]+gy),z]},t=o.t||0,sw=(o.sway==null?.15:o.sway)+.12,bk=(c.sc>1.07||c.dm>1)?1.14:1,bare=!!c.bare;
    const hip=P3(J.hip,0),neck=P3(J.neck,0),shC=P3(J.sh,0),sp=nm(sb(neck,hip)),fw=nm(cr(sp,[0,0,1]));
