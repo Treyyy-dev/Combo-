@@ -2526,5 +2526,20 @@
   "game": {
    "flag": "devonly"
   }
+ },
+ {
+  "id": "update-sound-back",
+  "type": "update",
+  "name": "Sound Stays",
+  "subtitle": "Sound comes back when you return to the game",
+  "desc": "When you leave the game but keep the tab and come back, the sound comes back. Before, the sound could stay off after returning.",
+  "status": "staged",
+  "created": 1795266049803,
+  "colors": [
+   "#7fdcff"
+  ],
+  "game": {
+   "flag": "sndback"
+  }
  }
 ]

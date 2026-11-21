@@ -1324,4 +1324,13 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
 {let v0=null,need=false,busy=false,last=0;const ask=()=>{if(busy||!window.COMBO_SRV)return;busy=true;last=performance.now();fetch('health?c='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(q=>{const v=q&&q.v;if(typeof v==='string'&&v){if(v0==null)v0=v;else if(v!==v0)need=true}}).catch(()=>{}).then(()=>{busy=false})};
  const uf0=update;update=function(rdt){uf0(rdt);try{const now=performance.now();if(v0==null?now-last>4000:now-last>40000)ask();if(need&&F().fresh&&!G.cnn&&!G.cf&&(G.mode==='title'||G.mode==='menu'||G.mode==='news')){need=false;try{save()}catch(e){}location.reload()}}catch(e){}};
  try{window.COMBO_FRESH=()=>({v0,need})}catch(e){}}
+/* sndback: sound comes back after leaving the game and returning to the same tab. Phones pause the game's sound engine when the tab goes to the background and often leave it silent afterwards.
+   With the flag on the game pauses the engine itself when the tab is hidden, starts it again when the tab is shown, and tries again on the next taps and every half second until it is really running. */
+{const ON=()=>!!F().sndback;let want=false,tick=0;
+ const kick=()=>{try{if(!ON()||typeof AC==='undefined'||!AC)return;if(AC.state!=='running'){const p=AC.resume();if(p&&p.catch)p.catch(()=>{})}else want=false}catch(e){}};
+ const hide=()=>{try{if(!ON()||typeof AC==='undefined'||!AC)return;want=true;if(AC.state==='running'){const p=AC.suspend();if(p&&p.catch)p.catch(()=>{})}}catch(e){}};
+ try{document.addEventListener('visibilitychange',()=>{if(document.hidden)hide();else{want=true;kick()}});window.addEventListener('pagehide',hide);window.addEventListener('pageshow',()=>{want=true;kick()});window.addEventListener('focus',()=>{want=true;kick()});
+  ['pointerdown','pointerup','touchend','click','keydown'].forEach(ev=>window.addEventListener(ev,()=>{if(want||(typeof AC!=='undefined'&&AC&&AC.state!=='running'))kick()},true))}catch(e){}
+ const us0=update;update=function(rdt){us0(rdt);if(!want)return;tick+=rdt;if(tick>.5){tick=0;if(!document.hidden)kick()}};
+ try{window.COMBO_SND=()=>({state:typeof AC!=='undefined'&&AC?AC.state:null,want})}catch(e){}}
 })();
