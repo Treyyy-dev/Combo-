@@ -196,6 +196,15 @@ SCR.dev=drawDev;
  const np=Math.max(1,Math.ceil(MAILS.length/3));if(np<2||G.mx)return;const bw=Math.min(640,W-36),bx=(W-bw)/2,ah=64,ay=62+(3*104-8)/2-ah/2,lx=Math.max(6,bx-56),rx=Math.min(W-52,bx+bw+10);
  button(lx,ay,46,ah,'‹','#3a2a5e',()=>{G.mpg=((G.mpg|0)+np-1)%np},34);button(rx,ay,46,ah,'›','#3a2a5e',()=>{G.mpg=((G.mpg|0)+1)%np},34);txt(((G.mpg|0)+1)+' / '+np,W/2,H-24,15,'#fff',INK,'center')}}
 
+/* flag "maildel": once a mail is read (SEEN or CLAIMED) a trash can button shows on it; tapping it deletes that mail from this player's mailbox (ids kept in SV.mdel) */
+{const m3=SCR.mail;SCR.mail=function(){if(!FLAGS.maildel)return m3();SV.mdel=SV.mdel||[];SV.mail=SV.mail||[];const all=MAILS.slice(),keep=all.filter(m=>!SV.mdel.includes(m.id)),b0=button;let page=[];
+ MAILS.length=0;keep.forEach(m=>MAILS.push(m));button=function(x,y,w,h,l){if(h===34&&(l==='SEEN'||l==='CLAIMED')){const a=Array.prototype.slice.call(arguments);a[0]=x+42;a[2]=w-42;return b0.apply(this,a)}return b0.apply(this,arguments)};
+ try{m3();page=MAILS.slice((G.mpg|0)*3,(G.mpg|0)*3+3)}finally{button=b0;MAILS.length=0;all.forEach(m=>MAILS.push(m))}
+ if(G.mx)return;const bw=Math.min(640,W-36),bx=(W-bw)/2;page.forEach((m,i)=>{if(!SV.mail.includes(m.id))return;const x=bx+bw-164,y=62+i*104+54,w=36,h=34,foc=hit(x,y,w,h,()=>{if(!SV.mdel.includes(m.id)){SV.mdel.push(m.id);save();G.note={t:'Mail deleted',T:1.6};sfx('ui')}});
+  g.save();rr(x,y,w,h,8);g.fillStyle='#7a2434';g.fill();g.strokeStyle=foc?'#ffe14d':'#fff';g.lineWidth=foc?3:2;g.stroke();const cx=x+w/2,cy=y+h/2;g.strokeStyle='#fff';g.fillStyle='#fff';g.lineWidth=2;g.lineCap='round';g.lineJoin='round';
+  g.beginPath();g.moveTo(cx-9,cy-7);g.lineTo(cx+9,cy-7);g.moveTo(cx-3,cy-7);g.lineTo(cx-3,cy-10);g.lineTo(cx+3,cy-10);g.lineTo(cx+3,cy-7);g.stroke();
+  g.beginPath();g.moveTo(cx-7,cy-4);g.lineTo(cx-5.5,cy+10);g.lineTo(cx+5.5,cy+10);g.lineTo(cx+7,cy-4);g.closePath();g.stroke();g.lineWidth=1.5;g.beginPath();[-2.5,2.5].forEach(o=>{g.moveTo(cx+o,cy-1);g.lineTo(cx+o,cy+7)});g.stroke();g.restore()})}}
+
 /* ---------- outside claude.ai (the GitHub / Render copy) ----------
    Released content comes from live.json. The game server can also run the studio: it is opened with the dev key
    (add #dev to the address), and the server keeps staged and released items in its own database. */

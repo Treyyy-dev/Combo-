@@ -1637,5 +1637,20 @@
   "game": {
    "flag": "umoves"
   }
+ },
+ {
+  "id": "update-mail-delete",
+  "type": "update",
+  "name": "Delete Read Mail",
+  "subtitle": "Trash can on mail you have read",
+  "desc": "After you read a mail or claim its gift, a trash can button appears on it. Tap it to delete that mail from your mailbox.",
+  "status": "staged",
+  "created": 1795234257773,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "maildel"
+  }
  }
 ]
