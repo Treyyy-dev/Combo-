@@ -835,7 +835,7 @@ let SCX=null,HCX=null;
   if(!f.arttalk||!c||!shown||G.mode!=='fdetail')return;
   try{const T=(typeof TALK!=='undefined'&&TALK[c.name])||null,L=T?[T.say,T.win].filter(x=>typeof x==='string'&&x):[];if(!L.length)return;
    G.ui.push({x:0,y:56,w:W*.44,h:H-56,fn:()=>{const pv=G.atk&&G.atk.n===c.name?G.atk.i:-1,i=(pv+1)%L.length,line=L[i];G.atk={n:c.name,i,t:G.t,line,d:1.8+line.length*.055};try{if(window.COMBO_SAY)COMBO_SAY(c.name,line)}catch(e){}}});
-   const A=G.atk;if(A&&A.n===c.name&&G.t-A.t<A.d&&G.t>=A.t){g.save();g.setTransform(S*dpr,0,0,S*dpr,0,0);const k=clamp((G.t-A.t)/.15,0,1)*clamp((A.d-(G.t-A.t))/.25,0,1),bw=Math.min(300,W*.4);g.font='700 15px '+FU;const ls=wrap(A.line,bw-28).slice(0,4),bh=22+ls.length*19,bx=Math.max(10,W*.3-bw/2),by=62;g.globalAlpha=k;
+   const A=G.atk;/* nobub: no speech bubble, the fighter only talks out loud */if(!f.nobub&&A&&A.n===c.name&&G.t-A.t<A.d&&G.t>=A.t){g.save();g.setTransform(S*dpr,0,0,S*dpr,0,0);const k=clamp((G.t-A.t)/.15,0,1)*clamp((A.d-(G.t-A.t))/.25,0,1),bw=Math.min(300,W*.4);g.font='700 15px '+FU;const ls=wrap(A.line,bw-28).slice(0,4),bh=22+ls.length*19,bx=Math.max(10,W*.3-bw/2),by=62;g.globalAlpha=k;
     rr(bx,by,bw,bh,12);g.fillStyle='#fff';g.fill();g.strokeStyle=INK;g.lineWidth=3;g.stroke();g.beginPath();g.moveTo(bx+bw*.42,by+bh-1);g.lineTo(bx+bw*.5,by+bh+16);g.lineTo(bx+bw*.56,by+bh-1);g.closePath();g.fillStyle='#fff';g.fill();g.stroke();g.fillRect(bx+bw*.42+2,by+bh-4,bw*.14-4,5);
     ls.forEach((t,j)=>txt(t,bx+bw/2,by+21+j*19,15,'#1a0f33',null,'center',FU));g.restore()}}catch(e){try{g.restore()}catch(x){}}};
  const uf0=update;update=function(rdt){uf0(rdt);if(G.fdv&&G.mode!=='fdetail')G.fdv=null}}

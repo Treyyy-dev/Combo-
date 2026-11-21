@@ -2043,5 +2043,20 @@
   "game": {
    "flag": "arttalk"
   }
+ },
+ {
+  "id": "update-talk-no-bubble",
+  "type": "update",
+  "name": "Fighters Talk: No Bubble",
+  "subtitle": "Voice only when you tap a fighter",
+  "desc": "When you tap a fighter's art they only talk out loud. The speech bubble is removed.",
+  "status": "staged",
+  "created": 1795243091040,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "nobub"
+  }
  }
 ]
