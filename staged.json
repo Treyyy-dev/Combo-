@@ -2074,5 +2074,20 @@
   "game": {
    "flag": "combosay"
   }
+ },
+ {
+  "id": "update-download-art",
+  "type": "update",
+  "name": "Download Screen Art",
+  "subtitle": "Full-screen fighter art and tips while you download",
+  "desc": "The download screens are now a full-screen picture of a fighter with a tip on it. MIN and FULL are at the top, the download bar is at the bottom, and arrows at the middle left and right flip through 20 arts and tips.",
+  "status": "staged",
+  "created": 1795245453375,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "dlart"
+  }
  }
 ]

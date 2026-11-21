@@ -674,6 +674,55 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
   txt(DL.cors===false?'Your browser is pre-loading the files.':'Files are kept on this device so voices play right away.',W/2,by+74,13,'#e6dcff',null,'center',FU);
   txt(MD()?(F().dlgame?'MIN download: game files and fight sounds. The rest loads while you play.':'MIN download: fight sounds only. The rest loads while you play.'):'Keep the game open. You can also switch to MIN and play now.',W/2,by+94,13,'#e6dcff',null,'center',FU);
   if(MD())button((W-320)/2,by+120,320,44,'PLAY NOW','#3a2a5e',()=>{DL.stop=true;DL.started=false;DL.fin=false;DL.ok=true;goto('menu')},18);else button((W-320)/2,by+120,320,44,'SWITCH TO MIN DOWNLOAD','#3a2a5e',()=>pick('min'),18);hdr('UPDATE',null,true)};
+ /* flag "dlart": the download screens (choose MIN / FULL, and downloading) are one full-screen picture: the artwork of one of 20 fighters with a tip
+    on it, MIN and FULL buttons at the top, the download bar at the bottom, and arrows at the middle left and right to flip through the 20 arts and tips. */
+ const TIPS=['Types beat each other in a circle: POWER beats SPEED, SPEED beats TECH, TECH beats SPIRIT, SPIRIT beats GUARD and GUARD beats POWER.',
+  'Hitting a type you beat does 25% more damage. Check the type chart before you pick your team.',
+  'Tap SWAP in a match to tag in a teammate. A clash cutscene plays when the new fighter comes in.',
+  'AST calls a teammate in for a quick hit without swapping your fighter out.',
+  'Hold GUARD to block. You cannot attack while you guard, so let go to hit back.',
+  'Fill your meter by fighting, then press ULT for your cinematic ultimate.',
+  'DASH gets you in close fast, or out of trouble just as fast.',
+  'Hold a fighter in TEAMS to level them up with EXP items.',
+  'EXP CHALLENGE in MATCH, OFFLINE gives EXP items. Play it as many times as you want.',
+  'Every level adds +0.25% damage and health in offline matches. The top level is 200.',
+  'Summoning a fighter you already own gives them a star. Every star makes them stronger.',
+  'Red tickets are for UR summons. Yellow tickets are for the ticket exchange in GACHA.',
+  'Gacha banners rotate every 30 minutes. Tap a banner to see what is in it and the full rates.',
+  'NEWS, next to your mailbox, shows every new fighter, map, mode and banner. Tap one to see all of it.',
+  'The mailbox next to your gems holds your rewards. A red dot means there is something to claim.',
+  'You have 10 team slots. Use the arrows before a match to switch between them.',
+  'Ranked Combo moves your rank up and down. Casual Combo is for fun and practice.',
+  'BOSS RAID in MATCH, ONLINE lets you fight one huge boss together with other players.',
+  'Every button can be changed in CONFIGURE, CONTROLS: keyboard, touch, Xbox and PlayStation.',
+  'LOW quality is the fastest on older phones. Change FPS and quality in CONFIGURE.'];
+ const dlArt=pk=>{
+  if(!pk){if(!DL.run&&!DL.fin&&!DL.started){DL.started=true;DL.stop=false;runDL()}
+   if(DL.fin){DL.ok=true;DL.fin=false;DL.started=false;try{localStorage.setItem(BK,String(window.COMBO_BIG||0))}catch(e){}if(DL.full)note('Your device is out of room. The rest loads as you play.');else if(DL.fail)note(DL.fail+' files did not download. They load as you play.');if(DL.reload&&!DL.stop){DL.reload=false;try{location.reload();return}catch(e){}}goto('menu');return}}
+  scr();const N=TIPS.length;if(G.dlaT==null||G.t-G.dlaT>1||G.dla==null)G.dla=(Math.random()*N)|0;G.dlaT=G.t;const i=((G.dla|0)%N+N)%N,c=CH[i%CH.length];
+  g.save();try{worldBG(c,0,0,W,H);g.fillStyle='rgba(10,0,30,.4)';g.beginPath();g.ellipse(W*.5,H-58,H*.32,H*.035,0,0,TAU);g.fill();miniChar(c,W*.5,H-60,(H-112)/165,{sway:.3})}catch(e){}g.restore();
+  let gr=g.createLinearGradient(0,0,0,74);gr.addColorStop(0,'rgba(10,4,24,.82)');gr.addColorStop(1,'rgba(10,4,24,0)');g.fillStyle=gr;g.fillRect(0,0,W,74);
+  gr=g.createLinearGradient(0,H-170,0,H);gr.addColorStop(0,'rgba(10,4,24,0)');gr.addColorStop(.45,'rgba(10,4,24,.7)');gr.addColorStop(1,'rgba(10,4,24,.94)');g.fillStyle=gr;g.fillRect(0,H-170,W,170);
+  /* MIN and FULL at the top */
+  const bw=Math.min(190,(W-260)/2),bh=40,by=10,cur=pk?null:DL.mode;
+  [['min','MIN','#2f4f8f','Small · plays in LOW'],['full','FULL','#2f7a5f','All voices · up to HIGH']].forEach((q,n)=>{const x=W/2+(n?8:-bw-8),on=cur===q[0];button(x,by,bw,bh,q[1],q[2],()=>{if(!on)pick(q[0])},24);
+   if(on){g.save();g.beginPath();g.moveTo(x+10,by);g.lineTo(x+bw,by);g.lineTo(x+bw-10,by+bh);g.lineTo(x,by+bh);g.closePath();g.strokeStyle='#ffe14d';g.lineWidth=5;g.stroke();g.restore()}
+   txt((on?'✓ ':'')+q[3],x+bw/2,by+bh+11,11.5,on?'#ffe14d':'#fff',INK,'center',FU,3)});
+  if(pk)button(12,12,96,34,'BACK','#3a2a5e',()=>goto('title'),18);
+  /* arrows at the middle left and right */
+  button(8,H/2-34,48,68,'‹','#3a2a5e',()=>{G.dla=(i+N-1)%N},36);button(W-56,H/2-34,48,68,'›','#3a2a5e',()=>{G.dla=(i+1)%N},36);
+  /* the tip */
+  const tw=Math.min(640,W-150),tx=(W-tw)/2;g.font='700 15px '+FU;const ls=wrap(TIPS[i],tw-36),th=30+ls.length*19+10,ty=H-58-th;
+  rr(tx,ty,tw,th,12);g.fillStyle='rgba(10,4,24,.8)';g.fill();g.strokeStyle=c.col2||'#ffe14d';g.lineWidth=2.5;g.stroke();
+  txt('TIP '+(i+1)+' / '+N,tx+16,ty+17,12,'#ffe14d',null,'left',FU);txt(c.name+(c.title?'  ·  '+String(c.title).toUpperCase():''),tx+tw-16,ty+17,12,c.col2||'#fff',INK,'right',FU,3);
+  ls.forEach((l,n)=>txt(l,W/2,ty+40+n*19,15,'#fff',null,'center',FU));
+  /* the download bar at the bottom */
+  const pw=Math.min(W-40,900),px=(W-pw)/2,py=H-26,tot=DL.tot,kk=pk?0:(tot?DL.done/tot:0);
+  rr(px,py,pw,16,8);g.fillStyle='#120a22';g.fill();g.strokeStyle='#fff';g.lineWidth=2;g.stroke();if(kk>0){rr(px+3,py+3,Math.max(10,(pw-6)*kk),10,5);g.fillStyle='#7fdcff';g.fill()}
+  txt(pk?'Pick MIN or FULL at the top to start. You can switch any time in Settings.':tot?'DOWNLOADING   '+DL.done+' / '+tot+' files'+(DL.bytes?'   ·   '+Math.round(DL.bytes/1048576)+' MB':''):'Checking what you already have...',px+4,py-13,13,'#fff',INK,'left',FU,3);
+  if(!pk&&MD())button(px+pw-150,py-30,150,26,'PLAY NOW','#3a2a5e',()=>{DL.stop=true;DL.started=false;DL.fin=false;DL.ok=true;goto('menu')},14);
+  hdr('',null,true)};
+ {const p0=SCR.dlpick,d0=SCR.dl;SCR.dlpick=function(){return F().dlart?dlArt(true):p0()};SCR.dl=function(){return F().dlart?dlArt(false):d0()}}
  BACK.dlpick='title';BACK.dl='title';
  /* settings panel */
  let LX=0;{const ge0=gems;gems=function(){return LX=ge0()}}
@@ -791,7 +840,7 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
    else{const P=[RAISE,L1B,L4A,HA,HB,WIN][q.sp]||IDLES[c.idle||0];g.scale(q.flip?-k:k,k);drawChar(c,P,{t:G.t,sway:.15,ground:true,expr:ex});done=true}}catch(e){}g.restore();
   if(!done)return mc0(c,x,y,sc,o)};
  const ctx=fn=>function(){ART++;try{return fn.apply(this,arguments)}finally{ART--}};
- SCR.menu=ctx(SCR.menu);if(SCR.fdetail)SCR.fdetail=ctx(SCR.fdetail);if(SCR.news)SCR.news=ctx(SCR.news);teamCard=ctx(teamCard);drawReveal=ctx(drawReveal)}
+ SCR.menu=ctx(SCR.menu);if(SCR.fdetail)SCR.fdetail=ctx(SCR.fdetail);if(SCR.news)SCR.news=ctx(SCR.news);['dl','dlpick'].forEach(q=>{if(SCR[q])SCR[q]=ctx(SCR[q])});teamCard=ctx(teamCard);drawReveal=ctx(drawReveal)}
 /* lobbychar, part 2: remove the fighter picture panel on the right side of the lobby. The panel is drawn by drawMenu right after scr(): box, world picture, fighter, header strip and two labels.
    While the flag is on those draws are skipped (canvas fill/stroke/fillRect are switched off from the end of scr() until the second label), so only the background fighter shows. */
 {let REQ=false,ARM=0;const N=function(){},disarm=()=>{if(ARM){ARM=0;try{delete g.fill;delete g.stroke;delete g.fillRect}catch(e){}}};
