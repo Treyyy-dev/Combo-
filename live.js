@@ -102,9 +102,9 @@ SCR.livemodes=function(){scr();const M=L.modes,bw=Math.min(600,W-36),bx=(W-bw)/2
  M.slice(G.lmpg*per,G.lmpg*per+per).forEach(m=>{button(bx,y,bw,60,m.n,m.col,()=>pickTeam(()=>playMode(m,'livemodes'),'livemodes'),30,m.d);y+=72});
  if(!M.length)txt('No extra modes right now.',W/2,H/2,15,'#e6dcff',null,'center',FU);if(np>1)pager(W/2-78,H-40,'lmpg',np);hdr('NEW MODES','offline')};
 try{BACK.livemodes='offline'}catch(e){}
-{const c0=SCR.config;SCR.config=function(){c0();/* flag "devkeyset": the DEV KEY button moves to SETTINGS on the start screen (look.js) and leaves Configure */if(L.canKey&&!L.owner&&!FLAGS.devkeyset)button(12,H-44,118,32,'DEV KEY','#3a2a5e',()=>askKey(),15)}}
-try{window.COMBO_DEVKEY={can:()=>!!L.canKey,owner:()=>!!L.owner,ask:()=>askKey()}}catch(e){}
-{const f0=SCR.menu;SCR.menu=function(){f0();if(!L.owner)return;const ww=W*.42,wh=H-84,wx=W-ww-22,wy=58;button(wx+10,wy+wh-42,150,32,'DEV STUDIO'+(L.staged.length?'  ·  '+L.staged.length:''),'#b8324f',()=>{L.sel=0;G.devpg=0;goto('dev')},16)}}
+{const c0=SCR.config;SCR.config=function(){c0();/* flag "devkeyset": the DEV KEY button moves to SETTINGS on the start screen (look.js) and leaves Configure */if(L.canKey&&!L.owner&&!FLAGS.devkeyset&&!FLAGS.devonly)button(12,H-44,118,32,'DEV KEY','#3a2a5e',()=>askKey(),15)}}
+try{window.COMBO_DEVKEY={can:()=>!!L.canKey,owner:()=>!!L.owner,ask:()=>askKey(),go:()=>{L.sel=0;G.devpg=0;goto('dev')}}}catch(e){}
+{const f0=SCR.menu;SCR.menu=function(){f0();/* flag "devonly": no DEV STUDIO button in the lobby; the studio is opened from SETTINGS on the start screen */if(!L.owner||FLAGS.devonly)return;const ww=W*.42,wh=H-84,wx=W-ww-22,wy=58;button(wx+10,wy+wh-42,150,32,'DEV STUDIO'+(L.staged.length?'  ·  '+L.staged.length:''),'#b8324f',()=>{L.sel=0;G.devpg=0;goto('dev')},16)}}
 try{BACK.dev='menu'}catch(e){}
 
 /* ---------- studio actions ---------- */

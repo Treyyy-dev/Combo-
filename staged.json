@@ -2511,5 +2511,20 @@
   },
   "release": true,
   "rev": 2
+ },
+ {
+  "id": "update-dev-only-settings",
+  "type": "update",
+  "name": "Dev Studio In Settings",
+  "subtitle": "Dev Studio opens from DEV KEY only",
+  "desc": "The DEV STUDIO button is gone from the lobby and the dev option is gone from Configure. The only way in is SETTINGS on the start screen: once the key is in, pressing DEV KEY opens the Dev Studio.",
+  "status": "staged",
+  "created": 1795265818986,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "devonly"
+  }
  }
 ]
