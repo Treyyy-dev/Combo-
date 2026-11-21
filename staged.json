@@ -2329,5 +2329,20 @@
   "game": {
    "flag": "idle2"
   }
+ },
+ {
+  "id": "update-download-4",
+  "type": "update",
+  "name": "Download On 4",
+  "subtitle": "Players download when 4 or more go out at once",
+  "desc": "The download screen now comes up when 4 or more things are released at once, instead of 5.",
+  "status": "staged",
+  "created": 1795250426810,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "dl4"
+  }
  }
 ]
