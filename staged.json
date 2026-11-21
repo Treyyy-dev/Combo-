@@ -2631,5 +2631,20 @@
   "game": {
    "flag": "subnohead"
   }
+ },
+ {
+  "id": "update-3d-fighters",
+  "type": "update",
+  "name": "3D Fighters",
+  "subtitle": "Every fighter is a real 3D model",
+  "desc": "Every fighter is now a real 3D model, built from their own colours, hair, outfit, weapon and accessories, with the anime outline look. Hair tails, scarves, capes and coats move with physics. Fights play the same as before, left and right like Street Fighter, with every move posed in 3D. Face icons stay drawn. Stage 1 of the 3D rebuild: 3D maps, 3D cutscenes and the 3D arena come next.",
+  "status": "staged",
+  "created": 1795267838065,
+  "colors": [
+   "#3fa9ff"
+  ],
+  "game": {
+   "flag": "fight3d"
+  }
  }
 ]
