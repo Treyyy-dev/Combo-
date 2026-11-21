@@ -1217,5 +1217,20 @@
   "game": {
    "flag": "dlg2"
   }
+ },
+ {
+  "id": "update-jp-voices",
+  "type": "update",
+  "name": "Japanese Voices",
+  "subtitle": "Switch fighter voices to Japanese",
+  "desc": "Every fighter line is also recorded in Japanese: intro, ultimate, win, KO and summon lines. Configure gets a new VOICES button that switches between English and Japanese. The words on screen stay in English.",
+  "status": "staged",
+  "created": 1795225567707,
+  "colors": [
+   "#ffd36e"
+  ],
+  "game": {
+   "flag": "jpvoice"
+  }
  }
 ]
