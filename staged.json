@@ -2637,7 +2637,7 @@
   "type": "update",
   "name": "3D Arena Modes",
   "subtitle": "Two new offline modes, like Tekken",
-  "desc": "Two new modes on the OFFLINE screen, played 3 vs 3 in a round 3D arena. 3D SIDESTEP plays like Tekken: a side view from an angle, and you tap up or down to step around an attack. 3D FREE RUN plays like Naruto Storm: the camera stays over your fighter's shoulder the whole time, while you run around the arena and fight. Fighters hold their hands in front of them, and attacks and ultimates are thrown forward at the opponent. The attacker lunges in so strikes connect, and a fighter who is hit is knocked back with an impact burst. Knock-ups, sparks and shots are shown in the same view. Crouching is off in these modes.",
+  "desc": "Two new modes on the OFFLINE screen, played 3 vs 3 in a round 3D arena. 3D SIDESTEP plays like Tekken: a side view from an angle, and you tap up or down to step around an attack. 3D FREE RUN plays like Naruto Storm: the camera stays over your fighter's shoulder the whole time, while you run around the arena and fight. Fighters hold their hands in front of them, and attacks and ultimates are thrown forward at the opponent. The attacker lunges in so strikes connect, and a fighter who is hit is knocked back with an impact burst. Jumps, jumping attacks, skills, guarding, knock-ups, sparks and shots are all shown in the same view. Crouching is off in these modes.",
   "status": "staged",
   "created": 1795308710773,
   "colors": [
@@ -2646,6 +2646,6 @@
   "game": {
    "flag": "arena3d"
   },
-  "rev": 6
+  "rev": 7
  }
 ]
