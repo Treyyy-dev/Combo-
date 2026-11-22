@@ -2738,5 +2738,20 @@
   "game": {
    "flag": "solid2"
   }
+ },
+ {
+  "id": "update-body-volume",
+  "type": "update",
+  "name": "Bodies With Volume",
+  "subtitle": "Fighters turn like solid bodies, not paper",
+  "desc": "In the 3D battle view fighters no longer move like flat cards. The body is wrapped round and turned: shoulders swing with each running step, the body leans into a circle, coils back and whips through on a strike, is spun by a hit, and sways while standing. Needs 3D Battle View.",
+  "status": "staged",
+  "created": 1795315292963,
+  "colors": [
+   "#ff9d5c"
+  ],
+  "game": {
+   "flag": "vol3d"
+  }
  }
 ]

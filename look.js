@@ -1496,6 +1496,15 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
        const POSE=()=>{g.translate(f.x+ox,f.y+oy);if(rot)g.rotate(rot);g.scale(qx,qy);g.translate(-f.x,-f.y)};
        /* the body turns in depth: the striking side swings toward the target and the other shoulder drops back; a hit turns the body the other way */
        const tws=fat&&o.atk?o.atk.arm*(away?1:-1):((f.a3hn||0)%2?1:-1),twa=fat?lg*.3:fhu?clamp(1-el/.3,0,1)*.26:0;
+       /* flag "vol3d" (Trey: make movement and animation feel 3D instead of paper; own flag because 3D Battle View is released). The fighter is no longer a flat card that gets squashed: the drawing is wrapped round a cylinder and turned by an angle, so the side of the body that turns toward the camera widens and the side that turns away narrows and slides behind, with the middle of the chest moving across. The angle comes from what the fighter is doing: the turn between views, shoulders swinging with each running step, leaning into a circle, coiling back and whipping through on a strike, being spun by a hit, and a slow sway while standing. */
+       if(F().vol3d){const R=30,mp=(x,th)=>R*Math.sin(clamp(Math.asin(clamp(x/R,-1,1))+th,-Math.PI/2,Math.PI/2));
+        let th=fs*(1-q)*.9-tws*twa*1.7;if(mov&&!fat)th+=Math.sin(G.t*12)*.15-(f.a3c||0)*(away?1:-1)*.3;if(f.state==='dash')th+=dsg*.22;if(!mov&&!fat&&!fhu&&!fln&&!fdn)th+=Math.sin(G.t*1.6+f.side*1.3)*.08;if(fln)th+=Math.sin(el*7)*.35;th=clamp(th,-1.05,1.05);
+        const B=[-26,-13,0,13,26],c0=(mp(-26,th)+mp(26,th))/2,KS=sc*(1+(away?-.05:.09)*lg);
+        for(let i=0;i<4;i++){const xa=B[i],xb=B[i+1],ma=mp(xa,th)-c0,mb=mp(xb,th)-c0,ss=Math.max(.14,(mb-ma)/(xb-xa)),tt=ma-xa*ss,ca=i===0?-260:xa-.35,cw=(i===3?260:xb+.35)-ca;
+         const one=add=>{g.save();if(add){g.globalCompositeOperation='lighter';g.globalAlpha=.55*fl}POSE();g.translate(f.x,f.y-bob+(away?-7:8)*lg*sc);g.scale(KS,KS);g.translate(tt,0);g.scale(ss,1);
+          if(LY>.02){const far2=away?lerp(1,.74,LY):lerp(1,1.3,LY),fy2=away?lerp(1,.72,LY):lerp(1,1.15,LY);g.save();g.beginPath();g.rect(ca,-70,cw,170);g.clip();try{fn(f.c,o)}catch(e){}g.restore();g.translate(0,-70);g.scale(far2,fy2);g.translate(0,70);g.beginPath();g.rect(ca,-420,cw,350.6);g.clip();try{fn(f.c,o)}catch(e){}}
+          else{g.beginPath();g.rect(ca,-420,cw,520);g.clip();try{fn(f.c,o)}catch(e){}}g.restore()};one(0);if(fl>0)one(1)}}
+       else
        [1,-1].forEach(h=>{const k=(h===fs?far:near)*(twa?(h===tws?1+twa*.3:1-twa):1);const one=add=>{g.save();if(add){g.globalCompositeOperation='lighter';g.globalAlpha=.55*fl}POSE();g.translate(f.x+(fs*(near-far)*9*sc),f.y-bob+(away?-7:8)*lg*sc);g.scale(k*sc*(1+(away?-.05:.09)*lg),sc*(1+(away?-.05:.09)*lg));if(LY>.02){/* lying in depth: legs and upper body are drawn as two slices; the slice farther from the camera is smaller */const far2=away?lerp(1,.74,LY):lerp(1,1.3,LY),fy2=away?lerp(1,.72,LY):lerp(1,1.15,LY);
           g.save();g.beginPath();g.rect(h>0?0:-260,-70,260,170);g.clip();try{fn(f.c,o)}catch(e){}g.restore();
           g.translate(0,-70);g.scale(far2,fy2);g.translate(0,70);g.beginPath();g.rect(h>0?0:-260,-420,260,350.6);g.clip();try{fn(f.c,o)}catch(e){}}
