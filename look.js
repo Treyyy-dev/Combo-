@@ -1383,7 +1383,7 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
  const sf0=stepF;stepF=function(f,o,dt){const m=A();if(m&&f.inp){if(f.inp.crouch)f.inp.crouch=false;if(f.state==='crouch')f.state='idle'}return sf0.apply(this,arguments)};
  /* 3D look (Trey: make the character and the camera move with it): the camera leans, pushes in and swings sideways with every step or circle, the far background slides the other way,
     the stepping fighter visibly comes toward the camera or goes into the screen (bigger or smaller, turned a little), and the other fighter shifts the opposite way. */
- const CM={rot:0,z:1,x:0};let prevD=0;const up0=update;update=function(rdt){cam.rot-=CM.rot;cam.z/=CM.z;cam.x-=CM.x;CM.rot=0;CM.z=1;CM.x=0;up0(rdt);const m=A();if(!m){prevD=0;return}try{const dt=Math.min(.05,rdt)*(G.slow||1),me=G.f[G.me||0],en=G.f[1-(G.me||0)],d=dirIn();
+ const CM={rot:0,z:1,x:0,y:0};let prevD=0;const up0=update;update=function(rdt){cam.rot-=CM.rot;cam.z/=CM.z;cam.x-=CM.x;cam.y-=CM.y;CM.rot=0;CM.z=1;CM.x=0;CM.y=0;up0(rdt);const m=A();if(!m){prevD=0;return}try{const dt=Math.min(.05,rdt)*(G.slow||1),me=G.f[G.me||0],en=G.f[1-(G.me||0)],d=dirIn();
    G.f.forEach(f=>{f.a3cd=Math.max(0,(f.a3cd||0)-dt);if(f.a3s){f.a3s.t+=dt;if(f.a3s.t>.34)f.a3s=null}f.a3z=f.a3z||0});
    if(m==='step'){if(d&&!prevD)step(me,d);me.a3c=0}else{const cd=Math.abs(S3.circ||0)>.3?Math.sign(S3.circ):0;me.a3c=cd&&live(me)?cd:0;if(me.a3c)S3.tg+=me.a3c*(me.side?-1:1)*1.5*dt}
    prevD=d;
@@ -1396,18 +1396,22 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
    G.f.forEach(f=>{const on=(f.a3s&&Math.sin(f.a3s.t/.34*Math.PI)>.22)||(m!=='free'&&f.a3c);if(f.a3s)f.a3td=f.a3s.d;else if(f.a3c)f.a3td=f.a3c;f.a3tn=lerp(f.a3tn||0,on&&live(f)?1:0,Math.min(1,dt*(f.a3s?26:12)))});
    S3.ang=lerp(S3.ang,S3.tg,Math.min(1,dt*9));{/* FREE RUN works like Naruto Storm (Trey): while the two are apart the camera sits behind your fighter (you see their back, the opponent faces you in the distance); when they close in or someone attacks or is hit it swings round to the side-on fighting view, like Tekken, where every move plays as usual. */
     const close=Math.abs(me.x-en.x)<235||[me,en].some(f=>['atk','hit','launch','down','getup','stun','pin'].includes(f.state))||G.cine;S3.close=close;
-    const tgt=m==='free'?(close?.3:1.3):clamp(.3+(S3.v||0)*.26,.05,.6);S3.phi=lerp(S3.phi==null?.3:S3.phi,tgt,Math.min(1,dt*(m==='free'?3.2:5)));S3.sd=lerp(S3.sd==null?((G.me||0)?-1:1):S3.sd,Math.sign(en.x-me.x)||1,Math.min(1,dt*6))}
+    /* Trey, later: over the shoulder the whole time in FREE RUN, so the camera no longer swings side-on to fight */const tgt=m==='free'?1.3:clamp(.3+(S3.v||0)*.26,.05,.6);S3.phi=lerp(S3.phi==null?.3:S3.phi,tgt,Math.min(1,dt*(m==='free'?3.2:5)));S3.sd=lerp(S3.sd==null?((G.me||0)?-1:1):S3.sd,Math.sign(en.x-me.x)||1,Math.min(1,dt*6))}
    {const v=clamp((S3.tg-S3.ang)*2.2,-1,1),dz=(G.f[0].a3z-G.f[1].a3z)/52;S3.v=lerp(S3.v||0,v,Math.min(1,dt*8));S3.dz=lerp(S3.dz||0,dz,Math.min(1,dt*8));
-    if(G.mode==='fight'&&!G.cine){CM.rot=S3.v*.045+S3.dz*.012;CM.z=1+Math.abs(S3.v)*.07+Math.abs(S3.dz)*.03;CM.x=S3.v*46;cam.rot+=CM.rot;cam.z*=CM.z;cam.x+=CM.x}}}catch(e){}};
+    S3.osq=m==='free'?clamp(((S3.phi||0)-.45)/.6,0,1):0;
+    if(G.mode==='fight'&&!G.cine){CM.rot=S3.v*.045+S3.dz*.012;CM.z=1+Math.abs(S3.v)*.07+Math.abs(S3.dz)*.03;CM.x=S3.v*46;
+     /* make it feel 3D (Trey): in FREE RUN the camera looks down from higher up (more floor, the far fighter stands higher on the screen), bobs with your steps, leans into turns, pushes in as you close the distance and pulls back as you run apart */
+     if(m==='free'){const mv=(me.state==='run'||me.a3c)?1:0,dist=Math.abs(me.x-en.x);S3.mv=lerp(S3.mv||0,mv,Math.min(1,dt*8));CM.y=Math.sin(G.t*11)*2.6*S3.mv;CM.rot+=(S3.circ||0)*.03*S3.mv+Math.sin(G.t*5.5)*.004*S3.mv;CM.z*=1+.1*clamp(1-dist/520,0,1)-.04*S3.mv}
+     cam.rot+=CM.rot;cam.z*=CM.z;cam.x+=CM.x;cam.y+=CM.y}}}catch(e){}};
  /* hits: far hits miss a circling fighter in FREE RUN */
  const ah0=applyHit;applyHit=function(a,v,h,sx,dir,force){if(A()==='free'&&v&&v.a3c&&a&&Math.abs(sx-a.x)>130&&!force)return false;return ah0.apply(this,arguments)};
  /* fighters are drawn nearer or farther while stepping */
  /* 3D camera view (Trey: do a 3D camera view for the 3D arena): the camera looks at the fight from an angle (S3.phi), from the player's side, so the player's fighter stands nearer and bigger and the opponent farther and smaller.
     Each fighter is placed on the arena floor with the same perspective as the floor itself (PJ), and the angle swings when someone steps or circles. Hit sparks and shots are still drawn on the straight line. */
- const K=620,PJ=(wx,wd)=>{const z=cam.z,ay=cam.ay,hy=cam.ay-26*z-cam.y*z*.6,cx=(G.f[0].x+G.f[1].x)/2,d=Math.max(wd,-K*.86),s=K/(K+d);return[W/2+(cx+wx-cam.x)*z*s,hy+(ay-hy)*s+(s>1?(s-1)*(H-ay)*.9:0),s]};
+ const K=620,HYO=()=>84*cam.z*(S3.osq||0),PJ=(wx,wd)=>{const z=cam.z,ay=cam.ay,hy=cam.ay-26*z-cam.y*z*.6-HYO(),cx=(G.f[0].x+G.f[1].x)/2,d=Math.max(wd,-K*.86),s=K/(K+d);return[W/2+(cx+wx-cam.x)*z*s,hy+(ay-hy)*s+(s>1?(s-1)*(H-ay)*.9:0),s]};
  /* FREE RUN controls follow the camera: pushing up runs at the opponent and down backs away while the camera is behind you, left and right circle; in the side-on view left and right move and up and down circle */
  const gi0=gatherInput;gatherInput=function(dt){gi0(dt);try{if(A()!=='free'||G.mode!=='fight')return;const me=G.f[G.me||0],en=G.f[1-(G.me||0)],ph=S3.phi||0,ix=PI.mx,iy=-dirIn(),to=Math.sign(en.x-me.x)||1;PI.mx=clamp(Math.round(ix*Math.cos(ph)+iy*Math.sin(ph)*to),-1,1);S3.circ=-iy*Math.cos(ph)+ix*Math.sin(ph)}catch(e){}};
- const df0=drawFighter;drawFighter=function(f,sil){if(!A()||!f||(f!==G.f[0]&&f!==G.f[1]))return df0.apply(this,arguments);const ph=S3.phi||0,sd=S3.sd||1,cx=(G.f[0].x+G.f[1].x)/2,xr=f.x-cx,az=f.a3z||0,p=PJ(xr*Math.cos(ph),xr*Math.sin(ph)*sd-az*1.05),k=clamp(p[2],.55,1.6),tw=1-Math.min(.16,Math.abs(az)/380);
+ const df0=drawFighter;drawFighter=function(f,sil){if(!A()||!f||(f!==G.f[0]&&f!==G.f[1]))return df0.apply(this,arguments);const ph=S3.phi||0,sd=S3.sd||1,cx=(G.f[0].x+G.f[1].x)/2,xr=f.x-cx,az=f.a3z||0,osq=A()==='free'?clamp((ph-.45)/.6,0,1):0,nearF=f===G.f[G.me||0],/* over the shoulder: your fighter sits low and to the left, the opponent up and to the right, and depth is stretched so distance reads */p=PJ(xr*Math.cos(ph)+(nearF?-78:62)*osq,clamp(xr*Math.sin(ph)*sd*(1+.7*osq)-az*1.05+(nearF?-70:40)*osq,osq>.5?-175:-9999,osq>.5?620:9999)),k=clamp(p[2],.5,1.85),tw=1-Math.min(.16,Math.abs(az)/380);
    g.save();g.translate(cam.x+(p[0]-W/2)/cam.z,(p[1]-cam.ay)/cam.z);g.scale(k*tw,k);g.translate(-f.x,0);
    /* the body turns to look 3D (Trey): stepping or running into the screen shows the fighter's back, toward the camera shows their front. The turn is a quick swivel: the side view narrows, swaps to the front or back drawing, and widens again; they bob as they run. */
    /* every angle of the body (Trey: a drawing of every angle): the turn goes side view -> three-quarter view -> full front (toward the camera) or full back (into the screen), in both directions, so eight directions in all.
@@ -1417,14 +1421,20 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
      else{const q=clamp((tn-.3)/.7,0,1),far=lerp(.34,1,q*q),near=lerp(.72,1,q),away=frr&&ph>.45?(f===meF):(f.a3td||1)<0,mov=f.state==='run'||f.a3c,fn=away?window.CBACK:(window.CFRONT||drawFrontChar),bob=mov?Math.abs(Math.sin(G.t*11))*5:f.a3s?Math.sin(f.a3s.t/.34*Math.PI)*7:0,sc=f.c.sc||1,fs=(f.face||1)*(away?-1:1);
       if(fn){g.fillStyle='rgba(10,4,24,.3)';g.beginPath();g.ellipse(f.x,0,34*sc,7,0,0,TAU);g.fill();/* they keep their fighting stance while turned (Trey): legs apart with bent knees and both hands up; the back view walks its legs while moving */const o={t:G.t+f.side*1.7,expr:away?'':'angry',stance:1,walk:mov?G.t*12:0};
        [1,-1].forEach(h=>{const k=(h===fs?far:near);g.save();g.translate(f.x+(fs*(near-far)*9*sc),f.y-bob);g.scale(k*sc,sc);g.beginPath();g.rect(h>0?0:-260,-420,260,520);g.clip();try{fn(f.c,o)}catch(e){}g.restore()});return}}}
-    return df0.apply(this,arguments)}finally{g.restore()}};
+    /* attacks, hits and falls only exist as side drawings; seen from over the shoulder they are drawn narrower, as a body moving into or out of the screen would look */
+    if(A()==='free'&&!sil){const q=clamp((ph-.45)/.6,0,1);if(q>0){g.translate(f.x,0);g.scale(lerp(1,.58,q),1);g.translate(-f.x,0)}}
+    return df0.apply(this,arguments)}finally{g.restore();
+    /* pillars on the near side of the ring pass in front of the fighters, big and dark, in FREE RUN (drawn once per frame, after the second fighter) */
+    try{if(!sil&&A()==='free'&&(S3.osq||0)>.5){if(S3.dfT===G.t&&S3.fgT!==G.t){S3.fgT=G.t;const ang=S3.ang-(S3.phi||0)*(S3.sd||1),tr=g.getTransform();g.save();g.setTransform(S*dpr,0,0,S*dpr,0,0);
+       for(let k2=0;k2<14;k2++){const t=k2/14*TAU+.2+ang,wx=880*1.04*Math.cos(t),wd=880*1.04*Math.sin(t);if(wd>-120||wd<-470)continue;const p=PJ(wx,wd),s2=p[2]*cam.z,x=p[0],y=p[1],w=26*s2,h=300*s2;if(x<-w||x>W+w)continue;g.globalAlpha=.86;g.fillStyle='#120a22';g.fillRect(x-w/2,y-h,w,h);g.fillRect(x-w*.8,y-h-w*.3,w*1.6,w*.3);g.globalAlpha=.5;circ(x,y-h-w*.9,w*.6,'#ffe14d');g.globalAlpha=1}
+       g.restore()}S3.dfT=G.t}}catch(e){}}};
  /* the body moves with the sidestep (Trey): a real stepping pose (legs cross and bend, the body dips and leans, arms swing), and a running stride while circling in FREE RUN */
  const pa0=poseOf;poseOf=function(f){const p=pa0(f);try{if(!A()||!f||!Array.isArray(p)||!(f.state==='idle'||f.state==='run'||f.state==='guard'))return p;
    if(f.a3s){const q=p.slice(),u=f.a3s.t/.34,w=Math.sin(u*Math.PI),d=f.a3s.d,c2=Math.sin(u*Math.PI*2);q[0]+=d*9*w;q[1]-=d*5*w;q[6]+=28*c2;q[7]+=26*w;q[8]-=28*c2;q[9]+=30*w;q[2]+=22*c2;q[3]+=14*w;q[4]-=22*c2;q[5]+=14*w;q[11]=(q[11]||0)+9*w;return q}
    if(f.a3c){const q=p.slice(),t=G.t*11,c2=Math.sin(t),d=f.a3c;q[0]+=d*5;q[6]+=24*c2;q[7]+=14+10*Math.cos(t);q[8]-=24*c2;q[9]+=14-10*Math.cos(t);q[2]-=18*c2;q[4]+=18*c2;q[11]=(q[11]||0)+3+2*Math.abs(c2);return q}}catch(e){}return p};
  /* the arena: drawn over the stage's own sky and far background, in perspective, rotating */
  const R=880,hs=i=>{const v=Math.sin(i*91.7)*43758.5;return v-Math.floor(v)};
- const bg0=drawBG;drawBG=function(){if(!A())return bg0();{const cx0=cam.x,sl=Math.sin(S3.ang)*420+(S3.v||0)*120;cam.x=cx0+sl*8;try{bg0()}finally{cam.x=cx0}}try{const st=STAGES[G.stg||0],z=cam.z,ay=cam.ay,hy=cam.ay-26*z-cam.y*z*.6,cx=(G.f[0].x+G.f[1].x)/2,ang=S3.ang-(S3.phi||0)*(S3.sd||1);
+ const bg0=drawBG;drawBG=function(){if(!A())return bg0();{const cx0=cam.x,sl=Math.sin(S3.ang)*420+(S3.v||0)*120;cam.x=cx0+sl*8;try{bg0()}finally{cam.x=cx0}}try{const st=STAGES[G.stg||0],z=cam.z,ay=cam.ay,hy=cam.ay-26*z-cam.y*z*.6-HYO(),cx=(G.f[0].x+G.f[1].x)/2,ang=S3.ang-(S3.phi||0)*(S3.sd||1);
    const P=(wx,wd)=>{const d=Math.max(wd,-K*.86),s=K/(K+d);return[W/2+(cx+wx*1-cam.x)*z*s+(1-s)*0,hy+(ay-hy+ (H-ay)*.0)*s+ (s>1?(s-1)*(H-ay)*.9:0),s]},rot=(r,t)=>[r*Math.cos(t+ang),r*Math.sin(t+ang)];
    g.save();g.beginPath();g.rect(0,hy-2,W,H-hy+2);g.clip();
    const fl=(st.fl&&st.fl[0])||'#3a2a5e',f2=(st.fl&&st.fl[1])||'#2a1f45';const gr=g.createLinearGradient(0,hy,0,H);gr.addColorStop(0,f2);gr.addColorStop(1,fl);g.fillStyle=gr;g.fillRect(0,hy,W,H-hy);
@@ -1433,6 +1443,8 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
    ring(R,null,0,'rgba(255,255,255,.07)');for(let k=0;k<16;k++){if(k%2)continue;g.beginPath();const a0=k/16*TAU,a1=(k+1)/16*TAU;for(let i=0;i<=8;i++){const q=rot(R,a0+(a1-a0)*i/8),p=P(q[0],q[1]);i?g.lineTo(p[0],p[1]):g.moveTo(p[0],p[1])}for(let i=8;i>=0;i--){const q=rot(R*.62,a0+(a1-a0)*i/8),p=P(q[0],q[1]);g.lineTo(p[0],p[1])}g.closePath();g.fillStyle='rgba(255,255,255,.06)';g.fill()}
    for(let k=0;k<16;k++){const a=rot(R*.2,k/16*TAU),b=rot(R,k/16*TAU),p=P(a[0],a[1]),q=P(b[0],b[1]);g.beginPath();g.moveTo(p[0],p[1]);g.lineTo(q[0],q[1]);g.strokeStyle='rgba(255,255,255,.16)';g.lineWidth=1.5;g.stroke()}
    ring(R*.2,'rgba(255,255,255,.3)',2);ring(R*.62,'rgba(255,255,255,.2)',2);ring(R,(st.sun&&st.sun[0])||'#ffe14d',4);
+   /* haze where the floor meets the horizon, so the far side of the arena fades with distance */
+   {const hz=g.createLinearGradient(0,hy,0,hy+70*z);hz.addColorStop(0,'rgba('+(st.rf||'255,255,255')+',.34)');hz.addColorStop(1,'rgba('+(st.rf||'255,255,255')+',0)');g.fillStyle=hz;g.fillRect(0,hy,W,70*z)}
    g.restore();
    /* pillars on the far half of the ring, nearest last */
    const ps=[];for(let k=0;k<14;k++){const q=rot(R*1.04,k/14*TAU+.2);if(q[1]>-60)ps.push([q[1],q[0],k])}ps.sort((a,b)=>b[0]-a[0]);
