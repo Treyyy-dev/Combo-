@@ -101,20 +101,20 @@ function drawBack(f,k){const c=f.c,d=f.face,sc=4.4*(H>W?.8:1),t=G.t,ink=INK,hair
 let OTSF=null,OTST=-9;const _ots=drawOTS;drawOTS=function(f,k){if(F().noots||F().lookcam){OTSF=f;OTST=G.t}if(F().otsback){try{return drawBack(f,k)}catch(e){}}return _ots(f,k)};
 const FA={katana:150,staff:105,bo:105,bow:90,dagger:320,orb:0,fist:0};
 function seg2(a,b,r0,r1,fill){const dx=b.x-a.x,dy=b.y-a.y,L=Math.hypot(dx,dy)||1,nx=-dy/L,ny=dx/L;g.beginPath();g.moveTo(a.x+nx*r0,a.y+ny*r0);g.lineTo(b.x+nx*r1,b.y+ny*r1);g.arc(b.x,b.y,r1,Math.atan2(ny,nx),Math.atan2(-ny,-nx),true);g.lineTo(a.x-nx*r0,a.y-ny*r0);g.arc(a.x,a.y,r0,Math.atan2(-ny,-nx),Math.atan2(ny,nx),true);g.closePath();g.fillStyle=fill;g.fill();g.strokeStyle=INK;g.lineWidth=2;g.stroke()}
-function drawFrontChar(c,o){const t=o.t||0,ex=o.expr||'',ink=INK,A=c.acc||[],long=[1,2,5,6,7].includes(c.style),bk=(c.sc>1.07||c.dm>1)?1.12:1,br=Math.sin(t*3)*.8,dk=dkOf(c);g.lineJoin='round';g.lineCap='round';
+function drawFrontChar(c,o){const SQ=o.stance?1:0,t=o.t||0,ex=o.expr||'',ink=INK,A=c.acc||[],long=[1,2,5,6,7].includes(c.style),bk=(c.sc>1.07||c.dm>1)?1.12:1,br=Math.sin(t*3)*.8,dk=dkOf(c);g.lineJoin='round';g.lineCap='round';
  if(c.style===7||c.style===3){poly([[-20*bk,-110],[20*bk,-110],[30*bk,-22],[-30*bk,-22]],c.style===7?c.col:c.col2,ink,2)}
  if(long){ribbon(-12,-128,c.style===2||c.style===7?76:54,13,5,-5,.1,t,c.hair,ink);ribbon(12,-128,c.style===2||c.style===7?76:54,13,5,5,.1,t+1,c.hair,ink)}
  if(c.style===0||c.style===4||c.style===3)[[-12,-140,-24,-152,-8,-146],[12,-140,24,-152,8,-146],[-15,-132,-27,-134,-15,-125],[15,-132,27,-134,15,-125],[-4,-147,0,-162,4,-147]].forEach(q=>poly([[q[0],q[1]],[q[2],q[3]],[q[4],q[5]]],c.hair,ink));
  g.beginPath();g.ellipse(0,-131,17,17.5,0,0,TAU);g.fillStyle=dk;g.fill();g.strokeStyle=ink;g.lineWidth=2;g.stroke();
- [-1,1].forEach(sx=>{seg2({x:sx*6.2*bk,y:-70},{x:sx*7.6*bk,y:-37},7.6*bk,5.8*bk,sx<0?c.pantsSh:c.pants);seg2({x:sx*7.6*bk,y:-37},{x:sx*8.2*bk,y:-3},5.8*bk,3.9,sx<0?c.pantsSh:c.pants);
-  g.beginPath();g.ellipse(sx*9.2*bk,2.2,6.4,4.2,0,0,TAU);g.fillStyle=c.bare?c.skin:'#2b2438';g.fill();g.strokeStyle=ink;g.lineWidth=2;g.stroke();if(c.bare){g.lineWidth=.9;g.beginPath();[-2.4,0,2.4].forEach(x=>{g.moveTo(sx*9.2*bk+x,3.2);g.lineTo(sx*9.2*bk+x,6)});g.stroke()}else{g.strokeStyle='#efeaf8';g.lineWidth=1.5;g.beginPath();g.moveTo(sx*9.2*bk-5,5.4);g.lineTo(sx*9.2*bk+5,5.4);g.stroke();g.strokeStyle=c.col;g.beginPath();g.moveTo(sx*9.2*bk-4,-1.4);g.lineTo(sx*9.2*bk+4,-1.4);g.stroke()}});
+ [-1,1].forEach(sx=>{seg2({x:sx*(6.2+1.5*SQ)*bk,y:-70},{x:sx*(7.6+7.5*SQ)*bk,y:-37+2*SQ},7.6*bk,5.8*bk,sx<0?c.pantsSh:c.pants);seg2({x:sx*(7.6+7.5*SQ)*bk,y:-37+2*SQ},{x:sx*(8.2+11*SQ)*bk,y:-3},5.8*bk,3.9,sx<0?c.pantsSh:c.pants);
+  g.beginPath();g.ellipse(sx*(9.2+11*SQ)*bk,2.2,6.4,4.2,0,0,TAU);g.fillStyle=c.bare?c.skin:'#2b2438';g.fill();g.strokeStyle=ink;g.lineWidth=2;g.stroke();if(c.bare){g.lineWidth=.9;g.beginPath();[-2.4,0,2.4].forEach(x=>{g.moveTo(sx*(9.2+11*SQ)*bk+x,3.2);g.lineTo(sx*(9.2+11*SQ)*bk+x,6)});g.stroke()}else{g.strokeStyle='#efeaf8';g.lineWidth=1.5;g.beginPath();g.moveTo(sx*(9.2+11*SQ)*bk-5,5.4);g.lineTo(sx*(9.2+11*SQ)*bk+5,5.4);g.stroke();g.strokeStyle=c.col;g.beginPath();g.moveTo(sx*(9.2+11*SQ)*bk-4,-1.4);g.lineTo(sx*(9.2+11*SQ)*bk+4,-1.4);g.stroke()}});
  const TP=[[-11,-65],[-12.6,-74],[-10,-88],[-13.4,-100-br],[-18,-108-br],[-9,-115],[9,-115],[18,-108-br],[13.4,-100-br],[10,-88],[12.6,-74],[11,-65]].map(q=>[q[0]*bk,q[1]]);
  const sm=()=>{const n=TP.length;let m=[(TP[n-1][0]+TP[0][0])/2,(TP[n-1][1]+TP[0][1])/2];g.beginPath();g.moveTo(m[0],m[1]);for(let i=0;i<n;i++){const j=(i+1)%n;m=[(TP[i][0]+TP[j][0])/2,(TP[i][1]+TP[j][1])/2];g.quadraticCurveTo(TP[i][0],TP[i][1],m[0],m[1])}g.closePath()};
  sm();g.strokeStyle=ink;g.lineWidth=4;g.stroke();g.fillStyle=c.top;g.fill();g.save();sm();g.clip();g.fillStyle=c.topSh;g.fillRect(-22*bk,-120,7.5*bk,60);g.fillRect(12*bk,-120,10*bk,60);
  g.fillStyle='rgba(255,255,255,.14)';g.beginPath();g.ellipse(-4*bk,-101,4*bk,5,0,0,TAU);g.fill();g.strokeStyle='rgba(0,0,0,.22)';g.lineWidth=1.2;g.beginPath();g.moveTo(-10*bk,-97);g.quadraticCurveTo(-5*bk,-93.5,-.6,-97);g.moveTo(.6,-97);g.quadraticCurveTo(5*bk,-93.5,10*bk,-97);g.moveTo(0,-95);g.lineTo(0,-78);g.moveTo(-4*bk,-89);g.lineTo(4*bk,-89);g.moveTo(-3.6*bk,-83.5);g.lineTo(3.6*bk,-83.5);g.stroke();
  g.beginPath();g.moveTo(-6,-116);g.lineTo(6,-116);g.lineTo(0,-103);g.closePath();g.fillStyle=c.skin;g.fill();g.strokeStyle=ink;g.lineWidth=1.4;g.stroke();g.strokeStyle=c.col;g.lineWidth=2.2;g.beginPath();g.moveTo(-7.5,-115);g.lineTo(0,-101.5);g.lineTo(7.5,-115);g.stroke();
  g.fillStyle=c.col2;g.fillRect(-16*bk,-77,32*bk,5.4);g.fillStyle=ink;g.fillRect(-2.6,-78,5.2,7.4);g.fillStyle=c.col;g.fillRect(-1.5,-77,3,5.4);g.restore();
- [-1,1].forEach(sx=>{const up=o.win&&sx<0,fr=o.arms==='front',S={x:sx*17.5*bk,y:-107-br},E=fr?{x:sx*20.5*bk,y:-90}:up?{x:sx*26*bk,y:-121}:{x:sx*21*bk,y:-89},Hd=fr?{x:sx*3.4,y:-75}:up?{x:sx*23*bk,y:-144+Math.sin(t*6)*1.5}:{x:sx*19*bk,y:-71};seg2(S,E,5.9*bk,4.6*bk,sx<0?c.topSh:c.top);seg2(E,Hd,4.6*bk,3.5*bk,c.bare?(sx<0?c.skinSh:c.skin):(sx<0?c.topSh:c.top));
+ [-1,1].forEach(sx=>{const up=o.win&&sx<0,fr=o.arms==='front',S={x:sx*17.5*bk,y:-107-br},E=SQ&&!fr&&!up?{x:sx*24*bk,y:-92}:fr?{x:sx*20.5*bk,y:-90}:up?{x:sx*26*bk,y:-121}:{x:sx*21*bk,y:-89},Hd=SQ&&!fr&&!up?{x:sx*(sx<0?11:15)*bk,y:-108+(sx<0?0:7)}:fr?{x:sx*3.4,y:-75}:up?{x:sx*23*bk,y:-144+Math.sin(t*6)*1.5}:{x:sx*19*bk,y:-71};seg2(S,E,5.9*bk,4.6*bk,sx<0?c.topSh:c.top);seg2(E,Hd,4.6*bk,3.5*bk,c.bare?(sx<0?c.skinSh:c.skin):(sx<0?c.topSh:c.top));
   if(sx>0&&c.weapon!=='fist'&&!fr)weapon(c,Hd,FA[c.weapon]||0,o,false);const gl=c.weapon==='fist',r=gl?(c.fistR||8.2)*.8:4.5;circ(Hd.x,Hd.y+2,r,gl?c.col2:(sx<0?c.skinSh:c.skin),ink,2);g.strokeStyle='rgba(0,0,0,.4)';g.lineWidth=.9;g.beginPath();[-.45,0,.45].forEach(k=>{g.moveTo(Hd.x+k*r,Hd.y+2+r*.15);g.lineTo(Hd.x+k*r,Hd.y+2+r*.95)});g.stroke()});
  g.fillStyle=c.skinSh;g.fillRect(-3.8,-121,7.6,8);g.strokeStyle=ink;g.lineWidth=2;g.strokeRect(-3.8,-121,7.6,8);
  g.save();g.translate(0,-132);[-1,1].forEach(sx=>{g.beginPath();g.ellipse(sx*14.4,3,2.4,3.8,0,0,TAU);g.fillStyle=c.skin;g.fill();g.strokeStyle=ink;g.lineWidth=1.8;g.stroke()});
@@ -1385,7 +1385,7 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
     the stepping fighter visibly comes toward the camera or goes into the screen (bigger or smaller, turned a little), and the other fighter shifts the opposite way. */
  const CM={rot:0,z:1,x:0};let prevD=0;const up0=update;update=function(rdt){cam.rot-=CM.rot;cam.z/=CM.z;cam.x-=CM.x;CM.rot=0;CM.z=1;CM.x=0;up0(rdt);const m=A();if(!m){prevD=0;return}try{const dt=Math.min(.05,rdt)*(G.slow||1),me=G.f[G.me||0],en=G.f[1-(G.me||0)],d=dirIn();
    G.f.forEach(f=>{f.a3cd=Math.max(0,(f.a3cd||0)-dt);if(f.a3s){f.a3s.t+=dt;if(f.a3s.t>.34)f.a3s=null}f.a3z=f.a3z||0});
-   if(m==='step'){if(d&&!prevD)step(me,d);me.a3c=0}else{me.a3c=d&&live(me)?d:0;if(me.a3c)S3.tg+=me.a3c*(me.side?-1:1)*1.5*dt}
+   if(m==='step'){if(d&&!prevD)step(me,d);me.a3c=0}else{const cd=Math.abs(S3.circ||0)>.3?Math.sign(S3.circ):0;me.a3c=cd&&live(me)?cd:0;if(me.a3c)S3.tg+=me.a3c*(me.side?-1:1)*1.5*dt}
    prevD=d;
    /* CPU */
    if(G.mode==='fight'&&en.hp>0){en.a3t=(en.a3t||0)-dt;const D=G.cd|0,near=Math.abs(en.x-me.x)<260;
@@ -1393,8 +1393,10 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
     else{if(en.a3t<=0){en.a3t=rnd(.5,1.4);en.a3w=Math.random()<[.15,.25,.35,.45][D]?(Math.random()<.5?1:-1):0}en.a3c=live(en)?(en.a3w||0):0;if(en.a3c)S3.tg+=en.a3c*(en.side?-1:1)*1.5*dt}}
    G.f.forEach((f,i)=>{const o=G.f[1-i],mine=f.a3s?Math.sin(f.a3s.t/.34*Math.PI)*f.a3s.d*62:(f.a3c||0)*40,theirs=o.a3s?Math.sin(o.a3s.t/.34*Math.PI)*o.a3s.d*62:(o.a3c||0)*40,want=mine-theirs*.45;f.a3z=lerp(f.a3z,want,Math.min(1,dt*(f.a3s||o.a3s?30:10)))});
    /* how far each fighter has turned its body (0 = side-on, 1 = fully turned) and which way */
-   G.f.forEach(f=>{const on=(f.a3s&&Math.sin(f.a3s.t/.34*Math.PI)>.22)||f.a3c;if(f.a3s)f.a3td=f.a3s.d;else if(f.a3c)f.a3td=f.a3c;f.a3tn=lerp(f.a3tn||0,on&&live(f)?1:0,Math.min(1,dt*(f.a3s?26:12)))});
-   S3.ang=lerp(S3.ang,S3.tg,Math.min(1,dt*9));S3.phi=lerp(S3.phi==null?.3:S3.phi,clamp(.3+(S3.v||0)*.26,.05,.6),Math.min(1,dt*5));
+   G.f.forEach(f=>{const on=(f.a3s&&Math.sin(f.a3s.t/.34*Math.PI)>.22)||(m!=='free'&&f.a3c);if(f.a3s)f.a3td=f.a3s.d;else if(f.a3c)f.a3td=f.a3c;f.a3tn=lerp(f.a3tn||0,on&&live(f)?1:0,Math.min(1,dt*(f.a3s?26:12)))});
+   S3.ang=lerp(S3.ang,S3.tg,Math.min(1,dt*9));{/* FREE RUN works like Naruto Storm (Trey): while the two are apart the camera sits behind your fighter (you see their back, the opponent faces you in the distance); when they close in or someone attacks or is hit it swings round to the side-on fighting view, like Tekken, where every move plays as usual. */
+    const close=Math.abs(me.x-en.x)<235||[me,en].some(f=>['atk','hit','launch','down','getup','stun','pin'].includes(f.state))||G.cine;S3.close=close;
+    const tgt=m==='free'?(close?.3:1.3):clamp(.3+(S3.v||0)*.26,.05,.6);S3.phi=lerp(S3.phi==null?.3:S3.phi,tgt,Math.min(1,dt*(m==='free'?3.2:5)));S3.sd=lerp(S3.sd==null?((G.me||0)?-1:1):S3.sd,Math.sign(en.x-me.x)||1,Math.min(1,dt*6))}
    {const v=clamp((S3.tg-S3.ang)*2.2,-1,1),dz=(G.f[0].a3z-G.f[1].a3z)/52;S3.v=lerp(S3.v||0,v,Math.min(1,dt*8));S3.dz=lerp(S3.dz||0,dz,Math.min(1,dt*8));
     if(G.mode==='fight'&&!G.cine){CM.rot=S3.v*.045+S3.dz*.012;CM.z=1+Math.abs(S3.v)*.07+Math.abs(S3.dz)*.03;CM.x=S3.v*46;cam.rot+=CM.rot;cam.z*=CM.z;cam.x+=CM.x}}}catch(e){}};
  /* hits: far hits miss a circling fighter in FREE RUN */
@@ -1403,15 +1405,17 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
  /* 3D camera view (Trey: do a 3D camera view for the 3D arena): the camera looks at the fight from an angle (S3.phi), from the player's side, so the player's fighter stands nearer and bigger and the opponent farther and smaller.
     Each fighter is placed on the arena floor with the same perspective as the floor itself (PJ), and the angle swings when someone steps or circles. Hit sparks and shots are still drawn on the straight line. */
  const K=620,PJ=(wx,wd)=>{const z=cam.z,ay=cam.ay,hy=cam.ay-26*z-cam.y*z*.6,cx=(G.f[0].x+G.f[1].x)/2,d=Math.max(wd,-K*.86),s=K/(K+d);return[W/2+(cx+wx-cam.x)*z*s,hy+(ay-hy)*s+(s>1?(s-1)*(H-ay)*.9:0),s]};
- const df0=drawFighter;drawFighter=function(f,sil){if(!A()||!f||(f!==G.f[0]&&f!==G.f[1]))return df0.apply(this,arguments);const ph=S3.phi||0,sd=(G.me||0)?-1:1,cx=(G.f[0].x+G.f[1].x)/2,xr=f.x-cx,az=f.a3z||0,p=PJ(xr*Math.cos(ph),xr*Math.sin(ph)*sd-az*1.05),k=clamp(p[2],.7,1.32),tw=1-Math.min(.16,Math.abs(az)/380);
+ /* FREE RUN controls follow the camera: pushing up runs at the opponent and down backs away while the camera is behind you, left and right circle; in the side-on view left and right move and up and down circle */
+ const gi0=gatherInput;gatherInput=function(dt){gi0(dt);try{if(A()!=='free'||G.mode!=='fight')return;const me=G.f[G.me||0],en=G.f[1-(G.me||0)],ph=S3.phi||0,ix=PI.mx,iy=-dirIn(),to=Math.sign(en.x-me.x)||1;PI.mx=clamp(Math.round(ix*Math.cos(ph)+iy*Math.sin(ph)*to),-1,1);S3.circ=-iy*Math.cos(ph)+ix*Math.sin(ph)}catch(e){}};
+ const df0=drawFighter;drawFighter=function(f,sil){if(!A()||!f||(f!==G.f[0]&&f!==G.f[1]))return df0.apply(this,arguments);const ph=S3.phi||0,sd=S3.sd||1,cx=(G.f[0].x+G.f[1].x)/2,xr=f.x-cx,az=f.a3z||0,p=PJ(xr*Math.cos(ph),xr*Math.sin(ph)*sd-az*1.05),k=clamp(p[2],.55,1.6),tw=1-Math.min(.16,Math.abs(az)/380);
    g.save();g.translate(cam.x+(p[0]-W/2)/cam.z,(p[1]-cam.ay)/cam.z);g.scale(k*tw,k);g.translate(-f.x,0);
    /* the body turns to look 3D (Trey): stepping or running into the screen shows the fighter's back, toward the camera shows their front. The turn is a quick swivel: the side view narrows, swaps to the front or back drawing, and widens again; they bob as they run. */
    /* every angle of the body (Trey: a drawing of every angle): the turn goes side view -> three-quarter view -> full front (toward the camera) or full back (into the screen), in both directions, so eight directions in all.
       The three-quarter views are the front or back drawing with the far half of the body drawn narrower than the near half, which is what a body turned 45 degrees looks like. */
-   try{const tn=f.a3tn||0;if(tn>.03&&!sil&&f.c){
+   try{const meF=G.f[G.me||0],frr=A()==='free'&&(f.state==='idle'||f.state==='run'||f.state==='guard'),tn=frr?Math.max(f.a3tn||0,clamp((ph-.45)/.6,0,1)):(f.a3tn||0);if(tn>.03&&!sil&&f.c){
      if(tn<.3){const sx=1-.5*(tn/.3);g.translate(f.x,0);g.scale(sx,1);g.translate(-f.x,0)}
-     else{const q=clamp((tn-.3)/.7,0,1),far=lerp(.34,1,q*q),near=lerp(.72,1,q),away=(f.a3td||1)<0,fn=away?window.CBACK:(window.CFRONT||drawFrontChar),bob=f.a3c?Math.abs(Math.sin(G.t*11))*5:f.a3s?Math.sin(f.a3s.t/.34*Math.PI)*7:0,sc=f.c.sc||1,fs=(f.face||1)*(away?-1:1);
-      if(fn){g.fillStyle='rgba(10,4,24,.3)';g.beginPath();g.ellipse(f.x,0,34*sc,7,0,0,TAU);g.fill();const o={t:G.t+f.side*1.7,expr:away?'':'angry'};
+     else{const q=clamp((tn-.3)/.7,0,1),far=lerp(.34,1,q*q),near=lerp(.72,1,q),away=frr&&ph>.45?(f===meF):(f.a3td||1)<0,mov=f.state==='run'||f.a3c,fn=away?window.CBACK:(window.CFRONT||drawFrontChar),bob=mov?Math.abs(Math.sin(G.t*11))*5:f.a3s?Math.sin(f.a3s.t/.34*Math.PI)*7:0,sc=f.c.sc||1,fs=(f.face||1)*(away?-1:1);
+      if(fn){g.fillStyle='rgba(10,4,24,.3)';g.beginPath();g.ellipse(f.x,0,34*sc,7,0,0,TAU);g.fill();/* they keep their fighting stance while turned (Trey): legs apart with bent knees and both hands up; the back view walks its legs while moving */const o={t:G.t+f.side*1.7,expr:away?'':'angry',stance:1,walk:mov?G.t*12:0};
        [1,-1].forEach(h=>{const k=(h===fs?far:near);g.save();g.translate(f.x+(fs*(near-far)*9*sc),f.y-bob);g.scale(k*sc,sc);g.beginPath();g.rect(h>0?0:-260,-420,260,520);g.clip();try{fn(f.c,o)}catch(e){}g.restore()});return}}}
     return df0.apply(this,arguments)}finally{g.restore()}};
  /* the body moves with the sidestep (Trey): a real stepping pose (legs cross and bend, the body dips and leans, arms swing), and a running stride while circling in FREE RUN */
@@ -1420,7 +1424,7 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
    if(f.a3c){const q=p.slice(),t=G.t*11,c2=Math.sin(t),d=f.a3c;q[0]+=d*5;q[6]+=24*c2;q[7]+=14+10*Math.cos(t);q[8]-=24*c2;q[9]+=14-10*Math.cos(t);q[2]-=18*c2;q[4]+=18*c2;q[11]=(q[11]||0)+3+2*Math.abs(c2);return q}}catch(e){}return p};
  /* the arena: drawn over the stage's own sky and far background, in perspective, rotating */
  const R=880,hs=i=>{const v=Math.sin(i*91.7)*43758.5;return v-Math.floor(v)};
- const bg0=drawBG;drawBG=function(){if(!A())return bg0();{const cx0=cam.x,sl=Math.sin(S3.ang)*420+(S3.v||0)*120;cam.x=cx0+sl*8;try{bg0()}finally{cam.x=cx0}}try{const st=STAGES[G.stg||0],z=cam.z,ay=cam.ay,hy=cam.ay-26*z-cam.y*z*.6,cx=(G.f[0].x+G.f[1].x)/2,ang=S3.ang-(S3.phi||0)*((G.me||0)?-1:1);
+ const bg0=drawBG;drawBG=function(){if(!A())return bg0();{const cx0=cam.x,sl=Math.sin(S3.ang)*420+(S3.v||0)*120;cam.x=cx0+sl*8;try{bg0()}finally{cam.x=cx0}}try{const st=STAGES[G.stg||0],z=cam.z,ay=cam.ay,hy=cam.ay-26*z-cam.y*z*.6,cx=(G.f[0].x+G.f[1].x)/2,ang=S3.ang-(S3.phi||0)*(S3.sd||1);
    const P=(wx,wd)=>{const d=Math.max(wd,-K*.86),s=K/(K+d);return[W/2+(cx+wx*1-cam.x)*z*s+(1-s)*0,hy+(ay-hy+ (H-ay)*.0)*s+ (s>1?(s-1)*(H-ay)*.9:0),s]},rot=(r,t)=>[r*Math.cos(t+ang),r*Math.sin(t+ang)];
    g.save();g.beginPath();g.rect(0,hy-2,W,H-hy+2);g.clip();
    const fl=(st.fl&&st.fl[0])||'#3a2a5e',f2=(st.fl&&st.fl[1])||'#2a1f45';const gr=g.createLinearGradient(0,hy,0,H);gr.addColorStop(0,f2);gr.addColorStop(1,fl);g.fillStyle=gr;g.fillRect(0,hy,W,H-hy);
@@ -1439,7 +1443,7 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
  /* match label and the two buttons on the OFFLINE screen */
  const rl0=rlab;rlab=function(){const m=A();return m==='step'?'3D SIDESTEP':m==='free'?'3D FREE RUN':rl0()};
  const go=m=>{S3.ang=S3.tg=0;begin(()=>({type:'team',team:SV.team.slice(),ret:'offline',a3:m}))};
- const so0=SCR.offline;SCR.offline=function(){if(!ON())return so0();const h0=hdr;hdr=function(t){if(t==='OFFLINE'){const bw=Math.min(600,W-36),bx=(W-bw)/2,w2=(bw-12)/2,y=H-74;button(bx,y,w2,52,'3D SIDESTEP','#2f4f8f',()=>go('step'),24,'Tekken style: step around hits');button(bx+w2+12,y,w2,52,'3D FREE RUN','#2f7a5f',()=>go('free'),24,'Circle your opponent freely')}return h0.apply(this,arguments)};try{so0()}finally{hdr=h0}};
+ const so0=SCR.offline;SCR.offline=function(){if(!ON())return so0();const h0=hdr;hdr=function(t){if(t==='OFFLINE'){const bw=Math.min(600,W-36),bx=(W-bw)/2,w2=(bw-12)/2,y=H-74;button(bx,y,w2,52,'3D SIDESTEP','#2f4f8f',()=>go('step'),24,'Tekken style: step around hits');button(bx+w2+12,y,w2,52,'3D FREE RUN','#2f7a5f',()=>go('free'),24,'Camera behind you, run anywhere')}return h0.apply(this,arguments)};try{so0()}finally{hdr=h0}};
  const sr0=startRound;startRound=function(){S3.ang=S3.tg=0;return sr0.apply(this,arguments)};
  try{window.COMBO_A3=()=>({mode:A(),ang:S3.ang,tg:S3.tg})}catch(e){}}
 })();
