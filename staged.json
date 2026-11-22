@@ -2637,7 +2637,7 @@
   "type": "update",
   "name": "3D Battle View",
   "subtitle": "Every match is played over your fighter's shoulder",
-  "desc": "Every match in every mode is now played in 3D, from over your fighter's shoulder, in a round arena. Run up and the opponent gets closer and bigger, back off and they get farther away; left and right circle. Fighters hold their hands in front of them and throw attacks, skills and ultimates forward, lunge in so the hit lands on the opponent, and get knocked back, into the air or flat on the floor in the same view. Running, dashing, jumping, getting hit, being launched, falling, getting up and knockouts each have their own animation for this view. Match intros, knockouts and the summon duel play in the same 3D view, with the camera swinging round to whoever is speaking or has won, and it circles the fighters during an ultimate. The camera travels round the fighters when it changes shoulder, showing them from the side, three-quarter, front and back, and it moves the same way in fights, intros and knockouts. Falling back and getting up are shown in depth, with soft shadows and light on the arena floor. Strikes wind up, snap and recover, fighters bounce in their stance, heavy hits throw speed lines with a flash and a harder camera jolt, and a knockout pulls the camera in. Jump is on its own button, and crouching is off outside online matches. The 3D SIDESTEP and 3D FREE RUN buttons are removed.",
+  "desc": "Every match in every mode is now played in 3D, from over your fighter's shoulder, in a round arena. Run up and the opponent gets closer and bigger, back off and they get farther away; left and right circle. Fighters hold their hands in front of them and throw attacks, skills and ultimates forward, lunge in so the hit lands on the opponent, and get knocked back, into the air or flat on the floor in the same view. Running, dashing, jumping, getting hit, being launched, falling, getting up and knockouts each have their own animation for this view. Match intros, knockouts and the summon duel play in the same 3D view, with the camera swinging round to whoever is speaking or has won, and it circles the fighters during an ultimate. The camera travels round the fighters when it changes shoulder, showing them from the side, three-quarter, front and back, and it moves the same way in fights, intros and knockouts. Falling back and getting up are shown in depth, with soft shadows and light on the arena floor. Jump is on its own button, and crouching is off outside online matches. The 3D SIDESTEP and 3D FREE RUN buttons are removed.",
   "status": "staged",
   "created": 1795308710773,
   "colors": [
@@ -2646,14 +2646,14 @@
   "game": {
    "flag": "arena3d"
   },
-  "rev": 12
+  "rev": 13
  },
  {
   "id": "update-solid-fighters",
   "type": "update",
   "name": "Solid Fighters",
   "subtitle": "Fighters look rounded and solid",
-  "desc": "Fighters keep their drawings and now look solid. In matches and cutscenes every part of a fighter (arms, legs, body, head, hair, weapon) is lit on one side with a bright spot, shaded on the other and round its edges, and casts a soft shadow on the parts behind it.",
+  "desc": "Fighters keep their drawings and now look solid. In matches and cutscenes every part of a fighter (arms, legs, body, head, hair, weapon) gets a bright lit side with a thin bright edge and a deep shadow side, so it reads as round.",
   "status": "staged",
   "created": 1795313268428,
   "colors": [
@@ -2662,7 +2662,7 @@
   "game": {
    "flag": "depth3d"
   },
-  "rev": 3
+  "rev": 4
  },
  {
   "id": "update-deep-maps",
@@ -2707,6 +2707,36 @@
   ],
   "game": {
    "flag": "scene3d"
+  }
+ },
+ {
+  "id": "update-fight-feel",
+  "type": "update",
+  "name": "Fight Feel",
+  "subtitle": "Strikes snap, heavy hits land hard",
+  "desc": "In the 3D battle view strikes now wind up, snap and recover, fighters bounce in their stance, a blocked hit drives the guard back, heavy hits throw speed lines with a flash and a harder camera jolt, and a knockout pulls the camera in. Needs 3D Battle View.",
+  "status": "staged",
+  "created": 1795315186647,
+  "colors": [
+   "#ffd24d"
+  ],
+  "game": {
+   "flag": "fightfeel"
+  }
+ },
+ {
+  "id": "update-solid-stronger",
+  "type": "update",
+  "name": "Solid Fighters 2",
+  "subtitle": "A much stronger solid look",
+  "desc": "Pushes the solid look further: every part of a fighter also gets a bright spot on its lit side, darker edges and underside, and casts a soft shadow on the parts behind it. Needs Solid Fighters.",
+  "status": "staged",
+  "created": 1795315186648,
+  "colors": [
+   "#7fb2ff"
+  ],
+  "game": {
+   "flag": "solid2"
   }
  }
 ]
