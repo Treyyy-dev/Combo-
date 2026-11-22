@@ -1381,7 +1381,9 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
  /* W and the up arrow normally also jump; in these modes they only step, and jump stays on its own key (Space) */
  const ka0=keyAct;keyAct=function(code){if(A()&&(code==='KeyW'||code==='ArrowUp'))return null;return ka0.apply(this,arguments)};
  const sf0=stepF;stepF=function(f,o,dt){const m=A();if(m&&f.inp){if(f.inp.crouch)f.inp.crouch=false;if(f.state==='crouch')f.state='idle'}return sf0.apply(this,arguments)};
- let prevD=0;const up0=update;update=function(rdt){up0(rdt);const m=A();if(!m){prevD=0;return}try{const dt=Math.min(.05,rdt)*(G.slow||1),me=G.f[G.me||0],en=G.f[1-(G.me||0)],d=dirIn();
+ /* 3D look (Trey: make the character and the camera move with it): the camera leans, pushes in and swings sideways with every step or circle, the far background slides the other way,
+    the stepping fighter visibly comes toward the camera or goes into the screen (bigger or smaller, turned a little), and the other fighter shifts the opposite way. */
+ const CM={rot:0,z:1,x:0};let prevD=0;const up0=update;update=function(rdt){cam.rot-=CM.rot;cam.z/=CM.z;cam.x-=CM.x;CM.rot=0;CM.z=1;CM.x=0;up0(rdt);const m=A();if(!m){prevD=0;return}try{const dt=Math.min(.05,rdt)*(G.slow||1),me=G.f[G.me||0],en=G.f[1-(G.me||0)],d=dirIn();
    G.f.forEach(f=>{f.a3cd=Math.max(0,(f.a3cd||0)-dt);if(f.a3s){f.a3s.t+=dt;if(f.a3s.t>.34)f.a3s=null}f.a3z=f.a3z||0});
    if(m==='step'){if(d&&!prevD)step(me,d);me.a3c=0}else{me.a3c=d&&live(me)?d:0;if(me.a3c)S3.tg+=me.a3c*(me.side?-1:1)*1.5*dt}
    prevD=d;
@@ -1389,15 +1391,17 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
    if(G.mode==='fight'&&en.hp>0){en.a3t=(en.a3t||0)-dt;const D=G.cd|0,near=Math.abs(en.x-me.x)<260;
     if(m==='step'){if(en.a3t<=0){en.a3t=.25;if(me.state==='atk'&&near&&Math.random()<[.03,.07,.12,.2][D])step(en,Math.random()<.5?1:-1);else if(Math.random()<.012*(D+1))step(en,Math.random()<.5?1:-1)}en.a3c=0}
     else{if(en.a3t<=0){en.a3t=rnd(.5,1.4);en.a3w=Math.random()<[.15,.25,.35,.45][D]?(Math.random()<.5?1:-1):0}en.a3c=live(en)?(en.a3w||0):0;if(en.a3c)S3.tg+=en.a3c*(en.side?-1:1)*1.5*dt}}
-   G.f.forEach(f=>{const want=f.a3s?Math.sin(f.a3s.t/.34*Math.PI)*f.a3s.d*52:(f.a3c||0)*24;f.a3z=lerp(f.a3z,want,Math.min(1,dt*(f.a3s?30:10)))});
-   S3.ang=lerp(S3.ang,S3.tg,Math.min(1,dt*9))}catch(e){}};
+   G.f.forEach((f,i)=>{const o=G.f[1-i],mine=f.a3s?Math.sin(f.a3s.t/.34*Math.PI)*f.a3s.d*62:(f.a3c||0)*40,theirs=o.a3s?Math.sin(o.a3s.t/.34*Math.PI)*o.a3s.d*62:(o.a3c||0)*40,want=mine-theirs*.45;f.a3z=lerp(f.a3z,want,Math.min(1,dt*(f.a3s||o.a3s?30:10)))});
+   S3.ang=lerp(S3.ang,S3.tg,Math.min(1,dt*9));
+   {const v=clamp((S3.tg-S3.ang)*2.2,-1,1),dz=(G.f[0].a3z-G.f[1].a3z)/52;S3.v=lerp(S3.v||0,v,Math.min(1,dt*8));S3.dz=lerp(S3.dz||0,dz,Math.min(1,dt*8));
+    if(G.mode==='fight'&&!G.cine){CM.rot=S3.v*.045+S3.dz*.012;CM.z=1+Math.abs(S3.v)*.07+Math.abs(S3.dz)*.03;CM.x=S3.v*46;cam.rot+=CM.rot;cam.z*=CM.z;cam.x+=CM.x}}}catch(e){}};
  /* hits: far hits miss a circling fighter in FREE RUN */
  const ah0=applyHit;applyHit=function(a,v,h,sx,dir,force){if(A()==='free'&&v&&v.a3c&&a&&Math.abs(sx-a.x)>130&&!force)return false;return ah0.apply(this,arguments)};
  /* fighters are drawn nearer or farther while stepping */
- const df0=drawFighter;drawFighter=function(f,sil){if(!A()||!f||!f.a3z)return df0.apply(this,arguments);const z=f.a3z,k=1+z/900;g.save();g.translate(f.x,z*.55);g.scale(k,k);g.translate(-f.x,0);try{return df0.apply(this,arguments)}finally{g.restore()}};
+ const df0=drawFighter;drawFighter=function(f,sil){if(!A()||!f||!f.a3z)return df0.apply(this,arguments);const z=f.a3z,k=1+z/330,tw=1-Math.min(.16,Math.abs(z)/380);g.save();g.translate(f.x,z*.8);g.scale(k*tw,k);g.translate(-f.x,0);try{return df0.apply(this,arguments)}finally{g.restore()}};
  /* the arena: drawn over the stage's own sky and far background, in perspective, rotating */
  const R=880,K=620,hs=i=>{const v=Math.sin(i*91.7)*43758.5;return v-Math.floor(v)};
- const bg0=drawBG;drawBG=function(){bg0();if(!A())return;try{const st=STAGES[G.stg||0],z=cam.z,ay=cam.ay,hy=cam.ay-26*z-cam.y*z*.6,cx=(G.f[0].x+G.f[1].x)/2,ang=S3.ang;
+ const bg0=drawBG;drawBG=function(){if(!A())return bg0();{const cx0=cam.x,sl=Math.sin(S3.ang)*420+(S3.v||0)*120;cam.x=cx0+sl*8;try{bg0()}finally{cam.x=cx0}}try{const st=STAGES[G.stg||0],z=cam.z,ay=cam.ay,hy=cam.ay-26*z-cam.y*z*.6,cx=(G.f[0].x+G.f[1].x)/2,ang=S3.ang;
    const P=(wx,wd)=>{const d=Math.max(wd,-K*.86),s=K/(K+d);return[W/2+(cx+wx*1-cam.x)*z*s+(1-s)*0,hy+(ay-hy+ (H-ay)*.0)*s+ (s>1?(s-1)*(H-ay)*.9:0),s]},rot=(r,t)=>[r*Math.cos(t+ang),r*Math.sin(t+ang)];
    g.save();g.beginPath();g.rect(0,hy-2,W,H-hy+2);g.clip();
    const fl=(st.fl&&st.fl[0])||'#3a2a5e',f2=(st.fl&&st.fl[1])||'#2a1f45';const gr=g.createLinearGradient(0,hy,0,H);gr.addColorStop(0,f2);gr.addColorStop(1,fl);g.fillStyle=gr;g.fillRect(0,hy,W,H-hy);
