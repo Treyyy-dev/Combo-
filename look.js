@@ -1367,4 +1367,56 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
   const up=e=>{if(E.drag&&E.drag.id===e.pointerId){E.drag=null;try{save()}catch(x){}}};cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up)}catch(e){}
  const sb0=SCR.binds;if(sb0)SCR.binds=function(){sb0();if(!ON()||(G.btab||0)!==1)return;const has=SV.tl&&Object.keys(SV.tl).length;button(W/2-200,102+236,400,38,'CUSTOM LAYOUT','#2f4f8f',()=>{E.sel=null;goto('tlay')},20,has?'ON':'Drag, size, see-through')};
  try{window.COMBO_TLAY=E}catch(e){}}
+/* arena3d (asked for by Trey 2026-11-21: "a mode in offline for a 3D battle like Tekken"; he chose drawn fighters in a 3D arena, 3 vs 3 teams, and both ways of moving as two modes).
+   Two buttons on the OFFLINE screen: 3D SIDESTEP and 3D FREE RUN. Both are a normal offline team match (same fighters, moves, swaps, assists, rewards) played in a round arena:
+   the two fighters always stay side-on to the camera, like Tekken, and stepping around the opponent turns the whole arena (floor rings, tiles and pillars are drawn in perspective and rotate).
+   - SIDESTEP: tap up (into the screen) or down (toward the camera): a quick step that cannot be hit for 0.28 s, then 0.6 s before the next one.
+   - FREE RUN: hold up or down to keep circling the opponent; shots and other hits that land far from the attacker miss while circling, close hits still land.
+   Up/down are W / S or the arrow keys, or the move stick pushed up / down (W and the up arrow do not jump here; jump is its own key or button). Crouching (and low attacks) is switched off in these modes because down is used for stepping. The CPU steps and circles too.
+   Numbers picked by Claude. rules.a3 = 'step' | 'free' marks the match. */
+{const ON=()=>!!F().arena3d,A=()=>ON()&&G.rules&&G.rules.a3&&G.f&&G.f.length===2?G.rules.a3:null,S3={ang:0,tg:0};
+ const dirIn=()=>{let d=0;try{if(keys.KeyW||keys.ArrowUp)d-=1;if(keys.KeyS||keys.ArrowDown)d+=1;if(typeof joy!=='undefined'&&joy){const dx=joy.x-joy.ox,dy=joy.y-joy.oy;if(Math.abs(dx)<60){if(dy>46)d+=1;else if(dy<-46)d-=1}}}catch(e){}return clamp(d,-1,1)};
+ const live=f=>G.mode==='fight'&&f.hp>0&&(f.state==='idle'||f.state==='run'||f.state==='guard'||f.state==='crouch');
+ const step=(f,d)=>{if(!live(f)||(f.a3cd||0)>0)return false;f.a3s={t:0,d};f.a3cd=.6;f.inv=Math.max(f.inv||0,.28);S3.tg+=d*(f.side?-1:1)*.55;try{sfx('dash')}catch(e){}return true};
+ /* W and the up arrow normally also jump; in these modes they only step, and jump stays on its own key (Space) */
+ const ka0=keyAct;keyAct=function(code){if(A()&&(code==='KeyW'||code==='ArrowUp'))return null;return ka0.apply(this,arguments)};
+ const sf0=stepF;stepF=function(f,o,dt){const m=A();if(m&&f.inp){if(f.inp.crouch)f.inp.crouch=false;if(f.state==='crouch')f.state='idle'}return sf0.apply(this,arguments)};
+ let prevD=0;const up0=update;update=function(rdt){up0(rdt);const m=A();if(!m){prevD=0;return}try{const dt=Math.min(.05,rdt)*(G.slow||1),me=G.f[G.me||0],en=G.f[1-(G.me||0)],d=dirIn();
+   G.f.forEach(f=>{f.a3cd=Math.max(0,(f.a3cd||0)-dt);if(f.a3s){f.a3s.t+=dt;if(f.a3s.t>.34)f.a3s=null}f.a3z=f.a3z||0});
+   if(m==='step'){if(d&&!prevD)step(me,d);me.a3c=0}else{me.a3c=d&&live(me)?d:0;if(me.a3c)S3.tg+=me.a3c*(me.side?-1:1)*1.5*dt}
+   prevD=d;
+   /* CPU */
+   if(G.mode==='fight'&&en.hp>0){en.a3t=(en.a3t||0)-dt;const D=G.cd|0,near=Math.abs(en.x-me.x)<260;
+    if(m==='step'){if(en.a3t<=0){en.a3t=.25;if(me.state==='atk'&&near&&Math.random()<[.03,.07,.12,.2][D])step(en,Math.random()<.5?1:-1);else if(Math.random()<.012*(D+1))step(en,Math.random()<.5?1:-1)}en.a3c=0}
+    else{if(en.a3t<=0){en.a3t=rnd(.5,1.4);en.a3w=Math.random()<[.15,.25,.35,.45][D]?(Math.random()<.5?1:-1):0}en.a3c=live(en)?(en.a3w||0):0;if(en.a3c)S3.tg+=en.a3c*(en.side?-1:1)*1.5*dt}}
+   G.f.forEach(f=>{const want=f.a3s?Math.sin(f.a3s.t/.34*Math.PI)*f.a3s.d*52:(f.a3c||0)*24;f.a3z=lerp(f.a3z,want,Math.min(1,dt*(f.a3s?30:10)))});
+   S3.ang=lerp(S3.ang,S3.tg,Math.min(1,dt*9))}catch(e){}};
+ /* hits: far hits miss a circling fighter in FREE RUN */
+ const ah0=applyHit;applyHit=function(a,v,h,sx,dir,force){if(A()==='free'&&v&&v.a3c&&a&&Math.abs(sx-a.x)>130&&!force)return false;return ah0.apply(this,arguments)};
+ /* fighters are drawn nearer or farther while stepping */
+ const df0=drawFighter;drawFighter=function(f,sil){if(!A()||!f||!f.a3z)return df0.apply(this,arguments);const z=f.a3z,k=1+z/900;g.save();g.translate(f.x,z*.55);g.scale(k,k);g.translate(-f.x,0);try{return df0.apply(this,arguments)}finally{g.restore()}};
+ /* the arena: drawn over the stage's own sky and far background, in perspective, rotating */
+ const R=880,K=620,hs=i=>{const v=Math.sin(i*91.7)*43758.5;return v-Math.floor(v)};
+ const bg0=drawBG;drawBG=function(){bg0();if(!A())return;try{const st=STAGES[G.stg||0],z=cam.z,ay=cam.ay,hy=cam.ay-26*z-cam.y*z*.6,cx=(G.f[0].x+G.f[1].x)/2,ang=S3.ang;
+   const P=(wx,wd)=>{const d=Math.max(wd,-K*.86),s=K/(K+d);return[W/2+(cx+wx*1-cam.x)*z*s+(1-s)*0,hy+(ay-hy+ (H-ay)*.0)*s+ (s>1?(s-1)*(H-ay)*.9:0),s]},rot=(r,t)=>[r*Math.cos(t+ang),r*Math.sin(t+ang)];
+   g.save();g.beginPath();g.rect(0,hy-2,W,H-hy+2);g.clip();
+   const fl=(st.fl&&st.fl[0])||'#3a2a5e',f2=(st.fl&&st.fl[1])||'#2a1f45';const gr=g.createLinearGradient(0,hy,0,H);gr.addColorStop(0,f2);gr.addColorStop(1,fl);g.fillStyle=gr;g.fillRect(0,hy,W,H-hy);
+   /* disc */
+   const ring=(r,col,lw,fill)=>{g.beginPath();for(let i=0;i<=72;i++){const q=rot(r,i/72*TAU),p=P(q[0],q[1]);i?g.lineTo(p[0],p[1]):g.moveTo(p[0],p[1])}if(fill){g.fillStyle=fill;g.fill()}if(col){g.strokeStyle=col;g.lineWidth=lw;g.stroke()}};
+   ring(R,null,0,'rgba(255,255,255,.07)');for(let k=0;k<16;k++){if(k%2)continue;g.beginPath();const a0=k/16*TAU,a1=(k+1)/16*TAU;for(let i=0;i<=8;i++){const q=rot(R,a0+(a1-a0)*i/8),p=P(q[0],q[1]);i?g.lineTo(p[0],p[1]):g.moveTo(p[0],p[1])}for(let i=8;i>=0;i--){const q=rot(R*.62,a0+(a1-a0)*i/8),p=P(q[0],q[1]);g.lineTo(p[0],p[1])}g.closePath();g.fillStyle='rgba(255,255,255,.06)';g.fill()}
+   for(let k=0;k<16;k++){const a=rot(R*.2,k/16*TAU),b=rot(R,k/16*TAU),p=P(a[0],a[1]),q=P(b[0],b[1]);g.beginPath();g.moveTo(p[0],p[1]);g.lineTo(q[0],q[1]);g.strokeStyle='rgba(255,255,255,.16)';g.lineWidth=1.5;g.stroke()}
+   ring(R*.2,'rgba(255,255,255,.3)',2);ring(R*.62,'rgba(255,255,255,.2)',2);ring(R,(st.sun&&st.sun[0])||'#ffe14d',4);
+   g.restore();
+   /* pillars on the far half of the ring, nearest last */
+   const ps=[];for(let k=0;k<14;k++){const q=rot(R*1.04,k/14*TAU+.2);if(q[1]>-60)ps.push([q[1],q[0],k])}ps.sort((a,b)=>b[0]-a[0]);
+   ps.forEach(q=>{const p=P(q[1],q[0]),s=p[2]*z,h=300*s,w=26*s,x=p[0],y=p[1];if(x<-80||x>W+80)return;g.fillStyle='rgba(10,4,24,.3)';g.beginPath();g.ellipse(x,y,w*1.5,w*.4,0,0,TAU);g.fill();
+     const pg=g.createLinearGradient(x-w/2,0,x+w/2,0);pg.addColorStop(0,'#2a1f45');pg.addColorStop(.5,'#6a5a9a');pg.addColorStop(1,'#1a1030');g.fillStyle=pg;g.fillRect(x-w/2,y-h,w,h);g.fillStyle='#1a1030';g.fillRect(x-w*.8,y-h-w*.3,w*1.6,w*.3);g.fillRect(x-w*.7,y-w*.25,w*1.4,w*.25);
+     const lc=q[2]%2?'#ffe14d':((st.sun&&st.sun[0])||'#ff7ad1');g.globalAlpha=.75+.25*Math.sin(G.t*3+q[2]);circ(x,y-h-w*.9,w*.55,lc);g.globalAlpha=.25;circ(x,y-h-w*.9,w*1.3,lc);g.globalAlpha=1;
+     if(q[2]%2===0){g.strokeStyle='rgba(255,255,255,.25)';g.lineWidth=Math.max(1,2*s);g.beginPath();g.moveTo(x-w/2,y-h*.45);g.lineTo(x+w/2,y-h*.45);g.stroke()}})}catch(e){try{g.restore()}catch(x){}}};
+ /* match label and the two buttons on the OFFLINE screen */
+ const rl0=rlab;rlab=function(){const m=A();return m==='step'?'3D SIDESTEP':m==='free'?'3D FREE RUN':rl0()};
+ const go=m=>{S3.ang=S3.tg=0;begin(()=>({type:'team',team:SV.team.slice(),ret:'offline',a3:m}))};
+ const so0=SCR.offline;SCR.offline=function(){if(!ON())return so0();const h0=hdr;hdr=function(t){if(t==='OFFLINE'){const bw=Math.min(600,W-36),bx=(W-bw)/2,w2=(bw-12)/2,y=H-74;button(bx,y,w2,52,'3D SIDESTEP','#2f4f8f',()=>go('step'),24,'Tekken style: step around hits');button(bx+w2+12,y,w2,52,'3D FREE RUN','#2f7a5f',()=>go('free'),24,'Circle your opponent freely')}return h0.apply(this,arguments)};try{so0()}finally{hdr=h0}};
+ const sr0=startRound;startRound=function(){S3.ang=S3.tg=0;return sr0.apply(this,arguments)};
+ try{window.COMBO_A3=()=>({mode:A(),ang:S3.ang,tg:S3.tg})}catch(e){}}
 })();

@@ -2631,5 +2631,20 @@
   "game": {
    "flag": "subnohead"
   }
+ },
+ {
+  "id": "update-3d-arena",
+  "type": "update",
+  "name": "3D Arena Modes",
+  "subtitle": "Two new offline modes, like Tekken",
+  "desc": "Two new modes on the OFFLINE screen, played 3 vs 3 in a round 3D arena that turns as you move around your opponent. 3D SIDESTEP: tap up or down to step around an attack. 3D FREE RUN: hold up or down to circle your opponent. Up and down are W and S, the arrow keys, or the move stick. Crouching is off in these modes.",
+  "status": "staged",
+  "created": 1795308710773,
+  "colors": [
+   "#2f4f8f"
+  ],
+  "game": {
+   "flag": "arena3d"
+  }
  }
 ]
