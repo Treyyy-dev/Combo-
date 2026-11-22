@@ -1517,16 +1517,24 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
     if(m==='step'){if(en.a3t<=0){en.a3t=.25;if(me.state==='atk'&&near&&Math.random()<[.03,.07,.12,.2][D])step(en,Math.random()<.5?1:-1);else if(Math.random()<.012*(D+1))step(en,Math.random()<.5?1:-1)}en.a3c=0}
     else{if(en.a3t<=0){en.a3t=rnd(.5,1.4);en.a3w=Math.random()<[.15,.25,.35,.45][D]?(Math.random()<.5?1:-1):0}en.a3c=live(en)?(en.a3w||0):0;if(en.a3c)S3.tg+=en.a3c*(en.side?-1:1)*1.5*dt}}
    G.f.forEach((f,i)=>{const o=G.f[1-i],mine=f.a3s?Math.sin(f.a3s.t/.34*Math.PI)*f.a3s.d*62:(f.a3c||0)*40,theirs=o.a3s?Math.sin(o.a3s.t/.34*Math.PI)*o.a3s.d*62:(o.a3c||0)*40,want=mine-theirs*.45;f.a3z=lerp(f.a3z,want,Math.min(1,dt*(f.a3s||o.a3s?30:10)))});
-   S3.ang=lerp(S3.ang,S3.tg,Math.min(1,dt*9));
+   S3.ang=lerp(S3.ang,S3.tg,Math.min(1,dt*9));S3.phi=lerp(S3.phi==null?.3:S3.phi,clamp(.3+(S3.v||0)*.26,.05,.6),Math.min(1,dt*5));
    {const v=clamp((S3.tg-S3.ang)*2.2,-1,1),dz=(G.f[0].a3z-G.f[1].a3z)/52;S3.v=lerp(S3.v||0,v,Math.min(1,dt*8));S3.dz=lerp(S3.dz||0,dz,Math.min(1,dt*8));
     if(G.mode==='fight'&&!G.cine){CM.rot=S3.v*.045+S3.dz*.012;CM.z=1+Math.abs(S3.v)*.07+Math.abs(S3.dz)*.03;CM.x=S3.v*46;cam.rot+=CM.rot;cam.z*=CM.z;cam.x+=CM.x}}}catch(e){}};
  /* hits: far hits miss a circling fighter in FREE RUN */
  const ah0=applyHit;applyHit=function(a,v,h,sx,dir,force){if(A()==='free'&&v&&v.a3c&&a&&Math.abs(sx-a.x)>130&&!force)return false;return ah0.apply(this,arguments)};
  /* fighters are drawn nearer or farther while stepping */
- const df0=drawFighter;drawFighter=function(f,sil){if(!A()||!f||!f.a3z)return df0.apply(this,arguments);const z=f.a3z,k=1+z/330,tw=1-Math.min(.16,Math.abs(z)/380);g.save();g.translate(f.x,z*.8);g.scale(k*tw,k);g.translate(-f.x,0);try{return df0.apply(this,arguments)}finally{g.restore()}};
+ /* 3D camera view (Trey: do a 3D camera view for the 3D arena): the camera looks at the fight from an angle (S3.phi), from the player's side, so the player's fighter stands nearer and bigger and the opponent farther and smaller.
+    Each fighter is placed on the arena floor with the same perspective as the floor itself (PJ), and the angle swings when someone steps or circles. Hit sparks and shots are still drawn on the straight line. */
+ const K=620,PJ=(wx,wd)=>{const z=cam.z,ay=cam.ay,hy=cam.ay-26*z-cam.y*z*.6,cx=(G.f[0].x+G.f[1].x)/2,d=Math.max(wd,-K*.86),s=K/(K+d);return[W/2+(cx+wx-cam.x)*z*s,hy+(ay-hy)*s+(s>1?(s-1)*(H-ay)*.9:0),s]};
+ const df0=drawFighter;drawFighter=function(f,sil){if(!A()||!f||(f!==G.f[0]&&f!==G.f[1]))return df0.apply(this,arguments);const ph=S3.phi||0,sd=(G.me||0)?-1:1,cx=(G.f[0].x+G.f[1].x)/2,xr=f.x-cx,az=f.a3z||0,p=PJ(xr*Math.cos(ph),xr*Math.sin(ph)*sd-az*1.05),k=clamp(p[2],.7,1.32),tw=1-Math.min(.16,Math.abs(az)/380);
+   g.save();g.translate(cam.x+(p[0]-W/2)/cam.z,(p[1]-cam.ay)/cam.z);g.scale(k*tw,k);g.translate(-f.x,0);try{return df0.apply(this,arguments)}finally{g.restore()}};
+ /* the body moves with the sidestep (Trey): a real stepping pose (legs cross and bend, the body dips and leans, arms swing), and a running stride while circling in FREE RUN */
+ const pa0=poseOf;poseOf=function(f){const p=pa0(f);try{if(!A()||!f||!Array.isArray(p)||!(f.state==='idle'||f.state==='run'||f.state==='guard'))return p;
+   if(f.a3s){const q=p.slice(),u=f.a3s.t/.34,w=Math.sin(u*Math.PI),d=f.a3s.d,c2=Math.sin(u*Math.PI*2);q[0]+=d*9*w;q[1]-=d*5*w;q[6]+=28*c2;q[7]+=26*w;q[8]-=28*c2;q[9]+=30*w;q[2]+=22*c2;q[3]+=14*w;q[4]-=22*c2;q[5]+=14*w;q[11]=(q[11]||0)+9*w;return q}
+   if(f.a3c){const q=p.slice(),t=G.t*11,c2=Math.sin(t),d=f.a3c;q[0]+=d*5;q[6]+=24*c2;q[7]+=14+10*Math.cos(t);q[8]-=24*c2;q[9]+=14-10*Math.cos(t);q[2]-=18*c2;q[4]+=18*c2;q[11]=(q[11]||0)+3+2*Math.abs(c2);return q}}catch(e){}return p};
  /* the arena: drawn over the stage's own sky and far background, in perspective, rotating */
- const R=880,K=620,hs=i=>{const v=Math.sin(i*91.7)*43758.5;return v-Math.floor(v)};
- const bg0=drawBG;drawBG=function(){if(!A())return bg0();{const cx0=cam.x,sl=Math.sin(S3.ang)*420+(S3.v||0)*120;cam.x=cx0+sl*8;try{bg0()}finally{cam.x=cx0}}try{const st=STAGES[G.stg||0],z=cam.z,ay=cam.ay,hy=cam.ay-26*z-cam.y*z*.6,cx=(G.f[0].x+G.f[1].x)/2,ang=S3.ang;
+ const R=880,hs=i=>{const v=Math.sin(i*91.7)*43758.5;return v-Math.floor(v)};
+ const bg0=drawBG;drawBG=function(){if(!A())return bg0();{const cx0=cam.x,sl=Math.sin(S3.ang)*420+(S3.v||0)*120;cam.x=cx0+sl*8;try{bg0()}finally{cam.x=cx0}}try{const st=STAGES[G.stg||0],z=cam.z,ay=cam.ay,hy=cam.ay-26*z-cam.y*z*.6,cx=(G.f[0].x+G.f[1].x)/2,ang=S3.ang-(S3.phi||0)*((G.me||0)?-1:1);
    const P=(wx,wd)=>{const d=Math.max(wd,-K*.86),s=K/(K+d);return[W/2+(cx+wx*1-cam.x)*z*s+(1-s)*0,hy+(ay-hy+ (H-ay)*.0)*s+ (s>1?(s-1)*(H-ay)*.9:0),s]},rot=(r,t)=>[r*Math.cos(t+ang),r*Math.sin(t+ang)];
    g.save();g.beginPath();g.rect(0,hy-2,W,H-hy+2);g.clip();
    const fl=(st.fl&&st.fl[0])||'#3a2a5e',f2=(st.fl&&st.fl[1])||'#2a1f45';const gr=g.createLinearGradient(0,hy,0,H);gr.addColorStop(0,f2);gr.addColorStop(1,fl);g.fillStyle=gr;g.fillRect(0,hy,W,H-hy);
