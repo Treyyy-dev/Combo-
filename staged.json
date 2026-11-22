@@ -2647,5 +2647,35 @@
    "flag": "arena3d"
   },
   "rev": 7
+ },
+ {
+  "id": "update-solid-fighters",
+  "type": "update",
+  "name": "Solid Fighters",
+  "subtitle": "Fighters look rounded and solid",
+  "desc": "Fighters keep their drawings and now look solid. In matches and cutscenes every part of a fighter (arms, legs, body, head, hair, weapon) gets a soft light on one side and a shadow on the other, so it reads as round.",
+  "status": "staged",
+  "created": 1795313268428,
+  "colors": [
+   "#7fb2ff"
+  ],
+  "game": {
+   "flag": "depth3d"
+  }
+ },
+ {
+  "id": "update-deep-maps",
+  "type": "update",
+  "name": "Maps Built In Depth",
+  "subtitle": "Each map goes back into the distance",
+  "desc": "Every map keeps its look and now goes back into the distance. Rows of the map's own lanterns, signs, ice, rocks or columns stand on the ground behind the fighters, each row farther away and hazier, with lines on the floor running to the horizon. In the 3D arena modes they stand around the ring and turn with it.",
+  "status": "staged",
+  "created": 1795313268429,
+  "colors": [
+   "#b98cff"
+  ],
+  "game": {
+   "flag": "mapdepth"
+  }
  }
 ]

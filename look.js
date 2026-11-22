@@ -819,6 +819,7 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
   else if(kind==='ice'){poly([[x-16*s,y],[x-7*s,y-46*s],[x,y-18*s],[x+8*s,y-64*s],[x+18*s,y]],sil?dk:'#bfe8ff',sil?null:'#fff',sil?0:1.5);if(!sil)poly([[x+3*s,y],[x+8*s,y-64*s],[x+12*s,y]],'#effaff')}
   else if(kind==='rock'){poly([[x-22*s,y],[x-12*s,y-30*s],[x-2*s,y-22*s],[x+7*s,y-44*s],[x+20*s,y-16*s],[x+26*s,y]],sil?dk:'#160708');if(!sil){g.strokeStyle='rgba(255,120,30,.8)';g.lineWidth=1.6*s;g.beginPath();g.moveTo(x+7*s,y-42*s);g.lineTo(x+3*s,y-24*s);g.lineTo(x+9*s,y);g.stroke()}}
   else{const h=(k%3===0?30:54)*s;g.fillStyle=sil?dk:'#eef4fb';g.fillRect(x-8*s,y-h,16*s,h);g.fillRect(x-12*s,y-5*s,24*s,5*s);if(k%3)g.fillRect(x-12*s,y-h-5*s,24*s,6*s);if(!sil){g.fillStyle='#c6d6ea';g.fillRect(x-8*s,y-h,4.5*s,h)}}};
+ try{window.COMBO_PROP=prop}catch(e){}
  const row=(front)=>{const st=STAGES[G.stg||0],z=cam.z,hy=cam.ay-26*z-cam.y*z*.6,fh=Math.max(1,H-hy),dy=front?fh*1.04:Math.min(15*z,fh*.2),f=z*(.62+2.2*dy/300),step=front?760:330,off=front?380:165,y=hy+dy,s=f*(front?1.5:.92);
   for(let i=-9;i<=9;i++){const wx=i*step+off;if(!front&&(Math.abs(wx)<95||Math.abs(Math.abs(wx)-620)<95))continue;const x=W/2+(wx-cam.x)*f;if(x<-90||x>W+90)continue;
    if(!front){g.fillStyle='rgba(0,0,0,.28)';g.beginPath();g.ellipse(x,y,16*s,3.2*s,0,0,TAU);g.fill()}prop(st.mid,x,y,s,st,front,i+20)}};
@@ -1491,5 +1492,41 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
  const go=m=>{S3.ang=S3.tg=0;begin(()=>({type:'team',team:SV.team.slice(),ret:'offline',a3:m}))};
  const so0=SCR.offline;SCR.offline=function(){if(!ON())return so0();const h0=hdr;hdr=function(t){if(t==='OFFLINE'){const bw=Math.min(600,W-36),bx=(W-bw)/2,w2=(bw-12)/2,y=H-74;button(bx,y,w2,52,'3D SIDESTEP','#2f4f8f',()=>go('step'),24,'Tekken style: step around hits');button(bx+w2+12,y,w2,52,'3D FREE RUN','#2f7a5f',()=>go('free'),24,'Camera behind you, run anywhere')}return h0.apply(this,arguments)};try{so0()}finally{hdr=h0}};
  const sr0=startRound;startRound=function(){S3.ang=S3.tg=0;return sr0.apply(this,arguments)};
- try{window.COMBO_A3=()=>({mode:A(),ang:S3.ang,tg:S3.tg})}catch(e){}}
+ try{window.COMBO_A3P={PJ,S3,A};window.COMBO_A3=()=>({mode:A(),ang:S3.ang,tg:S3.tg})}catch(e){}}
+/* ================= flag "depth3d": the drawn fighters look solid (Trey: make the characters 3D but keep them how they are; he chose "keep drawings, add depth").
+   Nothing about a fighter's drawing changes. While a fighter is being drawn in a match or cutscene, every filled shape (each limb, the body, the head, the hair, the weapon)
+   gets a soft light on the side facing the sun and a shadow on the other side, sized to that shape, so each part reads as round. Light always comes from the same side of
+   the screen whichever way the fighter faces. Dark silhouettes are left alone. ================= */
+{const ON=()=>F().depth3d,NM=['beginPath','moveTo','lineTo','quadraticCurveTo','bezierCurveTo','arc','ellipse','rect','fill'];let dep=0,x0,y0,x1,y1,has=0;
+ const P=(x,y)=>{if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y;has=1};
+ const run=fn=>{if(dep)return fn();dep=1;const prev={},cur={};NM.forEach(n=>{prev[n]=Object.prototype.hasOwnProperty.call(g,n)?g[n]:null;cur[n]=g[n]});const c=(n,a)=>cur[n].apply(g,a);
+  try{g.beginPath=function(){x0=y0=1e9;x1=y1=-1e9;has=0;return c('beginPath',arguments)};
+   g.moveTo=function(x,y){P(x,y);return c('moveTo',arguments)};g.lineTo=function(x,y){P(x,y);return c('lineTo',arguments)};
+   g.quadraticCurveTo=function(a,b,x,y){P(a,b);P(x,y);return c('quadraticCurveTo',arguments)};g.bezierCurveTo=function(a,b,d,e,x,y){P(a,b);P(d,e);P(x,y);return c('bezierCurveTo',arguments)};
+   g.arc=function(x,y,r){P(x-r,y-r);P(x+r,y+r);return c('arc',arguments)};g.ellipse=function(x,y,rx,ry){const r=Math.max(rx,ry);P(x-r,y-r);P(x+r,y+r);return c('ellipse',arguments)};
+   g.rect=function(x,y,w,h){P(x,y);P(x+w,y+h);return c('rect',arguments)};
+   g.fill=function(){const r=c('fill',arguments);try{const fs=g.fillStyle,w=x1-x0,h=y1-y0;if(!has||typeof fs!=='string'||fs[0]!=='#'||w<5||h<5||w>140||h>170||g.globalAlpha<.7)return r;
+     const m=g.getTransform(),flip=m.a<0,lx=flip?x1:x0,rx=flip?x0:x1,gr=g.createLinearGradient(lx,y0,rx,y0+h*.3);gr.addColorStop(0,'rgba(255,255,255,.24)');gr.addColorStop(.34,'rgba(255,255,255,0)');gr.addColorStop(.6,'rgba(12,0,40,0)');gr.addColorStop(1,'rgba(12,0,40,.36)');
+     g.fillStyle=gr;c('fill',arguments);g.fillStyle=fs}catch(e){}return r};
+   return fn()}finally{NM.forEach(n=>{if(prev[n])g[n]=prev[n];else delete g[n]});dep=0}};
+ const d0=drawFighter;drawFighter=function(f,sil){if(!ON()||sil)return d0.apply(this,arguments);const a=arguments,t=this;return run(()=>d0.apply(t,a))}}
+/* ================= flag "mapdepth": the maps are built in depth (Trey: make the map 3D but keep it how it is; he chose "same maps, built in depth").
+   The map's own sky, hills, buildings and big landmarks stay as they are. On the ground between the landmarks and the fighters the map's own small props (stone lanterns, neon signs,
+   ice, rocks, columns) are placed in three rows going back into the distance, each on the floor's own perspective with a shadow, so near rows slide faster than far rows when the
+   camera moves; floor lines run back to the horizon and each row is hazier than the one in front. In the two 3D arena modes the same props stand around the ring and turn with it.
+   Indoor story places are left alone. ================= */
+{const ON=()=>F().mapdepth,K=620,ROOM={dojo:1,inn:1,cave:1},b0=drawBG;drawBG=function(){b0.apply(this,arguments);if(!ON())return;const prop=window.COMBO_PROP;if(!prop)return;
+  try{if(G.mode==='scene'){let e=null;try{e=window.COMBO_ENV&&COMBO_ENV()}catch(x){}if(e&&ROOM[e])return}
+   const st=STAGES[G.stg||0],z=cam.z,hy=cam.ay-26*z-cam.y*z*.6,kind=st.mid||'column',A3=window.COMBO_A3P,am=A3&&A3.A&&A3.A();g.save();
+   if(am){const S3=A3.S3,ang=S3.ang-(S3.phi||0)*(S3.sd||1),L=[];for(let k=0;k<10;k++){const t=k/10*TAU+.5+ang,wx=800*Math.cos(t),wd=800*Math.sin(t);if(wd<90)continue;L.push([wd,wx,k])}
+    L.sort((a,b)=>b[0]-a[0]).forEach(q=>{const p=A3.PJ(q[1],q[0]),s=p[2]*z*(q[2]%5===0?4.6:3);if(p[0]<-120||p[0]>W+120)return;g.globalAlpha=.3*clamp(p[2]*1.6,0,1);g.fillStyle='#05020c';g.beginPath();g.ellipse(p[0]+10*s,p[1],16*s,3.2*s,0,0,TAU);g.fill();g.globalAlpha=clamp(.45+p[2]*.9,0,1);prop(kind,p[0],p[1],s,st,false,q[2])});g.restore();return}
+   const fy=cam.ay-cam.y*z,PP=(wx,d)=>{const s=K/(K+d);return[W/2+(wx-cam.x)*z*s,hy+(fy-hy)*s,s]};
+   /* floor lines running back to the horizon, and one line across the floor at each row */
+   g.strokeStyle='#fff';g.lineWidth=1;g.globalAlpha=.06;g.beginPath();for(let i=-12;i<=12;i++){const wx=Math.round(cam.x/420)*420+i*420,a=PP(wx,40),b=PP(wx,2600);g.moveTo(a[0],a[1]);g.lineTo(b[0],b[1])}g.stroke();
+   [[1020,.5,210],[640,.72,0],[330,.95,210]].forEach((r,ri)=>{const d=r[0],y=PP(0,d)[1];g.globalAlpha=.09;g.strokeStyle='#fff';g.beginPath();g.moveTo(0,y);g.lineTo(W,y);g.stroke();
+    const c0=Math.round(cam.x/420);for(let i=-9;i<=9;i++){const wx=(c0+i)*420+r[2];if(ri===2&&Math.abs(wx)%840<10)continue;const p=PP(wx,d),s=p[2]*z*2.5;if(p[0]<-80||p[0]>W+80)continue;
+     g.globalAlpha=.32*r[1];g.fillStyle='#05020c';g.beginPath();g.ellipse(p[0]+9*s,p[1]+1,15*s,3*s,0,0,TAU);g.fill();g.globalAlpha=r[1];prop(kind,p[0],p[1],s,st,false,i+ri*3+40)}
+    /* haze in front of each row, so the rows behind it look farther away */
+    g.globalAlpha=1;const hz=g.createLinearGradient(0,y-46*z*r[1],0,y+3);hz.addColorStop(0,'rgba('+(st.rf||'255,255,255')+',0)');hz.addColorStop(1,'rgba('+(st.rf||'255,255,255')+','+(.2*(1.1-r[1])+.03)+')');g.fillStyle=hz;g.fillRect(0,y-46*z*r[1],W,46*z*r[1]+3)});
+   g.restore()}catch(e){try{g.restore()}catch(x){}}}}
 })();
