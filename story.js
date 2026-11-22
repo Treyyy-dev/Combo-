@@ -1769,16 +1769,27 @@ function drawEm2(f){const e=f.em2;if(!e)return;const sc=f.c.sc||1,t=e[1],k=e[0],
  g.restore()}
 /* full body seen from behind */
 function segB(a,b,r0,r1,fill){const dx=b.x-a.x,dy=b.y-a.y,L=Math.hypot(dx,dy)||1,nx=-dy/L,ny=dx/L;g.beginPath();g.moveTo(a.x+nx*r0,a.y+ny*r0);g.lineTo(b.x+nx*r1,b.y+ny*r1);g.arc(b.x,b.y,r1,Math.atan2(ny,nx),Math.atan2(-ny,-nx),true);g.lineTo(a.x-nx*r0,a.y-ny*r0);g.arc(a.x,a.y,r0,Math.atan2(-ny,-nx),Math.atan2(ny,nx),true);g.closePath();g.fillStyle=fill;g.fill();g.strokeStyle=INK;g.lineWidth=2;g.stroke()}
-function drawBackChar(c,o){const SQ=o.stance?1:0,t=o.t||0,ink=INK,A=c.acc||[],long=[1,2,5,6,7].includes(c.style),bk=(c.sc>1.07||c.dm>1)?1.12:1,br=Math.sin(t*3)*.8,wk=o.walk||0;g.lineJoin='round';g.lineCap='round';
- [-1,1].forEach(sx=>{const sw=wk?Math.sin(wk+(sx>0?0:Math.PI))*5:0;segB({x:sx*(6.2+1.5*SQ)*bk,y:-70},{x:sx*(7.6+7.5*SQ)*bk,y:-37+2*SQ-sw*.4},7.6*bk,5.8*bk,sx>0?c.pantsSh:c.pants);segB({x:sx*(7.6+7.5*SQ)*bk,y:-37+2*SQ-sw*.4},{x:sx*(8.2+11*SQ)*bk,y:-3-Math.max(0,sw)},5.8*bk,3.9,sx>0?c.pantsSh:c.pants);
-  g.beginPath();g.ellipse(sx*(8.6+11*SQ)*bk,1.6-Math.max(0,sw),5.2,4.4,0,0,TAU);g.fillStyle=c.bare?c.skinSh:'#221c2e';g.fill();g.strokeStyle=ink;g.lineWidth=2;g.stroke()});
+function drawBackChar(c,o){const SQ=o.stance?1:0,t=o.t||0,ink=INK,A=c.acc||[],long=[1,2,5,6,7].includes(c.style),bk=(c.sc>1.07||c.dm>1)?1.12:1,br=Math.sin(t*3)*.8,wk=o.walk||0,AT=o.atk||null,ap=AT?Math.sin(clamp(AT.u,0,1)*Math.PI):0;g.lineJoin='round';g.lineCap='round';
+ [-1,1].forEach(sx=>{const sw=wk?Math.sin(wk+(sx>0?0:Math.PI))*5:0,kk=AT&&AT.k===1&&sx===AT.arm?ap:0;segB({x:sx*(6.2+1.5*SQ)*bk,y:-70},{x:sx*(7.6+7.5*SQ+7*kk)*bk,y:-37+2*SQ-sw*.4-26*kk},7.6*bk,5.8*bk,sx>0?c.pantsSh:c.pants);segB({x:sx*(7.6+7.5*SQ+7*kk)*bk,y:-37+2*SQ-sw*.4-26*kk},{x:sx*(8.2+11*SQ+4*kk)*bk,y:-3-Math.max(0,sw)-62*kk},5.8*bk,3.9*(1-.2*kk),sx>0?c.pantsSh:c.pants);
+  g.beginPath();g.ellipse(sx*(8.6+11*SQ+4*kk)*bk,1.6-Math.max(0,sw)-64*kk,5.2*(1-.25*kk),4.4*(1-.25*kk),0,0,TAU);g.fillStyle=c.bare?c.skinSh:'#221c2e';g.fill();g.strokeStyle=ink;g.lineWidth=2;g.stroke()});
+ /* seen from behind with the hands in front (o.fwd, o.atk: used by the 3D arena): the arms are drawn before the body, so the body covers them and the hands show past the shoulders; an attack reaches forward, away from us */
+ const FWD=o.fwd||AT,WB={katana:[46,'#e8eefc'],dagger:[24,'#e8eefc'],staff:[58,'#b98c5c'],bo:[58,'#b98c5c']}[c.weapon];
+ const arms=()=>{[-1,1].forEach(sx=>{const sw=wk?Math.sin(wk+(sx>0?Math.PI:0))*3:0,S={x:sx*17.5*bk,y:-107-br};let E=SQ?{x:sx*24.5*bk,y:-92+sw*.4}:{x:sx*21*bk,y:-89+sw*.4},Hd=SQ?{x:sx*(sx<0?17:19)*bk,y:-106+(sx<0?0:6)+sw*.5}:{x:sx*19.5*bk,y:-71+sw},hr=1;
+   if(FWD){E={x:sx*25.5*bk,y:-99+sw*.4};Hd={x:sx*21.5*bk,y:-119+(sx<0?0:5)+sw*.5};hr=.92}
+   const hit=AT&&AT.k!==1&&sx===AT.arm?ap:0;if(hit){E={x:sx*lerp(25.5,22,hit)*bk,y:lerp(-99,-118,hit)};Hd={x:sx*lerp(21.5,23.5,hit)*bk,y:lerp(-119,-146,hit)};hr=.92-.26*hit}
+   if(WB&&FWD&&sx===(AT?AT.arm:1)){const sl=AT&&AT.k===2?(AT.u-.5)*2.6*sx:-.25*sx,L=WB[0]*(.82-.2*hit),tx=Hd.x+Math.sin(sl)*L,ty=Hd.y-Math.cos(sl)*L*.8;
+    if(AT&&AT.k===2&&ap>.15){g.save();g.globalAlpha=.55*ap;g.strokeStyle=c.col;g.lineWidth=9;g.beginPath();g.arc(Hd.x,Hd.y,L*.9,-Math.PI/2+sl-sx*1.1,-Math.PI/2+sl,sx<0);g.stroke();g.strokeStyle='#fff';g.lineWidth=3;g.stroke();g.restore()}
+    g.strokeStyle=ink;g.lineWidth=5.5;g.beginPath();g.moveTo(Hd.x,Hd.y);g.lineTo(tx,ty);g.stroke();g.strokeStyle=WB[1];g.lineWidth=2.8;g.stroke()}
+   segB(S,E,5.9*bk,4.6*bk,sx>0?c.topSh:c.top);segB(E,Hd,4.6*bk,3.5*bk*hr,c.bare?(sx>0?c.skinSh:c.skin):(sx>0?c.topSh:c.top));
+   const gl=c.weapon==='fist',r=(gl?(c.fistR||8.2)*.8:4.3)*hr;circ(Hd.x,Hd.y+2,r,gl?c.col2:c.skinSh,ink,2);
+   if(hit>.35&&!WB){g.save();g.globalAlpha=(hit-.35)*1.3;g.strokeStyle=(c.weapon==='orb'||c.weapon==='bow')?c.col:'#fff';g.lineWidth=2.4;g.beginPath();g.arc(Hd.x,Hd.y-6,r+5+hit*7,Math.PI*1.05,Math.PI*1.95);g.stroke();g.restore()}})};
+ if(FWD)arms();
  const TP=[[-11,-65],[-12.6,-74],[-10,-88],[-13.4,-100-br],[-18,-108-br],[-9,-115],[9,-115],[18,-108-br],[13.4,-100-br],[10,-88],[12.6,-74],[11,-65]].map(q=>[q[0]*bk,q[1]]);
  const sm=()=>{const n=TP.length;let m=[(TP[n-1][0]+TP[0][0])/2,(TP[n-1][1]+TP[0][1])/2];g.beginPath();g.moveTo(m[0],m[1]);for(let i=0;i<n;i++){const j=(i+1)%n;m=[(TP[i][0]+TP[j][0])/2,(TP[i][1]+TP[j][1])/2];g.quadraticCurveTo(TP[i][0],TP[i][1],m[0],m[1])}g.closePath()};
  sm();g.strokeStyle=ink;g.lineWidth=4;g.stroke();g.fillStyle=c.top;g.fill();g.save();sm();g.clip();g.fillStyle=c.topSh;g.fillRect(-22*bk,-120,8*bk,60);g.fillRect(12*bk,-120,10*bk,60);
  g.strokeStyle='rgba(0,0,0,.28)';g.lineWidth=1.3;g.beginPath();g.moveTo(0,-112);g.lineTo(0,-78);g.moveTo(-9*bk,-104);g.quadraticCurveTo(-5*bk,-98,-7*bk,-90);g.moveTo(9*bk,-104);g.quadraticCurveTo(5*bk,-98,7*bk,-90);g.stroke();
  g.strokeStyle=c.col;g.lineWidth=2.2;g.beginPath();g.moveTo(-8,-114);g.quadraticCurveTo(0,-109,8,-114);g.stroke();g.fillStyle=c.col2;g.fillRect(-16*bk,-77,32*bk,5.4);g.restore();
- [-1,1].forEach(sx=>{const sw=wk?Math.sin(wk+(sx>0?Math.PI:0))*3:0,S={x:sx*17.5*bk,y:-107-br},E=SQ?{x:sx*24.5*bk,y:-92+sw*.4}:{x:sx*21*bk,y:-89+sw*.4},Hd=SQ?{x:sx*(sx<0?17:19)*bk,y:-106+(sx<0?0:6)+sw*.5}:{x:sx*19.5*bk,y:-71+sw};segB(S,E,5.9*bk,4.6*bk,sx>0?c.topSh:c.top);segB(E,Hd,4.6*bk,3.5*bk,c.bare?(sx>0?c.skinSh:c.skin):(sx>0?c.topSh:c.top));
-  const gl=c.weapon==='fist',r=gl?(c.fistR||8.2)*.8:4.3;circ(Hd.x,Hd.y+2,r,gl?c.col2:c.skinSh,ink,2)});
+ if(!FWD)arms();
  if(c.style===7||c.style===3){poly([[-17*bk,-112],[17*bk,-112],[26*bk,-26],[-26*bk,-26]],c.style===7?c.col:c.col2,ink,2);g.strokeStyle='rgba(0,0,0,.22)';g.lineWidth=1.4;g.beginPath();g.moveTo(-6,-108);g.lineTo(-10,-30);g.moveTo(6,-108);g.lineTo(10,-30);g.stroke()}
  g.fillStyle=c.skinSh;g.fillRect(-3.8,-121,7.6,8);g.strokeStyle=ink;g.lineWidth=2;g.strokeRect(-3.8,-121,7.6,8);
  g.save();g.translate(0,-132);[-1,1].forEach(sx=>{g.beginPath();g.ellipse(sx*14.6,3,2.4,3.8,0,0,TAU);g.fillStyle=c.skinSh;g.fill();g.strokeStyle=ink;g.lineWidth=1.8;g.stroke()});
