@@ -2637,7 +2637,7 @@
   "type": "update",
   "name": "3D Battle View",
   "subtitle": "Every match is played over your fighter's shoulder",
-  "desc": "Every match in every mode is now played in 3D, from over your fighter's shoulder, in a round arena. Run up and the opponent gets closer and bigger, back off and they get farther away; left and right circle. Fighters hold their hands in front of them and throw attacks, skills and ultimates forward, lunge in so the hit lands on the opponent, and get knocked back, into the air or flat on the floor in the same view. Running, dashing, jumping, getting hit, being launched, falling, getting up and knockouts each have their own animation for this view. No side-view fighters are left in matches. Jump is on its own button, and crouching is off outside online matches. The 3D SIDESTEP and 3D FREE RUN buttons are removed.",
+  "desc": "Every match in every mode is now played in 3D, from over your fighter's shoulder, in a round arena. Run up and the opponent gets closer and bigger, back off and they get farther away; left and right circle. Fighters hold their hands in front of them and throw attacks, skills and ultimates forward, lunge in so the hit lands on the opponent, and get knocked back, into the air or flat on the floor in the same view. Running, dashing, jumping, getting hit, being launched, falling, getting up and knockouts each have their own animation for this view. Match intros, knockouts and the summon duel play in the same 3D view, with the camera swinging round to whoever is speaking or has won, and it circles the fighters during an ultimate. No side-view fighters are left in matches. Jump is on its own button, and crouching is off outside online matches. The 3D SIDESTEP and 3D FREE RUN buttons are removed.",
   "status": "staged",
   "created": 1795308710773,
   "colors": [
@@ -2646,7 +2646,7 @@
   "game": {
    "flag": "arena3d"
   },
-  "rev": 9
+  "rev": 10
  },
  {
   "id": "update-solid-fighters",
@@ -2691,6 +2691,21 @@
   ],
   "game": {
    "flag": "nohurtv"
+  }
+ },
+ {
+  "id": "update-3d-cutscenes",
+  "type": "update",
+  "name": "Cutscenes In Depth",
+  "subtitle": "Speakers step forward, the camera moves",
+  "desc": "In story cutscenes whoever is speaking steps toward the camera and the others stand back, and the camera slowly pushes in and tilts during each line. Lines, voices and timing are unchanged.",
+  "status": "staged",
+  "created": 1795314114683,
+  "colors": [
+   "#8fe0c0"
+  ],
+  "game": {
+   "flag": "scene3d"
   }
  }
 ]
