@@ -1384,13 +1384,14 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
    - FREE RUN: hold up or down to keep circling the opponent; shots and other hits that land far from the attacker miss while circling, close hits still land.
    Up/down are W / S or the arrow keys, or the move stick pushed up / down (W and the up arrow do not jump here; jump is its own key or button). Crouching (and low attacks) is switched off in these modes because down is used for stepping. The CPU steps and circles too.
    Numbers picked by Claude. rules.a3 = 'step' | 'free' marks the match. */
-{const ON=()=>!!F().arena3d,A=()=>ON()&&G.rules&&G.rules.a3&&G.f&&G.f.length===2?G.rules.a3:null,S3={ang:0,tg:0};
+{const ON=()=>!!F().arena3d,/* Trey, later the same night: delete the two modes and use the 3D view for every other mode. With the flag on, every match (offline, online, ranked, raids, story fights, tests) is shown over your fighter's shoulder; the 3D SIDESTEP and 3D FREE RUN buttons are gone. Online keeps the normal rules (no circling dodge, crouch allowed) so both players' games agree. */
+ A=()=>ON()&&G.f&&G.f.length===2&&G.f[0]&&G.f[1]&&(G.mode==='fight'||G.mode==='ko')?'free':null,NET=()=>!!(G.rules&&G.rules.online),S3={ang:0,tg:0};
  const dirIn=()=>{let d=0;try{if(keys.KeyW||keys.ArrowUp)d-=1;if(keys.KeyS||keys.ArrowDown)d+=1;if(typeof joy!=='undefined'&&joy){const dx=joy.x-joy.ox,dy=joy.y-joy.oy;if(Math.abs(dx)<60){if(dy>46)d+=1;else if(dy<-46)d-=1}}}catch(e){}return clamp(d,-1,1)};
  const live=f=>G.mode==='fight'&&f.hp>0&&(f.state==='idle'||f.state==='run'||f.state==='guard'||f.state==='crouch');
  const step=(f,d)=>{if(!live(f)||(f.a3cd||0)>0)return false;f.a3s={t:0,d};f.a3cd=.6;f.inv=Math.max(f.inv||0,.28);S3.tg+=d*(f.side?-1:1)*.55;try{sfx('dash')}catch(e){}return true};
  /* W and the up arrow normally also jump; in these modes they only step, and jump stays on its own key (Space) */
  const ka0=keyAct;keyAct=function(code){if(A()&&(code==='KeyW'||code==='ArrowUp'))return null;return ka0.apply(this,arguments)};
- const sf0=stepF;stepF=function(f,o,dt){const m=A();if(m&&f.inp){if(f.inp.crouch)f.inp.crouch=false;if(f.state==='crouch')f.state='idle'}return sf0.apply(this,arguments)};
+ const sf0=stepF;stepF=function(f,o,dt){const m=A();if(m&&f.inp&&!NET()){if(f.inp.crouch)f.inp.crouch=false;if(f.state==='crouch')f.state='idle'}return sf0.apply(this,arguments)};
  /* 3D look (Trey: make the character and the camera move with it): the camera leans, pushes in and swings sideways with every step or circle, the far background slides the other way,
     the stepping fighter visibly comes toward the camera or goes into the screen (bigger or smaller, turned a little), and the other fighter shifts the opposite way. */
  const CM={rot:0,z:1,x:0,y:0};let prevD=0;const up0=update;update=function(rdt){cam.rot-=CM.rot;cam.z/=CM.z;cam.x-=CM.x;cam.y-=CM.y;CM.rot=0;CM.z=1;CM.x=0;CM.y=0;up0(rdt);const m=A();if(!m){prevD=0;return}try{const dt=Math.min(.05,rdt)*(G.slow||1),me=G.f[G.me||0],en=G.f[1-(G.me||0)],d=dirIn();
@@ -1400,7 +1401,7 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
    /* CPU */
    if(G.mode==='fight'&&en.hp>0){en.a3t=(en.a3t||0)-dt;const D=G.cd|0,near=Math.abs(en.x-me.x)<260;
     if(m==='step'){if(en.a3t<=0){en.a3t=.25;if(me.state==='atk'&&near&&Math.random()<[.03,.07,.12,.2][D])step(en,Math.random()<.5?1:-1);else if(Math.random()<.012*(D+1))step(en,Math.random()<.5?1:-1)}en.a3c=0}
-    else{if(en.a3t<=0){en.a3t=rnd(.5,1.4);en.a3w=Math.random()<[.15,.25,.35,.45][D]?(Math.random()<.5?1:-1):0}en.a3c=live(en)?(en.a3w||0):0;if(en.a3c)S3.tg+=en.a3c*(en.side?-1:1)*1.5*dt}}
+    else{if(en.a3t<=0){en.a3t=rnd(.5,1.4);en.a3w=Math.random()<[.15,.25,.35,.45][D]?(Math.random()<.5?1:-1):0}en.a3c=live(en)&&!NET()?(en.a3w||0):0;if(en.a3c)S3.tg+=en.a3c*(en.side?-1:1)*1.5*dt}}
    G.f.forEach((f,i)=>{const o=G.f[1-i],mine=f.a3s?Math.sin(f.a3s.t/.34*Math.PI)*f.a3s.d*62:(f.a3c||0)*40,theirs=o.a3s?Math.sin(o.a3s.t/.34*Math.PI)*o.a3s.d*62:(o.a3c||0)*40,want=mine-theirs*.45;f.a3z=lerp(f.a3z,want,Math.min(1,dt*(f.a3s||o.a3s?30:10)))});
    /* how far each fighter has turned its body (0 = side-on, 1 = fully turned) and which way */
    G.f.forEach(f=>{const on=(f.a3s&&Math.sin(f.a3s.t/.34*Math.PI)>.22)||(m!=='free'&&f.a3c);if(f.a3s)f.a3td=f.a3s.d;else if(f.a3c)f.a3td=f.a3c;f.a3tn=lerp(f.a3tn||0,on&&live(f)?1:0,Math.min(1,dt*(f.a3s?26:12)))});
@@ -1415,7 +1416,7 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
      if(m==='free'){const ha=performance.now()/1000-(S3.hitT||-9);if(ha>=0&&ha<.2){const w=1-ha/.2;CM.z*=1+.055*w;CM.y+=Math.sin(ha*90)*3.5*w;CM.rot+=Math.sin(ha*70)*.006*w}}
      cam.rot+=CM.rot;cam.z*=CM.z;cam.x+=CM.x;cam.y+=CM.y}}}catch(e){}};
  /* hits: far hits miss a circling fighter in FREE RUN */
- const ah0=applyHit;applyHit=function(a,v,h,sx,dir,force){if(A()==='free'&&v&&v.a3c&&a&&Math.abs(sx-a.x)>130&&!force)return false;const hp0=v?v.hp:0,st0=v?v.state:'';const r=ah0.apply(this,arguments);try{if(A()==='free'&&v&&a&&(v.hp<hp0||(v.state==='hurt'&&st0!=='hurt'))){const n=performance.now()/1000;v.a3h=n;v.a3hb=v.state==='guard'?1:0;S3.hitT=n}}catch(e){}return r};
+ const ah0=applyHit;applyHit=function(a,v,h,sx,dir,force){if(A()==='free'&&!NET()&&v&&v.a3c&&a&&Math.abs(sx-a.x)>130&&!force)return false;const hp0=v?v.hp:0,st0=v?v.state:'';const r=ah0.apply(this,arguments);try{if(A()==='free'&&v&&a&&(v.hp<hp0||(v.state==='hurt'&&st0!=='hurt'))){const n=performance.now()/1000;v.a3h=n;v.a3hb=v.state==='guard'?1:0;S3.hitT=n}}catch(e){}return r};
  /* fighters are drawn nearer or farther while stepping */
  /* 3D camera view (Trey: do a 3D camera view for the 3D arena): the camera looks at the fight from an angle (S3.phi), from the player's side, so the player's fighter stands nearer and bigger and the opponent farther and smaller.
     Each fighter is placed on the arena floor with the same perspective as the floor itself (PJ), and the angle swings when someone steps or circles. Hit sparks and shots are still drawn on the straight line. */
@@ -1423,7 +1424,9 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
  /* FREE RUN controls follow the camera: pushing up runs at the opponent and down backs away while the camera is behind you, left and right circle; in the side-on view left and right move and up and down circle */
  const gi0=gatherInput;gatherInput=function(dt){gi0(dt);try{if(A()!=='free'||G.mode!=='fight')return;const me=G.f[G.me||0],en=G.f[1-(G.me||0)],ph=S3.phi||0,ix=PI.mx,iy=-dirIn(),to=Math.sign(en.x-me.x)||1;PI.mx=clamp(Math.round(ix*Math.cos(ph)+iy*Math.sin(ph)*to),-1,1);S3.circ=-iy*Math.cos(ph)+ix*Math.sin(ph)}catch(e){}};
  /* the game's own hit sparks, speed lines, bolts and shots are placed on the arena floor between the two fighters in FREE RUN (they used to stay on the flat fight line); the side-view slash arcs and afterimages are left out there because the fighters are not drawn from the side */
- const PX=x=>{const a=G.f[G.me||0],b=G.f[1-(G.me||0)],ph=S3.phi||0,sd=S3.sd||1,osq=S3.osq||0,cx=(G.f[0].x+G.f[1].x)/2,t=clamp((x-a.x)/((b.x-a.x)||1),0,1),xq=x-cx;return PJ(xq*Math.cos(ph)+lerp(-78,62,t)*osq,clamp(xq*Math.sin(ph)*sd*(1+.7*osq)+lerp(-70,40,t)*osq,-175,620))};
+ /* run up and you get closer, back off and you get farther (Trey): distance is stretched in depth so the opponent clearly grows as you close in and shrinks as you back away, and when the two are in reach they stand right at each other instead of being held apart on screen */
+ const CL=()=>clamp((Math.abs(G.f[0].x-G.f[1].x)-70)/260,0,1);
+ const PX=x=>{const a=G.f[G.me||0],b=G.f[1-(G.me||0)],ph=S3.phi||0,sd=S3.sd||1,osq=S3.osq||0,cx=(G.f[0].x+G.f[1].x)/2,t=clamp((x-a.x)/((b.x-a.x)||1),0,1),xq=x-cx,cl=CL();return PJ(xq*Math.cos(ph)+lerp(-78,62,t)*osq*lerp(.5,1,cl),clamp(xq*Math.sin(ph)*sd*(1+1.25*osq)+lerp(-70,40,t)*osq*cl,-175,900))};
  const each=(list,fn,key)=>{const all=G[key];try{for(const e of all){const x=e.type==='arc'||e.type==='ghost'?null:typeof e.x==='number'?e.x:null;if(e.type==='arc'||e.type==='ghost')continue;G[key]=[e];if(x==null){fn();continue}const p=PX(x),k=clamp(p[2],.5,1.85);g.save();g.translate(cam.x+(p[0]-W/2)/cam.z,(p[1]-cam.ay)/cam.z);g.scale(k*(key==='proj'?.62:1),k);g.translate(-x,0);try{fn()}finally{g.restore()}}}finally{G[key]=all}};
  const fx0=drawFX;drawFX=function(){if(A()!=='free'||(S3.osq||0)<.5)return fx0();try{each(G.fx,fx0,'fx')}catch(e){}};
  const pj0=drawProj;drawProj=function(){if(A()!=='free'||(S3.osq||0)<.5)return pj0();try{each(G.proj,pj0,'proj')}catch(e){}};
@@ -1431,16 +1434,18 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
    g.beginPath();for(let i=0;i<16;i++){const a=i/16*TAU+f.a3h*7,r=i%2?R*.38:R*(.8+.2*Math.sin(i*5+f.a3h*3));g[i?'lineTo':'moveTo'](Math.cos(a)*r,Math.sin(a)*r)}g.closePath();g.fillStyle='#fff';g.fill();g.strokeStyle=col;g.lineWidth=3;g.stroke();
    g.strokeStyle='#fff';g.lineWidth=2.4;for(let i=0;i<7;i++){const a=i/7*TAU+f.a3h*3,r0=R*1.05,r1=R*(1.35+w*.9);g.beginPath();g.moveTo(Math.cos(a)*r0,Math.sin(a)*r0);g.lineTo(Math.cos(a)*r1,Math.sin(a)*r1);g.stroke()}
    g.restore();g.save();g.globalAlpha=(1-w)*.7;g.strokeStyle=col;g.lineWidth=3;g.beginPath();g.ellipse(f.x,0,(30+w*70)*sc,(7+w*15)*sc,0,0,TAU);g.stroke();g.restore()};
- const df0=drawFighter;drawFighter=function(f,sil){if(!A()||!f||(f!==G.f[0]&&f!==G.f[1]))return df0.apply(this,arguments);const ph=S3.phi||0,sd=S3.sd||1,cx=(G.f[0].x+G.f[1].x)/2,xr=f.x-cx,az=f.a3z||0,osq=A()==='free'?clamp((ph-.45)/.6,0,1):0,nearF=f===G.f[G.me||0],/* over the shoulder: your fighter sits low and to the left, the opponent up and to the right, and depth is stretched so distance reads */pos=ff=>{const xq=ff.x-cx,nq=ff===G.f[G.me||0];return PJ(xq*Math.cos(ph)+(nq?-78:62)*osq,clamp(xq*Math.sin(ph)*sd*(1+.7*osq)-(ff.a3z||0)*1.05+(nq?-70:40)*osq,osq>.5?-175:-9999,osq>.5?620:9999))},NOW=performance.now()/1000,oth=G.f[f===G.f[0]?1:0];let p=pos(f);
+ const df0=drawFighter;drawFighter=function(f,sil){if(!A()||!f||(f!==G.f[0]&&f!==G.f[1]))return df0.apply(this,arguments);
+   /* no side-view fighters in this view (Trey: delete all side character style): the dark shape used during an ultimate is the same over-the-shoulder drawing, blacked out */
+   if(sil){g.save();try{g.filter='brightness(0)'}catch(e){}try{return drawFighter(f)}finally{try{g.filter='none'}catch(e){}g.restore()}}const ph=S3.phi||0,sd=S3.sd||1,cx=(G.f[0].x+G.f[1].x)/2,xr=f.x-cx,az=f.a3z||0,osq=A()==='free'?clamp((ph-.45)/.6,0,1):0,nearF=f===G.f[G.me||0],/* over the shoulder: your fighter sits low and to the left, the opponent up and to the right, and depth is stretched so distance reads */pos=ff=>{const xq=ff.x-cx,nq=ff===G.f[G.me||0],cl=CL();return PJ(xq*Math.cos(ph)+(nq?-78:62)*osq*lerp(.5,1,cl),clamp(xq*Math.sin(ph)*sd*(1+1.25*osq)-(ff.a3z||0)*1.05+(nq?-70:40)*osq*cl,osq>.5?-175:-9999,osq>.5?900:9999))},NOW=performance.now()/1000,oth=G.f[f===G.f[0]?1:0];let p=pos(f);
    /* they look like they are hitting each other (Trey): in FREE RUN an attacker who is in reach lunges across the floor to the opponent at the moment of the strike and comes back, and a fighter who is hit is knocked away from the attacker */
-   if(osq>.5&&!sil){try{if(f.state==='atk'&&f.mv&&Math.abs(f.x-oth.x)<230){let id='';try{id=mvId(f)||''}catch(e){}const u=id==='U'?(f.st*3.4)%1:clamp(f.st/(f.mv.dur||.4),0,1),w=Math.sin(u*Math.PI)*(id==='U'?.5:.46),q=pos(oth);p=[lerp(p[0],q[0],w),lerp(p[1],q[1],w),lerp(p[2],q[2],w)]}
+   if(osq>.5&&!sil){try{if(f.state==='atk'&&f.mv&&Math.abs(f.x-oth.x)<230){let id='';try{id=mvId(f)||''}catch(e){}const u=id==='U'?(f.st*3.4)%1:clamp(f.st/(f.mv.dur||.4),0,1),w=Math.sin(u*Math.PI)*(id==='U'?.6:.66),q=pos(oth);p=[lerp(p[0],q[0],w),lerp(p[1],q[1],w),lerp(p[2],q[2],w)]}
      const ha=NOW-(f.a3h||-9);if(ha<.3&&!f.a3hb){const w=(1-ha/.3),q=pos(oth),dx=p[0]-q[0],dy=p[1]-q[1],d=Math.hypot(dx,dy)||1;p=[p[0]+dx/d*26*w,p[1]+dy/d*14*w,p[2]*(1+(nearF?.06:-.06)*w)]}}catch(e){}}
-   const k=clamp(p[2],.5,1.85),tw=1-Math.min(.16,Math.abs(az)/380);
+   const k=clamp(p[2],.36,1.85),tw=1-Math.min(.16,Math.abs(az)/380);
    g.save();g.translate(cam.x+(p[0]-W/2)/cam.z,(p[1]-cam.ay)/cam.z);g.scale(k*tw,k);g.translate(-f.x,0);
    /* the body turns to look 3D (Trey): stepping or running into the screen shows the fighter's back, toward the camera shows their front. The turn is a quick swivel: the side view narrows, swaps to the front or back drawing, and widens again; they bob as they run. */
    /* every angle of the body (Trey: a drawing of every angle): the turn goes side view -> three-quarter view -> full front (toward the camera) or full back (into the screen), in both directions, so eight directions in all.
       The three-quarter views are the front or back drawing with the far half of the body drawn narrower than the near half, which is what a body turned 45 degrees looks like. */
-   try{const meF=G.f[G.me||0],fat=A()==='free'&&f.state==='atk'&&f.mv&&!sil,fhu=A()==='free'&&f.state==='hurt'&&!sil&&f.y>=0,fln=A()==='free'&&f.state==='launch'&&!sil,frr=A()==='free'&&(f.state==='idle'||f.state==='run'||f.state==='guard'||fat||fhu||fln||(!sil&&(f.state==='air'||f.state==='dash'||f.state==='getup'))),tn=frr?Math.max(f.a3tn||0,clamp((ph-.45)/.6,0,1)):(f.a3tn||0);if(tn>.03&&!sil&&f.c){
+   try{const meF=G.f[G.me||0],fat=A()==='free'&&f.state==='atk'&&f.mv&&!sil,fhu=A()==='free'&&f.state==='hurt'&&!sil&&f.y>=0,fln=A()==='free'&&f.state==='launch'&&!sil,fdn=f.state==='down'||(f.hp<=0&&f.y>=0&&f.state!=='launch'&&f.state!=='hurt'),frr=A()==='free',tn=frr?Math.max(f.a3tn||0,clamp((ph-.45)/.6,0,1)):(f.a3tn||0);if(tn>.03&&!sil&&f.c){
      if(tn<.3){const sx=1-.5*(tn/.3);g.translate(f.x,0);g.scale(sx,1);g.translate(-f.x,0)}
      else{const q=clamp((tn-.3)/.7,0,1),far=lerp(.34,1,q*q),near=lerp(.72,1,q),away=frr&&ph>.45?(f===meF):(f.a3td||1)<0,mov=f.state==='run'||f.state==='dash'||f.a3c,fn=away?window.CBACK:(window.CFRONT||drawFrontChar),bob=mov?Math.abs(Math.sin(G.t*11))*5:f.a3s?Math.sin(f.a3s.t/.34*Math.PI)*7:0,sc=f.c.sc||1,fs=(f.face||1)*(away?-1:1);
       if(fn){g.fillStyle='rgba(10,4,24,.3)';g.beginPath();g.ellipse(f.x,0,34*sc,7,0,0,TAU);g.fill();/* they keep their fighting stance while turned (Trey): legs apart with bent knees and both hands up; the back view walks its legs while moving */const o={t:G.t+f.side*1.7,expr:away?'':'angry',stance:1,fwd:1,walk:mov?G.t*12:0,guard:f.state==='guard'?1:0,tuck:f.y<0&&(f.state==='air'||f.state==='atk')?clamp(-f.y/70,0,1)*(f.state==='atk'?.5:.9):0};
@@ -1451,10 +1456,13 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
         o.atk={u:uu,k:kd,arm:wb&&kd!==1?1:(nn%2?1:-1)};o.expr=away?'':'yell';lg=Math.sin(u*Math.PI);
         if(ult){g.save();g.translate(f.x,f.y-70*sc);for(let r=0;r<3;r++){const q2=(G.t*1.6+r/3)%1;g.globalAlpha=(1-q2)*.6;g.strokeStyle=r%2?'#fff':f.c.col;g.lineWidth=5*(1-q2)+1;g.beginPath();g.ellipse(0,0,(30+q2*90)*sc,(40+q2*110)*sc,0,0,TAU);g.stroke()}g.restore()}}
        /* a hit fighter rocks back in the same view, mouth open, instead of switching to the side drawing */
-       const hw=fhu?clamp(1-(NOW-(f.a3h||-9))/.3,0,1):0;if(fhu||fln){o.expr=away?'':'yell';o.fwd=0;o.stance=1}
+       const hw=fhu?clamp(1-(NOW-(f.a3h||-9))/.3,0,1):0;if(fhu||fln||fdn){o.expr=away?'':'yell';o.fwd=0;o.stance=fdn?0:1}if(f.state==='win'){o.stance=0;o.fwd=0;o.win=1;o.expr=''}
        [1,-1].forEach(h=>{const k=(h===fs?far:near);g.save();if(fhu){g.translate(f.x,f.y);g.rotate((away?1:-1)*(f.side>0?-1:1)*.13*(.4+hw));g.translate(-f.x,-f.y-(away?5:-5)*hw)}
         /* knocked into the air: the same drawing tips over backwards as it flies; getting up: it rises from a crouch */
         if(fln){const R=(away?1:-1)*(f.side>0?-1:1)*(.45+.75*clamp(f.st*2.2,0,1));g.translate(f.x,f.y-62*sc);g.rotate(R);g.translate(-f.x,-f.y+62*sc)}
+        /* lying on the floor: the same drawing laid flat, feet toward the attacker; crouching: a squat */
+        if(fdn){g.translate(f.x,f.y);g.rotate((away?1:-1)*(f.side>0?-1:1)*1.5);g.scale(1,.62);g.translate(-f.x,-f.y-14*sc)}
+        if(f.state==='crouch'){g.translate(0,f.y);g.scale(1,.7);g.translate(0,-f.y)}
         if(f.state==='getup'){const gy=clamp(.5+f.st*1.6,.5,1);g.translate(0,f.y);g.scale(1,gy);g.translate(0,-f.y)}g.translate(f.x+(fs*(near-far)*9*sc),f.y-bob+(away?-7:8)*lg*sc);g.scale(k*sc*(1+(away?-.05:.09)*lg),sc*(1+(away?-.05:.09)*lg));g.beginPath();g.rect(h>0?0:-260,-420,260,520);g.clip();try{fn(f.c,o)}catch(e){}g.restore()});BURST(f,sc);return}}}
     /* attacks, hits and falls only exist as side drawings; seen from over the shoulder they are drawn narrower, as a body moving into or out of the screen would look */
     if(A()==='free'&&!sil&&f.state!=='down'){const q=clamp((ph-.45)/.6,0,1);if(q>0){g.translate(f.x,0);g.scale(lerp(1,.58,q),1);g.translate(-f.x,0)}}
@@ -1488,10 +1496,7 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
      const lc=q[2]%2?'#ffe14d':((st.sun&&st.sun[0])||'#ff7ad1');g.globalAlpha=.75+.25*Math.sin(G.t*3+q[2]);circ(x,y-h-w*.9,w*.55,lc);g.globalAlpha=.25;circ(x,y-h-w*.9,w*1.3,lc);g.globalAlpha=1;
      if(q[2]%2===0){g.strokeStyle='rgba(255,255,255,.25)';g.lineWidth=Math.max(1,2*s);g.beginPath();g.moveTo(x-w/2,y-h*.45);g.lineTo(x+w/2,y-h*.45);g.stroke()}})}catch(e){try{g.restore()}catch(x){}}};
  /* match label and the two buttons on the OFFLINE screen */
- const rl0=rlab;rlab=function(){const m=A();return m==='step'?'3D SIDESTEP':m==='free'?'3D FREE RUN':rl0()};
- const go=m=>{S3.ang=S3.tg=0;begin(()=>({type:'team',team:SV.team.slice(),ret:'offline',a3:m}))};
- const so0=SCR.offline;SCR.offline=function(){if(!ON())return so0();const h0=hdr;hdr=function(t){if(t==='OFFLINE'){const bw=Math.min(600,W-36),bx=(W-bw)/2,w2=(bw-12)/2,y=H-74;button(bx,y,w2,52,'3D SIDESTEP','#2f4f8f',()=>go('step'),24,'Tekken style: step around hits');button(bx+w2+12,y,w2,52,'3D FREE RUN','#2f7a5f',()=>go('free'),24,'Camera behind you, run anywhere')}return h0.apply(this,arguments)};try{so0()}finally{hdr=h0}};
- const sr0=startRound;startRound=function(){S3.ang=S3.tg=0;return sr0.apply(this,arguments)};
+  const sr0=startRound;startRound=function(){S3.ang=S3.tg=0;if(ON())S3.phi=1.3;return sr0.apply(this,arguments)};
  try{window.COMBO_A3P={PJ,S3,A};window.COMBO_A3=()=>({mode:A(),ang:S3.ang,tg:S3.tg})}catch(e){}}
 /* ================= flag "depth3d": the drawn fighters look solid (Trey: make the characters 3D but keep them how they are; he chose "keep drawings, add depth").
    Nothing about a fighter's drawing changes. While a fighter is being drawn in a match or cutscene, every filled shape (each limb, the body, the head, the hair, the weapon)
