@@ -1406,9 +1406,13 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
  const df0=drawFighter;drawFighter=function(f,sil){if(!A()||!f||(f!==G.f[0]&&f!==G.f[1]))return df0.apply(this,arguments);const ph=S3.phi||0,sd=(G.me||0)?-1:1,cx=(G.f[0].x+G.f[1].x)/2,xr=f.x-cx,az=f.a3z||0,p=PJ(xr*Math.cos(ph),xr*Math.sin(ph)*sd-az*1.05),k=clamp(p[2],.7,1.32),tw=1-Math.min(.16,Math.abs(az)/380);
    g.save();g.translate(cam.x+(p[0]-W/2)/cam.z,(p[1]-cam.ay)/cam.z);g.scale(k*tw,k);g.translate(-f.x,0);
    /* the body turns to look 3D (Trey): stepping or running into the screen shows the fighter's back, toward the camera shows their front. The turn is a quick swivel: the side view narrows, swaps to the front or back drawing, and widens again; they bob as they run. */
-   try{const tn=f.a3tn||0;if(tn>.03&&!sil&&f.c){const sx=Math.max(.14,Math.abs(1-2*tn));g.translate(f.x,0);g.scale(sx,1);g.translate(-f.x,0);
-     if(tn>=.5){const away=(f.a3td||1)<0,fn=away?window.CBACK:(window.CFRONT||drawFrontChar),bob=f.a3c?Math.abs(Math.sin(G.t*11))*5:f.a3s?Math.sin(f.a3s.t/.34*Math.PI)*7:0,sc=f.c.sc||1;
-      if(fn){g.fillStyle='rgba(10,4,24,.3)';g.beginPath();g.ellipse(f.x,f.y*0,34*sc,7,0,0,TAU);g.fill();g.save();g.translate(f.x,f.y-bob);g.rotate((f.a3c||0)*(f.side?-1:1)*.05);g.scale(sc,sc);try{fn(f.c,{t:G.t+f.side*1.7,expr:away?'':'angry'})}catch(e){}g.restore();return}}}
+   /* every angle of the body (Trey: a drawing of every angle): the turn goes side view -> three-quarter view -> full front (toward the camera) or full back (into the screen), in both directions, so eight directions in all.
+      The three-quarter views are the front or back drawing with the far half of the body drawn narrower than the near half, which is what a body turned 45 degrees looks like. */
+   try{const tn=f.a3tn||0;if(tn>.03&&!sil&&f.c){
+     if(tn<.3){const sx=1-.5*(tn/.3);g.translate(f.x,0);g.scale(sx,1);g.translate(-f.x,0)}
+     else{const q=clamp((tn-.3)/.7,0,1),far=lerp(.34,1,q*q),near=lerp(.72,1,q),away=(f.a3td||1)<0,fn=away?window.CBACK:(window.CFRONT||drawFrontChar),bob=f.a3c?Math.abs(Math.sin(G.t*11))*5:f.a3s?Math.sin(f.a3s.t/.34*Math.PI)*7:0,sc=f.c.sc||1,fs=(f.face||1)*(away?-1:1);
+      if(fn){g.fillStyle='rgba(10,4,24,.3)';g.beginPath();g.ellipse(f.x,0,34*sc,7,0,0,TAU);g.fill();const o={t:G.t+f.side*1.7,expr:away?'':'angry'};
+       [1,-1].forEach(h=>{const k=(h===fs?far:near);g.save();g.translate(f.x+(fs*(near-far)*9*sc),f.y-bob);g.scale(k*sc,sc);g.beginPath();g.rect(h>0?0:-260,-420,260,520);g.clip();try{fn(f.c,o)}catch(e){}g.restore()});return}}}
     return df0.apply(this,arguments)}finally{g.restore()}};
  /* the body moves with the sidestep (Trey): a real stepping pose (legs cross and bend, the body dips and leans, arms swing), and a running stride while circling in FREE RUN */
  const pa0=poseOf;poseOf=function(f){const p=pa0(f);try{if(!A()||!f||!Array.isArray(p)||!(f.state==='idle'||f.state==='run'||f.state==='guard'))return p;
