@@ -2646,5 +2646,21 @@
   "game": {
    "flag": "arena3d"
   }
+ },
+ {
+  "id": "update-3d-fighters",
+  "type": "update",
+  "name": "3D Fighters",
+  "subtitle": "Every fighter is a real 3D model",
+  "desc": "Every fighter is a real 3D model again, built from their own colours, hair, outfit, weapon and accessories, with the anime outline look: strong bodies with abs, human heads, necks, fingers and real feet, girls and boys with their own heads and builds. Hair, scarves, capes and coats move with physics. Fights play the same as before. Face icons stay drawn.",
+  "status": "staged",
+  "created": 1795267838065,
+  "rev": 2,
+  "colors": [
+   "#3fa9ff"
+  ],
+  "game": {
+   "flag": "fight3d"
+  }
  }
 ]
