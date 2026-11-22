@@ -1496,6 +1496,8 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
        const POSE=()=>{g.translate(f.x+ox,f.y+oy);if(rot)g.rotate(rot);g.scale(qx,qy);g.translate(-f.x,-f.y)};
        /* the body turns in depth: the striking side swings toward the target and the other shoulder drops back; a hit turns the body the other way */
        const tws=fat&&o.atk?o.atk.arm*(away?1:-1):((f.a3hn||0)%2?1:-1),twa=fat?lg*.3:fhu?clamp(1-el/.3,0,1)*.26:0;
+       /* flag "real3d": the fighter is a real 3D model, turned to the camera's side of the arena and posed by the game's own pose for whatever they are doing (see the real3d block at the end of this file) */
+       if(F().real3d&&window.COMBO_R3){const yaw=lerp(-.5,(away?1:-1)*(Math.PI/2-.3),q);let ok=false;g.save();try{g.translate(f.x,f.y);g.scale((f.face||1)*sc,sc);ok=COMBO_R3.render(f.c,poseOf(f),{t:G.t+f.side*1.7,expr:fat||fhu||fln?'yell':(f.state==='win'?'happy':'angry'),ground:f.y>=0&&f.state!=='down'&&f.state!=='launch'},yaw)}catch(e){}g.restore();if(ok){BURST(f,sc);return}}
        /* flag "vol3d" (Trey: make movement and animation feel 3D instead of paper; own flag because 3D Battle View is released). The fighter is no longer a flat card that gets squashed: the drawing is wrapped round a cylinder and turned by an angle, so the side of the body that turns toward the camera widens and the side that turns away narrows and slides behind, with the middle of the chest moving across. The angle comes from what the fighter is doing: the turn between views, shoulders swinging with each running step, leaning into a circle, coiling back and whipping through on a strike, being spun by a hit, and a slow sway while standing. */
        if(F().vol3d){const R=30,mp=(x,th)=>R*Math.sin(clamp(Math.asin(clamp(x/R,-1,1))+th,-Math.PI/2,Math.PI/2));
         let th=fs*(1-q)*.9-tws*twa*1.7;if(mov&&!fat)th+=Math.sin(G.t*12)*.15-(f.a3c||0)*(away?1:-1)*.3;if(f.state==='dash')th+=dsg*.22;if(!mov&&!fat&&!fhu&&!fln&&!fdn)th+=Math.sin(G.t*1.6+f.side*1.3)*.08;if(fln)th+=Math.sin(el*7)*.35;th=clamp(th,-1.05,1.05);
@@ -1603,4 +1605,126 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
  const d1=drawFighter;drawFighter=function(f,sil){const S0=G.mode==='scene'&&ON()?sc():null;if(!S0||!f||sil)return d1.apply(this,arguments);let foc=null;try{foc=S0.foc}catch(e){}
    const tz=foc?(f===foc?1.1:.94):1;f.s3z=lerp(f.s3z||1,tz,.07);const k=f.s3z;g.save();g.translate(f.x,(f.y||0)+(k-1)*46);g.scale(k,k);g.translate(-f.x,-(f.y||0));try{return d1.apply(this,arguments)}finally{g.restore()}};
  try{const ss=SCR.scene;SCR.scene=function(){const S0=ON()?sc():null;if(!S0)return ss.apply(this,arguments);const z0=cam.z,r0=cam.rot,t=G.t,w=.5+.5*Math.sin(t*.35);cam.z=z0*(1.02+.035*w);cam.rot=(r0||0)+Math.sin(t*.27)*.006;try{return ss.apply(this,arguments)}finally{cam.z=z0;cam.rot=r0}}}catch(e){}}
+/* ================= flag "real3d" (Trey: "can you make it real 3D while keeping them like they are"; he chose anime models with drawn faces).
+   Real 3D fighters for the 3D battle view. Each fighter is a 3D model built in code from their own data (colours, hair style, outfit, weapon, accessories) in the drawings' own shape: a big round anime head, a slim body, the same hair spikes or tail, scarves, capes and coats, with cel shading and an ink outline. The face is the game's own drawn face, placed on the head.
+   The model is posed by the game's own poses, so every move, jump, block, hit, fall and get-up is the real animation seen from the camera's side of the arena: your fighter from behind, the opponent from the front.
+   Rendered with WebGL on a hidden canvas and stamped into the picture; if WebGL is missing or anything fails, the drawn fighter is used. Based on the earlier 3D model code (git 9de330f), restyled. ================= */
+{const ON=()=>!!F().real3d,SZ=1024,HALF=170,CY=110;let HEADI=null,GLc=null,gl=null,PR=null,U={},MS=null,MC=null,MQ=null,dead=false;
+ const V=(x,y,z)=>[x,y,z],ad=(a,b)=>[a[0]+b[0],a[1]+b[1],a[2]+b[2]],sb=(a,b)=>[a[0]-b[0],a[1]-b[1],a[2]-b[2]],ml=(a,s)=>[a[0]*s,a[1]*s,a[2]*s],ln=a=>Math.hypot(a[0],a[1],a[2]),nm=a=>{const l=ln(a)||1;return[a[0]/l,a[1]/l,a[2]/l]},cr=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+ const CC={},rgb=s=>{let q=CC[s];if(q)return q;q=[.5,.5,.5];try{s=String(s);if(s[0]==='#'){const h=s.length===4?s[1]+s[1]+s[2]+s[2]+s[3]+s[3]:s.slice(1,7),n=parseInt(h,16);q=[(n>>16&255)/255,(n>>8&255)/255,(n&255)/255]}else{const m=s.match(/[\d.]+/g);if(m&&m.length>=3)q=[m[0]/255,m[1]/255,m[2]/255]}}catch(e){}return CC[s]=q};
+ const init=()=>{if(gl||dead)return!!gl;try{GLc=document.createElement('canvas');GLc.width=GLc.height=SZ;gl=GLc.getContext('webgl',{alpha:true,antialias:true,premultipliedAlpha:true,preserveDrawingBuffer:true});if(!gl){dead=true;return false}
+   GLc.addEventListener('webglcontextlost',e=>{e.preventDefault();gl=null;PR=null});
+   const sh=(t,s)=>{const o=gl.createShader(t);gl.shaderSource(o,s);gl.compileShader(o);if(!gl.getShaderParameter(o,gl.COMPILE_STATUS))throw new Error(gl.getShaderInfoLog(o));return o};
+   PR=gl.createProgram();gl.attachShader(PR,sh(gl.VERTEX_SHADER,'attribute vec3 aP;attribute vec3 aN;uniform mat4 uM;uniform mat4 uV;uniform mediump float uO;uniform float uT;uniform float uZ;varying vec3 vN;void main(){vec3 p=aP;p.xz*=mix(1.,uT,clamp(aP.y,0.,1.));vec4 w=uM*vec4(p,1.);vec3 n=normalize(mat3(uM)*aN);w.xyz+=n*uO;vN=n;gl_Position=uV*w;gl_Position.z+=uZ;}'));
+   gl.attachShader(PR,sh(gl.FRAGMENT_SHADER,'precision mediump float;uniform vec3 uC;uniform vec3 uL;uniform float uO;uniform float uF;varying vec3 vN;void main(){if(uO>0.){gl_FragColor=vec4(.07,.04,.12,1.);return;}float l=dot(normalize(vN),uL);float s=uF>1.5?(l>-.3?1.:.86):(uF>0.?1.:(l>.3?1.:(l>-.15?.8:.62)));gl_FragColor=vec4(uC*s,1.);}'));
+   gl.linkProgram(PR);if(!gl.getProgramParameter(PR,gl.LINK_STATUS))throw new Error('link');gl.useProgram(PR);['uM','uV','uO','uT','uC','uL','uF','uZ'].forEach(k=>U[k]=gl.getUniformLocation(PR,k));
+   const mesh=(P,N,I)=>{const b=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(P),gl.STATIC_DRAW);const n=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,n);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(N),gl.STATIC_DRAW);const i=gl.createBuffer();gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,i);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,new Uint16Array(I),gl.STATIC_DRAW);return{b,n,i,c:I.length}};
+   {const P=[],I=[],A=16,B=24;for(let a=0;a<=A;a++){const t=a/A*Math.PI;for(let b=0;b<=B;b++){const f=b/B*TAU;P.push(Math.sin(t)*Math.cos(f),Math.cos(t),Math.sin(t)*Math.sin(f))}}for(let a=0;a<A;a++)for(let b=0;b<B;b++){const p=a*(B+1)+b,q=p+B+1;I.push(p,p+1,q,q,p+1,q+1)}MS=mesh(P,P,I);/* MQ: the same ball squared off into a block with rounded edges (for square chest muscles) */const Q=P.map(v=>Math.sign(v)*Math.pow(Math.abs(v),.32));MQ=mesh(Q,P,I)}
+   {const P=[],N=[],I=[],B=14;for(let b=0;b<=B;b++){const f=b/B*TAU,x=Math.cos(f),z=Math.sin(f);P.push(x,0,z,x,1,z);N.push(x,0,z,x,0,z)}for(let b=0;b<B;b++){const p=b*2;I.push(p,p+1,p+2,p+2,p+1,p+3)}MC=mesh(P,N,I)}
+   gl.enable(gl.DEPTH_TEST);gl.clearColor(0,0,0,0);return true}catch(e){dead=true;gl=null;try{window.COMBO_3DERR=String(e&&e.message||e)}catch(x){}return false}};
+ const bind=m=>{gl.bindBuffer(gl.ARRAY_BUFFER,m.b);const a=gl.getAttribLocation(PR,'aP');gl.enableVertexAttribArray(a);gl.vertexAttribPointer(a,3,gl.FLOAT,false,0,0);gl.bindBuffer(gl.ARRAY_BUFFER,m.n);const n=gl.getAttribLocation(PR,'aN');gl.enableVertexAttribArray(n);gl.vertexAttribPointer(n,3,gl.FLOAT,false,0,0);gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,m.i)};
+ let cur=null,OUT=1.25;const put=(m,O,X,Y,Z,col,tp,flat,noOut)=>{if(cur!==m){bind(m);cur=m}gl.uniformMatrix4fv(U.uM,false,[X[0],X[1],X[2],0,Y[0],Y[1],Y[2],0,Z[0],Z[1],Z[2],0,O[0],O[1],O[2],1]);gl.uniform1f(U.uT,tp==null?1:tp);gl.uniform3fv(U.uC,rgb(col));gl.uniform1f(U.uF,flat===2?2:flat?1:0);
+   if(!noOut||noOut>=2){gl.enable(gl.CULL_FACE);gl.cullFace(gl.FRONT);gl.uniform1f(U.uO,noOut===2?OUT*.4:OUT);/* 3 = the outline is pushed back, so parts that overlap (the pieces of the head) get one outline around all of them and no lines where they meet */gl.uniform1f(U.uZ,noOut===3?.05:0);gl.drawElements(gl.TRIANGLES,m.c,gl.UNSIGNED_SHORT,0);gl.uniform1f(U.uZ,0);gl.disable(gl.CULL_FACE)}gl.uniform1f(U.uO,0);gl.drawElements(gl.TRIANGLES,m.c,gl.UNSIGNED_SHORT,0)};
+ const ZR=[0,0,1],XR=[1,0,0],fr=y=>{let x=cr(y,ZR);if(ln(x)<.05)x=cr(y,XR);x=nm(x);return[x,cr(x,y)]};
+ const sph=(O,r,col,flat,no)=>put(MS,O,[r,0,0],[0,r,0],[0,0,r],col,1,flat,no);
+ const ell=(O,yd,ry,rx,rz,col,flat,no)=>{const y=nm(yd),f=fr(y);put(MS,O,ml(f[0],rx),ml(y,ry),ml(f[1],rz),col,1,flat,no)};
+ const ell3=(O,X,Y,Z,col,flat,no)=>put(MS,O,X,Y,Z,col,1,flat,no),blk3=(O,X,Y,Z,col,flat,no)=>put(MQ,O,X,Y,Z,col,1,flat,no);
+ const cyl=(A,B,r0,r1,col,flat,no)=>{const d=sb(B,A),y=nm(d),f=fr(y);put(MC,A,ml(f[0],r0),d,ml(f[1],r0),col,r1/r0,flat,no)};
+ const cap=(A,B,r0,r1,col)=>{cyl(A,B,r0,r1,col);sph(A,r0,col);sph(B,r1,col)};
+ /* chains with physics: hair tails, scarves, capes, coat tails */
+ const CHN=new Map();
+ const chain=(key,A,dir,len,n,t,sway)=>{let S=CHN.get(key);const seg=len/n,d=nm(dir),tg=i=>{const w=Math.sin(t*3.1+i*.9)*sway*seg*.55*i;return[A[0]+d[0]*seg*i-d[1]*w*.6,A[1]+d[1]*seg*i+d[0]*w*.6-i*i*.35,A[2]+Math.sin(t*2.3+i)*sway*i*.8]};
+   if(!S||Math.abs(t-S.t)>.4||S.p.length!==n+1){S={p:[],v:[],t};for(let i=0;i<=n;i++){S.p.push(tg(i));S.v.push([0,0,0])}CHN.set(key,S);if(CHN.size>400)CHN.delete(CHN.keys().next().value)}
+   const dt=clamp(t-S.t,0,.05);S.t=t;if(dt>0){S.p[0]=A;for(let i=1;i<=n;i++){const T=tg(i),p=S.p[i],v=S.v[i];for(let k=0;k<3;k++){v[k]=v[k]*.86+(T[k]-p[k])*.16;p[k]+=v[k]*(dt*60)}const q=sb(p,S.p[i-1]),l=ln(q)||1;S.p[i]=ad(S.p[i-1],ml(q,seg/l))}}else S.p[0]=A;return S.p};
+ const tail=(key,A,dir,len,r0,r1,col,t,sw)=>{const P=chain(key,A,dir,len,5,t,sw);for(let i=0;i<5;i++){const a=r0+(r1-r0)*i/5,b=r0+(r1-r0)*(i+1)/5;cap(P[i],P[i+1],a,b,col)}};
+ const cloth=(key,A,dir,len,w,col,t,sw)=>{const P=chain(key,A,dir,len,4,t,sw);for(let i=0;i<4;i++){const h=ml(sb(P[i+1],P[i]),.62),y=nm(h),Z=[0,0,1],x=nm(cr(y,Z)),z=cr(x,y),ww=w*(.8+.2*i/3);ell3(ml(ad(P[i],P[i+1]),.5),ml(x,1.5),h,ml(z,ww),col)}};
+ const HAIRSP=[[-.15,1,0],[-.65,.8,.4],[-.65,.8,-.4],[-1,.3,0],[-.9,.5,.55],[-.9,.5,-.55],[.25,.97,.3],[.25,.97,-.3],[-.5,.95,0]];
+ const model=(c,p,o,view)=>{const J=joints(p),R0=Math.PI/180,ra=(p[10]||0)*R0,ca=Math.cos(ra),sa=Math.sin(ra);let gy=0;
+   /* taller (Trey: make them taller): the skeleton is 14% longer from the feet up; the head and the thickness of the body stay the same, so they read as taller, not just bigger */
+   const TALL=1,T2=q=>{let x=q.x*TALL,y=q.y*TALL;if(p[10]||p[11]){const y2=y+75;const rx=x*ca-y2*sa,ry=x*sa+y2*ca;x=rx;y=ry+(p[11]||0)-75}return[x,y]};
+   /* feet touch the ground in every pose (Trey): the model is moved up or down so the sole of its lowest foot sits exactly on the floor line (jumps still rise, because the game lifts the whole fighter). Poses where the body is tipped over (knocked down, flips) are left alone. */
+   const SOLE=5.4,snap=o.ground||Math.abs(p[10]||0)<40;if(snap)gy=-Math.max(T2(J.lf[1])[1],T2(J.lb[1])[1]);
+   const P3=(q,z)=>{const a=T2(q);return[a[0],-(a[1]+gy)+(snap?SOLE:0),z]},t=o.t||0,sw=(o.sway==null?.15:o.sway)+.12,bk=(c.sc>1.07||c.dm>1)?1.14:1,bare=!!c.bare;
+   const hip=P3(J.hip,0),neck=P3(J.neck,0),shC=P3(J.sh,0),sp=nm(sb(neck,hip)),fw=nm(cr(sp,[0,0,1]));
+   /* boys' shoulders are a little wider than girls' (Trey) */const SW=(isFem(c)?12.6:13.8)*bk,HW=(isFem(c)?7:6.6)*bk;
+   /* body faces the player (Trey): in the side view the chest is turned toward the camera around the spine (the waist less, the hips least); the head still looks at the opponent. The arms and legs hang from the turned shoulders and hips. */
+   const tw=view==='s'?.95:0,rt0=cr(fw,sp),rotv=a=>{const c=Math.cos(a),s2=Math.sin(a);return[ad(ml(fw,c),ml(rt0,s2)),ad(ml(rt0,c),ml(fw,-s2))]},FT=rotv(tw),FM=rotv(tw*.72),FH=rotv(tw*.45),fwT=FT[0],rtT=FT[1],fwM=FM[0],rtM=FM[1],fwH=FH[0],rtH=FH[1];
+   const shF=ad(shC,ml(rtT,SW)),shB=ad(shC,ml(rtT,-SW)),elF=ad(P3(J.af[0],0),ml(rtT,SW+2)),haF=ad(P3(J.af[1],0),ml(rtT,SW)),elB=ad(P3(J.ab[0],0),ml(rtT,-SW-2)),haB=ad(P3(J.ab[1],0),ml(rtT,-SW)),hpF=ad(hip,ml(rtH,HW)),hpB=ad(hip,ml(rtH,-HW)),knF=ad(P3(J.lf[0],0),ml(rtH,HW+1.5)),ftF=ad(P3(J.lf[1],0),ml(rtH,HW+1.5)),knB=ad(P3(J.lb[0],0),ml(rtH,-HW-1.5)),ftB=ad(P3(J.lb[1],0),ml(rtH,-HW-1.5));
+   const tor=(O,ry,rx,rz,col,F2)=>ell3(O,ml(F2[0],rx),ml(sp,ry),ml(F2[1],rz),col);
+   const fem=isFem(c),top=c.top,topS=c.topSh||c.top,skin=c.skin,pants=c.pants,slv=bare?skin:top,st=c.style|0;
+   /* cloth behind the body first (order does not matter for depth, only kept readable) */
+   const K=c.name+'|'+view+'|';
+   if(st===7){cloth(K+'cape',ad(neck,ml(fw,-7)),[-.3,-.95,0],86,17,c.col,t,sw*.8);cloth(K+'coat',ad(hip,ml(fw,-8)),[-.25,-.97,0],52,13,topS,t,sw*.6)}
+   if(st===2){cloth(K+'coat',ad(hip,ml(fw,-8)),[-.35,-.94,0],50,13,topS,t,sw*.7);cloth(K+'flap',ad(hip,ml(fw,7)),[.15,-.99,0],42,11,top,t,sw*.5)}
+   if(st===0)cloth(K+'sash',ad(hip,ml(fw,-8)),[-.7,-.7,0],28,6,topS,t,sw);
+   if(st===1){cloth(K+'r1',ad(hip,[-7,2,5]),[-.8,-.6,0],38,3.2,c.col2,t,sw);cloth(K+'r2',ad(hip,[-7,0,-5]),[-.85,-.5,0],30,2.8,c.col,t+2,sw)}
+   if(st===6){cloth(K+'r1',ad(hip,[-7,2,5]),[-.8,-.6,0],44,3.6,c.col,t,sw);cloth(K+'r2',ad(hip,[-6,0,-5]),[-.9,-.45,0],34,3,c.col2,t+2,sw)}
+   if(st===5){cloth(K+'scarf',ad(neck,[-4,-3,0]),[-.92,-.4,0],34,3.6,c.col,t,sw);cloth(K+'apron',ad(hip,ml(fw,8)),[.05,-1,0],24,10,c.col,t,sw*.3)}
+   if(st===3){cloth(K+'s1',ad(neck,[-4,-3,3]),[-1,-.12,0],60,4,c.col2,t,sw);cloth(K+'s2',ad(neck,[-3,-5,-3]),[-1,-.3,0],44,3.4,c.col2,t+1,sw)}
+   /* legs */
+   /* girls' legs are thicker (Trey): bigger thighs and calves, and wider hips to carry them */
+   const lk=1,leg=(h,k,f,ang)=>{cap(h,k,6.3*bk,4.9*bk,pants);cap(k,f,4.7*bk,3.5*bk,pants);/* feet that look like feet (Trey): ankle, heel, the top of the foot sloping down, a squared toe box and a flat sole. Flat on the floor when standing; in the air the foot follows the shin. */
+     const sh=nm(sb(f,k)),air=f[1]>(snap?SOLE+7:9),td=air?nm([-sh[1]+sh[0]*.45,sh[0]+sh[1]*.45,0]):[1,0,0],up=[-td[1],td[0],0],zz=[0,0,1],at=(a,b2)=>ad(f,ad(ml(td,a),ml(up,b2))),SH='#2b2438';
+     sph(at(-.5,1.2),4.3*bk,pants);ell3(at(-3.2,-1.6),ml(td,4),ml(up,3.6),ml(zz,3.9),SH);ell3(at(3.6,-.6),ml(td,7.2),ml(up,3.5),ml(zz,4.3),SH);blk3(at(10.2,-2.1),ml(td,4.2),ml(up,2.5),ml(zz,4.6),SH);
+     blk3(at(4,-4.4),ml(td,11.2),ml(up,1),ml(zz,4.9),'#f2ecff',1);cyl(at(1.5,2.2),at(8.6,.4),.9,.9,c.col,1,1)};
+   leg(hpB,knB,ftB,p[8]+p[9]);leg(hpF,knF,ftF,p[6]+p[7]);
+   /* torso, belt, pelvis, neck */
+   const mid=ml(ad(hip,shC),.5),tl=ln(sb(shC,hip));/* anime build: a slim body with a small chest and narrow waist, no muscle shapes */
+   tor(ad(mid,ml(sp,-3)),tl/2+4,6.6*bk,9*bk,top,FM);tor(ad(shC,ml(sp,-7)),10.5,8.4*bk,(fem?12.4:13.6)*bk,top,FT);if(fem)[5,-5].forEach(z=>ell3(ad(shC,ad(ml(sp,-8),ad(ml(fwT,6.2*bk),ml(rtT,z*bk)))),ml(fwT,3.6),ml(sp,4.6),ml(rtT,5*bk),top));
+   tor(ad(neck,ml(sp,-3)),4.6,5.6*bk,8.6*bk,top,FT);tor(ad(hip,ml(sp,1)),7.6,(fem?8.6:7.8)*bk,(fem?12:10.6)*bk,pants,FH);tor(ad(hip,ml(sp,8)),2.4,8.3*bk,11.4*bk,c.col2,FH);
+   ell3(ad(mid,ad(ml(sp,6),ml(fwM,6.2*bk))),ml(fwM,1.8),ml(sp,tl/2-3),ml(rtM,1.9),c.col);
+   /* arms */
+   /* hands with fingers (Trey: give them fingers): a palm, four fingers in two joints curled into a loose fist, and a thumb. Fist fighters wear the glove colour. */
+   const hand=(h,e,back)=>{const f=nm(sb(h,e)),u=nm(cr(f,[0,0,1])),zc=[0,0,back?1:-1],col=c.weapon==='fist'?c.col2:skin,k=c.weapon==='fist'?1.18:1;ell3(ad(h,ml(f,1.6)),ml(f,3.5*k),ml(u,3.9*k),cr(nm(f),u).map(v=>v*2.3*k),col);
+     [-2.85,-.95,.95,2.85].forEach((o2,i)=>{const b0=ad(h,ad(ml(f,3.6*k),ml(u,o2*k))),L=(i===0||i===3?2.9:3.5)*k,b1=ad(b0,ad(ml(f,L),ml(zc,.7))),b2=ad(b1,ad(ml(f,.9),ml(zc,2.7*k)));cyl(b0,b1,1.15*k,1.05*k,col,0,2);sph(b1,1.05*k,col,0,2);cyl(b1,b2,1.05*k,.9*k,col,0,2);sph(b2,.9*k,col,0,2)});
+     const t0=ad(h,ad(ml(f,.8),ml(u,3.4*k))),t1=ad(t0,ad(ml(f,2.6*k),ad(ml(u,1.5*k),ml(zc,1.3))));cyl(t0,t1,1.3*k,1.1*k,col,0,2);sph(t1,1.1*k,col,0,2)};
+   const arm=(s,e,h,back)=>{sph(s,5.4*bk,slv);cap(s,e,4.5*bk,3.8*bk,slv);cap(e,h,3.9*bk,3.1*bk,bare?skin:topS);hand(h,e,back)};
+   arm(shB,elB,haB,1);arm(shF,elF,haF,0);
+   /* head */
+   const ha=((p[0]||0)*.5+(p[1]||0))*R0+ra,HS=1.16,hu=[Math.sin(ha)*HS,Math.cos(ha)*HS,0],hf=[Math.cos(ha)*HS,-Math.sin(ha)*HS,0],hs=[0,0,HS],nk=ad(neck,ml(sp,-2)),hc=ad(neck,ml(hu,13.2+2.4/HS)),/* the head sits 6 higher than the shoulders so a real neck shows */hp=(a,b,s)=>ad(hc,ad(ml(hf,a),ad(ml(hu,b),ml(hs,s))));
+   cyl(nk,hc,2.9,2.6,skin,2,3);/* anime head: one big round head with a small chin and ears; the face itself is the game's drawn face, put on after the model is drawn */
+   ell3(hp(0,.8,0),ml(hf,13.1),ml(hu,13.3),ml(hs,12.7),skin,2,3);ell3(hp(3.4,-8.2,0),ml(hf,8.2),ml(hu,5.6),ml(hs,7.6),skin,2,3);[1,-1].forEach(k=>ell3(hp(-1.4,-1.6,12.4*k),ml(hf,2.4),ml(hu,3.8),ml(hs,1.5),skin,2,3));
+   const hair=c.hair,long=[1,2,5,6,7].includes(st);ell3(hp(-2.8,3.6,0),ml(hf,14.2),ml(hu,14.2),ml(hs,12.9),hair);
+   [-6.5,0,6.5].forEach((s,i)=>cyl(hp(8,11.5,s),hp(14.4,4.5-(i===1?1.5:0),s*1.12),4.3,.3,hair));
+   [[-1,3,11.4],[-1,3,-11.4]].forEach(q=>cyl(hp(q[0],q[1]+4,q[2]),hp(q[0]+1,q[1]-9,q[2]*1.02),3.5,.4,hair));
+   if(!long)HAIRSP.forEach((d,i)=>{const n=nm(d),k=(st===4?1.25:st===3?.85:1)*(1+.12*Math.sin(i*2.3));cyl(hp(n[0]*8,n[1]*8+2,n[2]*8),hp(n[0]*(15+9*k)+Math.sin(t*3+i)*sw*1.2,n[1]*(15+9*k)+2,n[2]*(15+9*k)),6.4,.3,i%3===2&&c.hairHi?c.hairHi:hair)});
+   else{tail(K+'tail',hp(-12,5,0),[-.5,-.86,0],(st===2||st===7)?76:54,5.6,1.6,hair,t,sw);if(st===1||st===6)ell3(hp(-13,6,0),ml(hf,3),ml(hu,3.4),ml(hs,3.4),c.col2)}
+   /* face */
+   const ex=o.expr||'',blink=ex==='blink'||ex==='closed'||ex==='happy'||ex==='hurt'||(t%4.1)>3.95;
+   /* eyes and mouth sit on the curve of the head, so they read from the side and from the front */
+   const fp=(b,s,off,th,hg,wd,col)=>{const x=12.9*Math.sqrt(Math.max(.05,1-(b-1.2)*(b-1.2)/185-s*s/134.6)),xl=Math.hypot(x,b,s),rn=nm([x,b,s]),k=xl+off+(b<-3?1.6:0),Rw=nm(ad(ml(hf,rn[0]),ad(ml(hu,rn[1]),ml(hs,rn[2])))),uU=nm(hu),d=uU[0]*Rw[0]+uU[1]*Rw[1]+uU[2]*Rw[2],Y=nm(sb(uU,ml(Rw,d))),Z=cr(Rw,Y);ell3(hp(rn[0]*k,rn[1]*k,rn[2]*k),ml(Rw,th*HS),ml(Y,hg*HS),ml(Z,wd*HS),col,1,1)};
+   HEADI={hc,hf,hu,HS,ex,blink};
+   /* accessories */
+   const A=c.acc||[];if(A.includes('band'))ell3(hp(-.6,6.5,0),ml(hf,14.9),ml(hu,2.3),ml(hs,15.2),c.col2);
+   if(A.includes('horns'))[7,-7].forEach(s=>cyl(hp(2,10,s),hp(5,25,s*1.6),3.3,.3,'#f2e6c8'));
+   if(A.includes('ears'))[8,-8].forEach(s=>{cyl(hp(-2,9,s),hp(-1,25,s*1.35),5.4,.3,hair);cyl(hp(0,11,s),hp(.6,21,s*1.3),2.6,.2,'#ff9ec4',1,1)});
+   if(A.includes('halo'))for(let i=0;i<12;i++){const a=i*TAU/12,b=a+TAU/12;cyl(hp(Math.cos(a)*10,23,Math.sin(a)*10),hp(Math.cos(b)*10,23,Math.sin(b)*10),1.5,1.5,'#ffe14d',1)}
+   if(A.includes('patch')){ell3(hp(12.2,1.2,5.4),ml(hf,1.8),ml(hu,4.6),ml(hs,3.6),'#1a1024',1,1);cyl(hp(11,6,9),hp(-6,9,12),.9,.9,'#1a1024',1,1)}
+   /* weapon in the front hand */
+   const fa=nm(sb(haF,elF)),a75=75*R0,wd=[fa[0]*Math.cos(a75)-fa[1]*Math.sin(a75),fa[0]*Math.sin(a75)+fa[1]*Math.cos(a75),0],W=(k)=>ad(haF,ml(wd,k)),wp=c.weapon;
+   if(wp==='katana'){cyl(W(-7),W(5),1.7,1.7,'#2b2438');ell3(W(5.5),ml(fr(wd)[0],3.4),ml(wd,1),ml(fr(wd)[1],3.4),c.col2);cyl(W(6),W(56),1.5,.5,'#eef4ff')}
+   else if(wp==='staff'||wp==='bo'){cyl(W(-34),W(44),1.9,1.9,'#8a5a30');sph(W(44),3.2,c.col2);sph(W(-34),3.2,c.col2)}
+   else if(wp==='dagger'){[haF,haB].forEach(h=>{cyl(h,ad(h,ml(wd,4)),1.5,1.5,'#2b2438');cyl(ad(h,ml(wd,4)),ad(h,ml(wd,20)),1.8,.3,'#eef4ff')})}
+   else if(wp==='bow'){const h=haB,up=[0,1,0];for(let i=0;i<8;i++){const a=-1.1+i*.275,b=a+.275,q=x=>ad(h,[Math.cos(x)*14-6,Math.sin(x)*26,0]);cyl(q(a),q(b),1.4,1.4,c.col2)}cyl(ad(h,[.35,-23.2,0]),ad(h,[.35,23.2,0]),.4,.4,'#ffffff',1,1)}
+   else if(wp==='orb'){const q=W(11),pl=1+.08*Math.sin(t*6);sph(q,6.4*pl,c.col,1);sph(ad(q,[1.5,2,2]),2.2,'#ffffff',1,1)}};
+ const POSEF=[-2,-2,10,12,-10,14,7,-5,-7,-5,0,0];
+ /* woman's head (Trey: give girls a woman's head; he chose "by their voice"): fighters whose voice is one of the four girl voices (Rin 1, Yuki 2, Hana 5, Cocky Girl 7 in voice.js order) */
+ /* every fighter is labelled girl or boy (Trey: "label each girl and boy and put man head on boys"; the voice rule before this gave some boys a woman's head).
+    The main and released fighters are labelled by hand in GIRLS / BOYS. Every other fighter gets a fixed label from how their name ends (KENKO, MIRA, YUMI = girl; NETO, RILU, KENJI = boy). window.COMBO_SEX(name) gives the label; to fix one, add the name to GIRLS or BOYS. */
+ const GIRLS='RIN YUKI MIRA NOVA HANA LUNA AOI SERA NIKO MEI EMI VEGA MIRELLA SOLENNE NYXIA ZEPHRA LUMEIRA KENKO'.split(' '),BOYS='KAITO ZERO GOU REN AKIRA SORA TETSU JIN KURO BRAN DAI YORU KAI RAIZO SHIRO GIN TORA ASH KAZURO DRAVEN TORIK BRAMOS ONIKAI VESPER NETO'.split(' ');
+ const FEMC={},sexOf=n=>{n=String(n||'').toUpperCase();let f=FEMC[n];if(f==null){if(GIRLS.includes(n))f=true;else if(BOYS.includes(n))f=false;else{const e=n.slice(-1),e2=n.slice(-2);f=e==='A'||/([AEIOUY]E|LLE|NNE|TTE|INE|LIE)$/.test(n)||(e==='I'&&!/[JHTZGDBR]I$/.test(n))||['KO','YU','MI'].includes(e2)}FEMC[n]=f}return f},isFem=c=>sexOf(c.name);try{window.COMBO_SEX=n=>sexOf(n)?'girl':'boy'}catch(e){}
+ /* render one fighter and stamp it into the 2D picture at the current drawing position */
+ const render=(c,p,o,yaw,view)=>{if(!init())return false;try{const tr=g.getTransform(),sc=Math.hypot(tr.a,tr.b),px=Math.round(clamp(HALF*2*sc,96,SZ));
+   gl.viewport(0,0,px,px);gl.enable(gl.SCISSOR_TEST);gl.scissor(0,0,px,px);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);gl.disable(gl.SCISSOR_TEST);gl.useProgram(PR);cur=null;
+   const cy=Math.cos(yaw),sy=Math.sin(yaw),h=1/HALF;gl.uniformMatrix4fv(U.uV,false,[cy*h,0,sy/600,0, 0,h,0,0, sy*h,0,-cy/600,0, 0,-CY*h,0,1]);
+   const L=nm([.35,.75,.6]);gl.uniform3fv(U.uL,[L[0]*cy-L[2]*sy,L[1],L[0]*sy+L[2]*cy]);OUT=clamp(2.6/Math.max(.6,sc),1.1,2.6);
+   model(c,p,o,view);gl.flush();g.drawImage(GLc,0,SZ-px,px,px,-HALF,-(CY+HALF),HALF*2,HALF*2);return true}catch(e){try{window.COMBO_3DERR=String(e&&e.message||e)}catch(x){}return false}};
+ /* the drawn face: after the model is stamped, the game's own eyes, brows and mouth are drawn on the head where it faces the camera, turned and narrowed with the head */
+ const face=(c,yaw)=>{const I=HEADI;if(!I)return;const cy=Math.cos(yaw),sy=Math.sin(yaw),hc=I.hc,hf=I.hf,hu=I.hu,H=I.HS,X=cy*hc[0]+sy*hc[2],Y=-hc[1],side=(cy*hf[0]+sy*hf[2])/H,tow=-(sy*hf[0]-cy*hf[2])/H;if(tow<.16)return;
+   g.save();g.translate(X+side*11.2*H,Y+hf[1]*-11/H*0);g.rotate(Math.atan2(cy*hu[0],hu[1]));g.scale(H*clamp(tow,.3,1),H);g.lineCap='round';g.lineJoin='round';const ex=I.ex,ang=ex==='angry'||ex==='yell';
+   try{eye(5.5,1.8,7,8.4,c,I.blink?'closed':ex);g.save();g.scale(-1,1);eye(5.5,1.8,7,8.4,c,I.blink?'closed':ex);g.restore()}catch(e){}
+   g.strokeStyle=INK;g.lineWidth=1.6;[1,-1].forEach(k=>{g.beginPath();g.moveTo(k*2.2,ang?-4.4:-6);g.lineTo(k*9.4,ang?-7.6:-6.8);g.stroke()});
+   if(ex==='yell'||ex==='talk'){g.beginPath();g.ellipse(0,10.4,2.6,ex==='yell'?3.4:2.1,0,0,TAU);g.fillStyle='#5a1a26';g.fill();g.stroke()}else{g.lineWidth=1.4;g.beginPath();g.moveTo(-2.6,10);g.quadraticCurveTo(0,ang?9.2:11.2,2.6,10);g.stroke()}
+   g.restore()};
+ try{window.COMBO_R3={on:ON,render:(c,p,o,yaw)=>{HEADI=null;const ok=render(c,p,o||{},yaw,'x');if(ok)try{face(c,yaw)}catch(e){}return ok},state:()=>({gl:!!gl,dead})}}catch(e){}}
 })();

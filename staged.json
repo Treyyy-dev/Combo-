@@ -2753,5 +2753,20 @@
   "game": {
    "flag": "vol3d"
   }
+ },
+ {
+  "id": "update-real-3d-fighters",
+  "type": "update",
+  "name": "Real 3D Fighters",
+  "subtitle": "Anime 3D models with drawn faces",
+  "desc": "In the 3D battle view every fighter is a real 3D model built from their own colours, hair, outfit, weapon and accessories, in the drawings' shape: a big anime head, a slim body, cel shading and an outline, with the drawn face on the head. They use the game's own animations for every move, hit, fall and get-up, seen from your side of the arena. Needs 3D Battle View. On a device that cannot draw them, the drawn fighters are used.",
+  "status": "staged",
+  "created": 1795315784272,
+  "colors": [
+   "#5cd6ff"
+  ],
+  "game": {
+   "flag": "real3d"
+  }
  }
 ]
