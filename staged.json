@@ -2768,5 +2768,20 @@
   "game": {
    "flag": "real3d"
   }
+ },
+ {
+  "id": "update-3d-everywhere",
+  "type": "update",
+  "name": "3D Everywhere",
+  "subtitle": "3D fighters in every part of the game",
+  "desc": "The real 3D fighters are used everywhere a fighter is drawn: the start screen, menus and fighter art, match intros, side-view matches, ultimates, win shots, story cutscenes and the summon. Small face icons stay drawn. On a device that cannot draw the models, the drawn fighters are used.",
+  "status": "staged",
+  "created": 1795316040692,
+  "colors": [
+   "#5cd6ff"
+  ],
+  "game": {
+   "flag": "real3dall"
+  }
  }
 ]
