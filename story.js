@@ -1775,7 +1775,7 @@ function drawBackChar(c,o){const SQ=o.stance?1:0,t=o.t||0,ink=INK,A=c.acc||[],lo
  /* seen from behind with the hands in front (o.fwd, o.atk: used by the 3D arena): the arms are drawn before the body, so the body covers them and the hands show past the shoulders; an attack reaches forward, away from us */
  const FWD=o.fwd||AT,WB={katana:[46,'#e8eefc'],dagger:[24,'#e8eefc'],staff:[58,'#b98c5c'],bo:[58,'#b98c5c']}[c.weapon];
  const arms=()=>{[-1,1].forEach(sx=>{const sw=wk?Math.sin(wk+(sx>0?Math.PI:0))*3:0,S={x:sx*17.5*bk,y:-107-br};let E=SQ?{x:sx*24.5*bk,y:-92+sw*.4}:{x:sx*21*bk,y:-89+sw*.4},Hd=SQ?{x:sx*(sx<0?17:19)*bk,y:-106+(sx<0?0:6)+sw*.5}:{x:sx*19.5*bk,y:-71+sw},hr=1;
-   if(FWD){E={x:sx*25.5*bk,y:-99+sw*.4};Hd={x:sx*21.5*bk,y:-119+(sx<0?0:5)+sw*.5};hr=.92}
+   if(FWD){E={x:sx*25.5*bk,y:-99+sw*1.1};Hd={x:sx*21.5*bk,y:-119+(sx<0?0:5)+sw*2.4};hr=.92}
    if(o.guard&&!AT){E={x:sx*27*bk,y:-101};Hd={x:sx*9*bk,y:-108}}
    const hit=AT&&AT.k!==1&&(AT.k===3||sx===AT.arm)?ap:0;if(hit){E={x:sx*lerp(25.5,22,hit)*bk,y:lerp(-99,-118,hit)};Hd={x:sx*lerp(21.5,23.5,hit)*bk,y:lerp(-119,-146,hit)};hr=.92-.26*hit}
    if(WB&&FWD&&sx===(AT?AT.arm:1)){const sl=AT&&AT.k===2?(AT.u-.5)*2.6*sx:-.25*sx,L=WB[0]*(.82-.2*hit),tx=Hd.x+Math.sin(sl)*L,ty=Hd.y-Math.cos(sl)*L*.8;

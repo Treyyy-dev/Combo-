@@ -56,7 +56,7 @@ const _du=drawSummonUI;drawSummonUI=function(){_du();const M=G.sm;if(!M||!M.say|
  const gurl=(v,k)=>BASE+GS.P+'/'+GS.C[v]+'/'+GS.T[v][k]+'.wav';
  function gunlock(){if(!gon()||GP.els.length)return;try{const s=silent();for(let k=0;k<4;k++){const a=new Audio();a.preload='auto';a.src=s;a.volume=0;GP.els.push(a);const p=a.play();if(p&&p.catch)p.catch(()=>{})}}catch(e){}}
  ['pointerup','touchend','click'].forEach(e=>window.addEventListener(e,gunlock,{passive:true}));
- function gplay(f,kind,cd){if(!gon()||!f||!f.c||!GP.els.length)return;try{const vol=[0,.6,1][SV.set.vol];if(!vol)return;const now=performance.now();if(f._gt&&now-f._gt<(cd||350))return;f._gt=now;
+ function gplay(f,kind,cd){if(!gon()||!f||!f.c||!GP.els.length)return;/* flag "nohurtv" (Trey: delete the voice lines when they get hurt): no grunts, screams or groans; attack shouts stay */try{if(kind!=='a'&&FLAGS.nohurtv)return}catch(e){}try{const vol=[0,.6,1][SV.set.vol];if(!vol)return;const now=performance.now();if(f._gt&&now-f._gt<(cd||350))return;f._gt=now;
    const K=KIND[kind],v=voiceOf(f.c.name)%GS.C.length,u=gurl(v,K[0]+((Math.random()*K[1])|0)),a=GP.els[GP.i=(GP.i+1)%GP.els.length];a.pause();a.src=u;a.volume=vol*.85;const p=a.play();if(p&&p.catch)p.catch(()=>{});
    setTimeout(()=>{try{if(a.src===u&&!a.paused)a.pause()}catch(e){}},K[2]*1000)}catch(e){}}
  function gwarm(f){if(!f||!f.c||f._gw)return;f._gw=1;try{const v=voiceOf(f.c.name)%GS.C.length;for(let k=0;k<11;k++){const u=gurl(v,k);if(!GW[u]){const a=new Audio();a.preload='auto';a.src=u;GW[u]=a}}}catch(e){}}

@@ -2637,7 +2637,7 @@
   "type": "update",
   "name": "3D Battle View",
   "subtitle": "Every match is played over your fighter's shoulder",
-  "desc": "Every match in every mode is now played in 3D, from over your fighter's shoulder, in a round arena. Run up and the opponent gets closer and bigger, back off and they get farther away; left and right circle. Fighters hold their hands in front of them and throw attacks, skills and ultimates forward, lunge in so the hit lands on the opponent, and get knocked back, into the air or flat on the floor in the same view. No side-view fighters are left in matches. Jump is on its own button, and crouching is off outside online matches. The 3D SIDESTEP and 3D FREE RUN buttons are removed.",
+  "desc": "Every match in every mode is now played in 3D, from over your fighter's shoulder, in a round arena. Run up and the opponent gets closer and bigger, back off and they get farther away; left and right circle. Fighters hold their hands in front of them and throw attacks, skills and ultimates forward, lunge in so the hit lands on the opponent, and get knocked back, into the air or flat on the floor in the same view. Running, dashing, jumping, getting hit, being launched, falling, getting up and knockouts each have their own animation for this view. No side-view fighters are left in matches. Jump is on its own button, and crouching is off outside online matches. The 3D SIDESTEP and 3D FREE RUN buttons are removed.",
   "status": "staged",
   "created": 1795308710773,
   "colors": [
@@ -2646,7 +2646,7 @@
   "game": {
    "flag": "arena3d"
   },
-  "rev": 8
+  "rev": 9
  },
  {
   "id": "update-solid-fighters",
@@ -2676,6 +2676,21 @@
   ],
   "game": {
    "flag": "mapdepth"
+  }
+ },
+ {
+  "id": "update-no-hurt-voices",
+  "type": "update",
+  "name": "No Hurt Voices",
+  "subtitle": "Fighters stay quiet when they are hit",
+  "desc": "Fighters no longer grunt, scream or groan when they are hit or knocked down. Attack shouts and spoken lines are unchanged.",
+  "status": "staged",
+  "created": 1795313783841,
+  "colors": [
+   "#ff8a8a"
+  ],
+  "game": {
+   "flag": "nohurtv"
   }
  }
 ]

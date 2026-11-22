@@ -119,6 +119,7 @@ function drawFrontChar(c,o){const SQ=o.stance?1:0,t=o.t||0,ex=o.expr||'',ink=INK
  /* o.atk (3D arena): an attack that comes toward the camera: the hitting hand swings in to the middle and grows, a weapon sweeps across, a kick shows the sole of the foot */
  const AT=o.atk||null,ap=AT?Math.sin(clamp(AT.u,0,1)*Math.PI):0;
  [-1,1].forEach(sx=>{const up=o.win&&sx<0,fr=o.arms==='front',hit=AT&&AT.k!==1&&(AT.k===3||sx===AT.arm)?ap:0,S={x:sx*17.5*bk,y:-107-br};let E=SQ&&!fr&&!up?{x:sx*24*bk,y:-92}:fr?{x:sx*20.5*bk,y:-90}:up?{x:sx*26*bk,y:-121}:{x:sx*21*bk,y:-89},Hd=SQ&&!fr&&!up?{x:sx*(sx<0?11:15)*bk,y:-108+(sx<0?0:7)}:fr?{x:sx*3.4,y:-75}:up?{x:sx*23*bk,y:-144+Math.sin(t*6)*1.5}:{x:sx*19*bk,y:-71};
+  if(o.walk&&SQ&&!fr&&!up){const pw=Math.sin(o.walk+(sx>0?Math.PI:0))*6;Hd.y+=pw;E.y+=pw*.4}
   if(o.guard&&!AT){E={x:sx*23*bk,y:-95};Hd={x:-sx*5*bk,y:-107+(sx<0?0:6)}}
   if(hit){E={x:sx*lerp(24,21,hit)*bk,y:lerp(-92,-101,hit)};Hd={x:sx*lerp(13,6,hit)*bk,y:lerp(-106,-95,hit)}}
   seg2(S,E,5.9*bk,4.6*bk,sx<0?c.topSh:c.top);seg2(E,Hd,4.6*bk,3.5*bk*(1+.5*hit),c.bare?(sx<0?c.skinSh:c.skin):(sx<0?c.topSh:c.top));
@@ -1457,13 +1458,24 @@ try{window.COMBO_TITLE_CH=['KENKO','NETO']}catch(e){}
         if(ult){g.save();g.translate(f.x,f.y-70*sc);for(let r=0;r<3;r++){const q2=(G.t*1.6+r/3)%1;g.globalAlpha=(1-q2)*.6;g.strokeStyle=r%2?'#fff':f.c.col;g.lineWidth=5*(1-q2)+1;g.beginPath();g.ellipse(0,0,(30+q2*90)*sc,(40+q2*110)*sc,0,0,TAU);g.stroke()}g.restore()}}
        /* a hit fighter rocks back in the same view, mouth open, instead of switching to the side drawing */
        const hw=fhu?clamp(1-(NOW-(f.a3h||-9))/.3,0,1):0;if(fhu||fln||fdn){o.expr=away?'':'yell';o.fwd=0;o.stance=fdn?0:1}if(f.state==='win'){o.stance=0;o.fwd=0;o.win=1;o.expr=''}
-       [1,-1].forEach(h=>{const k=(h===fs?far:near);g.save();if(fhu){g.translate(f.x,f.y);g.rotate((away?1:-1)*(f.side>0?-1:1)*.13*(.4+hw));g.translate(-f.x,-f.y-(away?5:-5)*hw)}
-        /* knocked into the air: the same drawing tips over backwards as it flies; getting up: it rises from a crouch */
-        if(fln){const R=(away?1:-1)*(f.side>0?-1:1)*(.45+.75*clamp(f.st*2.2,0,1));g.translate(f.x,f.y-62*sc);g.rotate(R);g.translate(-f.x,-f.y+62*sc)}
-        /* lying on the floor: the same drawing laid flat, feet toward the attacker; crouching: a squat */
-        if(fdn){g.translate(f.x,f.y);g.rotate((away?1:-1)*(f.side>0?-1:1)*1.5);g.scale(1,.62);g.translate(-f.x,-f.y-14*sc)}
-        if(f.state==='crouch'){g.translate(0,f.y);g.scale(1,.7);g.translate(0,-f.y)}
-        if(f.state==='getup'){const gy=clamp(.5+f.st*1.6,.5,1);g.translate(0,f.y);g.scale(1,gy);g.translate(0,-f.y)}g.translate(f.x+(fs*(near-far)*9*sc),f.y-bob+(away?-7:8)*lg*sc);g.scale(k*sc*(1+(away?-.05:.09)*lg),sc*(1+(away?-.05:.09)*lg));g.beginPath();g.rect(h>0?0:-260,-420,260,520);g.clip();try{fn(f.c,o)}catch(e){}g.restore()});BURST(f,sc);return}}}
+       /* animations made for this view (Trey: better animations now it is 3D, for getting hurt, falling and movement). One pose (lean, squash, stretch, shift) is worked out per fighter per frame from what they are doing and how long they have been doing it:
+          running bobs and leans into the circle, a dash stretches forward with streaks, a jump stretches on the way up and squashes on landing with dust; a hit snaps the body back, shakes it and flashes it, alternating sides in a combo;
+          a launch tumbles backwards with flailing legs and lands flat with a bounce and dust; a knockout buckles and falls over; getting up rolls back onto the feet. */
+       const dsg=(away?1:-1)*(f.side>0?-1:1),key=fdn?'DN':f.state;if(f.a3ps!==key){f.a3pp=f.a3ps;f.a3ps=key;f.a3t0=NOW;if(key==='hurt')f.a3hn=(f.a3hn||0)+1}const el=NOW-(f.a3t0||NOW),air=f.y<-4;if(f.a3air&&!air)f.a3ld=NOW;f.a3air=air;const ld=clamp(1-(NOW-(f.a3ld||-9))/.18,0,1),ez=x=>x*x*(3-2*x);
+       let rot=0,qx=1,qy=1,ox=0,oy=0,fl=0;
+       if(mov&&!fat){const c2=Math.sin(G.t*12);rot+=(f.a3c||0)*dsg*.07+c2*.018;qy*=1-.035*Math.abs(c2);qx*=1+.02*Math.abs(c2);oy-=Math.abs(c2)*3}
+       if(f.state==='dash'){qx*=1.1;qy*=.93;rot+=dsg*-.05;g.save();g.globalAlpha=.4;g.strokeStyle='#fff';g.lineWidth=2;for(let i=0;i<4;i++){const yy=f.y-(30+i*28)*sc,xx=f.x+(i%2?-1:1)*(26+i*5)*sc;g.beginPath();g.moveTo(xx,yy);g.lineTo(xx,yy+(away?26:-26)*sc);g.stroke()}g.restore()}
+       if(f.state==='air'){const up=(f.vy||0)<0,w=clamp(1-el/.16,0,1);qy*=1+(up?.1:.03)+.1*w;qx*=1-(up?.06:.01)-.06*w;o.tuck=clamp(el*3,0,.9)*(up?1:.5)}
+       if(ld>0&&!fdn){qy*=1-.2*ld;qx*=1+.14*ld}
+       if(fhu){const w=clamp(1-el/.3,0,1),sd2=(f.a3hn||0)%2?1:-.6;rot+=dsg*(.08+.24*w*w)*(sd2>0?1:.7);ox+=sd2*9*w*sc+Math.sin(el*62)*4*w;qx*=1+.07*w;qy*=1-.09*w;oy-=(away?4:-4)*w;fl=el<.09?1-el/.09:0}
+       if(fln){const up=(f.vy||0)<0;rot+=dsg*lerp(.35,1.5,ez(clamp(el*(up?2.6:4),0,1)))+Math.sin(el*9)*.06;o.tuck=.35+.3*Math.sin(el*15);qx*=1.03;fl=el<.07?1-el/.07:0}
+       if(fdn){const e=ez(clamp(el/(f.a3pp==='launch'||f.a3pp==='hurt'&&f.y<0?.1:.42),0,1)),bn=f.a3pp==='launch'?Math.abs(Math.sin(el*10))*16*Math.exp(-el*6)*sc:0;rot+=dsg*1.5*e;qy*=lerp(1,.62,e)*(1-.1*Math.sin(Math.min(1,el/.16)*Math.PI));oy-=10*sc*e+bn;if(e<1&&f.a3pp!=='launch'){qy*=1-.12*Math.sin(e*Math.PI);ox+=dsg*-6*Math.sin(e*Math.PI)*sc}}
+       if(f.state==='getup'){const e=ez(clamp(el/.34,0,1));rot+=dsg*1.5*(1-e);qy*=lerp(.62,1,e)*(1+.08*Math.sin(e*Math.PI));oy-=10*sc*(1-e)}
+       if(f.state==='crouch')qy*=.7;
+       /* dust on landings and when a body hits the floor */
+       {const da=fdn?el:(NOW-(f.a3ld||-9)),big=fdn?1.5:1;if(da>=0&&da<.32&&(fdn?f.a3pp==='launch'||el>.3:true)){const w=da/.32;g.save();g.globalAlpha=(1-w)*.5;g.fillStyle='#e9e2f5';for(let i=-1;i<=1;i+=2){g.beginPath();g.ellipse(f.x+i*(22+w*38)*sc*big,-(3+w*8)*sc,(9+w*10)*sc*big,(5+w*6)*sc,0,0,TAU);g.fill()}g.restore()}}
+       const POSE=()=>{g.translate(f.x+ox,f.y+oy);if(rot)g.rotate(rot);g.scale(qx,qy);g.translate(-f.x,-f.y)};
+       [1,-1].forEach(h=>{const k=(h===fs?far:near);const one=add=>{g.save();if(add){g.globalCompositeOperation='lighter';g.globalAlpha=.55*fl}POSE();g.translate(f.x+(fs*(near-far)*9*sc),f.y-bob+(away?-7:8)*lg*sc);g.scale(k*sc*(1+(away?-.05:.09)*lg),sc*(1+(away?-.05:.09)*lg));g.beginPath();g.rect(h>0?0:-260,-420,260,520);g.clip();try{fn(f.c,o)}catch(e){}g.restore()};one(0);if(fl>0)one(1)});BURST(f,sc);return}}}
     /* attacks, hits and falls only exist as side drawings; seen from over the shoulder they are drawn narrower, as a body moving into or out of the screen would look */
     if(A()==='free'&&!sil&&f.state!=='down'){const q=clamp((ph-.45)/.6,0,1);if(q>0){g.translate(f.x,0);g.scale(lerp(1,.58,q),1);g.translate(-f.x,0)}}
     return df0.apply(this,arguments)}finally{g.restore();
